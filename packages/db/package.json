@@ -1,0 +1,53 @@
+{
+  "name": "@repo/db",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./client": {
+      "types": "./src/db/index.ts",
+      "default": "./dist/db/index.js"
+    },
+    "./users": {
+      "types": "./src/db/users.ts",
+      "default": "./src/db/users.ts"
+    },
+    "./organizations": {
+      "types": "./src/db/organizations.ts",
+      "default": "./src/db/organizations.ts"
+    },
+    "./memberships": {
+      "types": "./src/db/memberships.ts",
+      "default": "./src/db/memberships.ts"
+    },
+    "./boards": {
+      "types": "./src/db/boards.ts",
+      "default": "./src/db/boards.ts"
+    },
+    "./sections": {
+      "types": "./src/db/sections.ts",
+      "default": "./src/db/sections.ts"
+    },
+    "./issues": {
+      "types": "./src/db/issues.ts",
+      "default": "./src/db/issues.ts"
+    },
+    "./comments": {
+      "types": "./src/db/comments.ts",
+      "default": "./src/db/comments.ts"
+    }
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^1.0.0-rc.4",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "drizzle-orm": "^1.0.0-rc.4",
+    "pg": "^8.23.0",
+    "@repo/config": "workspace:*"
+  }
+}

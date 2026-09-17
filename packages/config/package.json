@@ -1,0 +1,23 @@
+{
+  "name": "@repo/config",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/config.js",
+      "types": "./src/config.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@repo/typescript-config": "workspace:*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  }
+}

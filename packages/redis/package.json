@@ -1,0 +1,25 @@
+{
+  "name": "@repo/redis",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./client": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/ioredis": "^5.0.0",
+    "@types/redis": "^4.0.11",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "@repo/config": "workspace:*",
+    "ioredis": "^6.0.0",
+    "redis": "^6.2.1"
+  }
+}
