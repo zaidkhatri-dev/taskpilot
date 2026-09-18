@@ -1,8 +1,5 @@
 {
-  "name": "@repo/config",
-  "dependencies": {
-    "zod": "^4.6.5"
-  },
+  "name": "@repo/errors",
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/bun": "latest",
@@ -10,9 +7,8 @@
     "typescript": "^7.0.2"
   },
   "exports": {
-    ".": {
-      "import": "./dist/config.js",
-      "types": "./src/config.ts"
+    "./app-error": {
+      "types": "./src/app-error.ts"
     }
   },
   "scripts": {

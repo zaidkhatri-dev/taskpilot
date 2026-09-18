@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc --rootDir ./src --outDir ./dist"
   },
   "exports": {
     "./client": {
@@ -15,7 +15,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/ioredis": "^5.0.0",
     "@types/redis": "^4.0.11",
-    "typescript": "latest"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@repo/config": "workspace:*",

@@ -1,0 +1,11 @@
+{
+    "extends": "@repo/typescript-config/base.json",
+    "compilerOptions": {
+        "paths": {
+            "@/*": ["./src/*"],
+            "@middlewares/*": ["./src/middlewares/*"],
+            "@utils/*": ["./src/utils/*"],
+            "@errors/*": ["./src/errors/*"]
+        }
+    }
+}

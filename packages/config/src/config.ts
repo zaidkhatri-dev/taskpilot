@@ -8,18 +8,23 @@ const envSchema = z.object({
   DEFAULT_PAGE: z.coerce.number().default(1),
   API_PREFIX: z.string().default("/api/v1"),
   RATE_LIMIT_PER_EMAIL: z.coerce.number().default(10),
-  GRACEFUL_SHUTDOWN_TIMEOUT: z.coerce.number().default(10_000),
+  SHUTDOWN_TIMEOUT: z.coerce.number().default(30_000),
+  CLEANUP_TIMEOUT: z.coerce.number().default(5_000),
 
   DATABASE_URL: z.url(),
   DB_MAX_POOL_SIZE: z.coerce.number().default(10),
   DB_IDLE_TIMEOUT: z.coerce.number().default(30_000),
   DB_CONNECTION_TIMEOUT: z.coerce.number().default(5_000),
+  DB_SSL: z.boolean().default(false),
 
   REDIS_URL: z.url(),
-  REDIS_MAX_RETRIES_PER_REQUEST: z.coerce.number().default(3),
-  REDIS_CONNECTION_TIMEOUT: z.coerce.number().default(10_000),
-  REDIS_KEEP_ALIVE: z.coerce.number().default(30_000),
 });
 
-export const config = envSchema.parse(process.env);
+const parsedConfig = envSchema.safeParse(process.env);
 
+if (!parsedConfig.success){
+    console.error("Invalid environment variables: ", parsedConfig.error.issues.map(iss => ({ [iss.path.join(".")] : iss.message}))) 
+    process.exit(1)
+}
+
+export const config = parsedConfig.data;

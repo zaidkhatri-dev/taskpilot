@@ -9,5 +9,4 @@ export const getRedis = () => {
 
 export const closeRedis = async () => {
     await redis.quit();
-    return true
 }

@@ -3,12 +3,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc --rootDir ./src --outDir ./dist"
   },
   "exports": {
     "./client": {
-      "types": "./src/db/index.ts",
-      "default": "./dist/db/index.js"
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
     },
     "./users": {
       "types": "./src/db/users.ts",
@@ -43,7 +43,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/pg": "^8.23.1",
     "drizzle-kit": "^1.0.0-rc.4",
-    "typescript": "latest"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "drizzle-orm": "^1.0.0-rc.4",

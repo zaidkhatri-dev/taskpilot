@@ -1,18 +1,13 @@
 {
-  "name": "@repo/config",
-  "dependencies": {
-    "zod": "^4.6.5"
-  },
+  "name": "@repo/contracts",
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/bun": "latest",
-    "@types/node": "^22.0.0",
     "typescript": "^7.0.2"
   },
   "exports": {
-    ".": {
-      "import": "./dist/config.js",
-      "types": "./src/config.ts"
+    "./http": {
+      "types": "./src/http.ts"
     }
   },
   "scripts": {
