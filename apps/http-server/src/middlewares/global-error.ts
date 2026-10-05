@@ -8,7 +8,7 @@ import type { NextFunction, Request, Response } from "express";
 import { DatabaseError } from "pg";
 import { ZodError } from "zod";
 
-export const globalErrorMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (res.headersSent) {
         return next(err)
     }

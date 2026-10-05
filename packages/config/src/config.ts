@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  PORT: z.coerce.number().default(3000),
+  PORT: z.coerce.number().default(8000),
   CORS_ORIGIN: z.url(),
   DEFAULT_PAGE_SIZE: z.coerce.number().default(10),
   DEFAULT_PAGE: z.coerce.number().default(1),

@@ -1,11 +1,12 @@
 import "dotenv/config"
 import { config } from "@repo/config";
 import express from "express";
-import type { Express, Request, Response, NextFunction} from "express";
+import type { Express} from "express";
 import { closeDb } from "@repo/db/client";
 import { closeRedis } from "@repo/redis/client"; 
-import type { HttpResponse } from "@repo/contracts/http";
 import { GracefulShutdownManager } from "./shutdown.js";
+import { checkIsServerShuttingDown } from "@middlewares/graceful-shutdown.js";
+import { globalErrorHandler } from "@middlewares/global-error.js";
 
 const shutdown = new GracefulShutdownManager({
     shutdownTimeout: config.SHUTDOWN_TIMEOUT,
@@ -14,19 +15,10 @@ const shutdown = new GracefulShutdownManager({
 
 const app: Express = express()
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-    if(shutdown.isTerminating()){
-        const response: HttpResponse<null> = {
-            success: false,
-            message: "Server is shutting down",
-            data: null
-        }
-        
-        return res.status(503).json(response);
-    }
+app.use(checkIsServerShuttingDown)
+app.use()
 
-    next()
-})
+app.use(globalErrorHandler)
 
 shutdown.registerCleanup("Database", closeDb);
 shutdown.registerCleanup("Redis", closeRedis);

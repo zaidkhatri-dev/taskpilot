@@ -1,6 +1,12 @@
 {
   "name": "@repo/validation",
   "type": "module",
+  "exports": {
+    "./auth": {
+      "types": "./src/auth.ts",
+      "default": "./dist/auth.js"
+    }
+  },
   "scripts": {
     "build": "tsc --rootDir ./src --outDir ./dist"
   },

@@ -8,6 +8,7 @@
   },
   "exports": {
     "./app-error": {
+      "default": "./dist/app-error.js",
       "types": "./src/app-error.ts"
     }
   },

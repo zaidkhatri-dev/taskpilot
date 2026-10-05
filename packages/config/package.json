@@ -11,8 +11,8 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/config.js",
-      "types": "./src/config.ts"
+      "types": "./src/config.ts",
+      "default": "./dist/config.js"
     }
   },
   "scripts": {
