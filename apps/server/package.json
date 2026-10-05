@@ -14,6 +14,7 @@
     "@repo/errors": "workspace:*",
     "@repo/redis": "workspace:*",
     "@repo/validation": "workspace:*",
+    "@repo/email": "workspace:*",
     "connect-redis": "^10.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

@@ -17,6 +17,12 @@
         "types": "./src/response.ts",
         "default": "./dist/response.js"
       }
+    },
+    "./other": {
+      "import": {
+        "types": "./src/other.ts",
+        "default": "./dist/other.js"
+      }
     }
   },
   "scripts": {

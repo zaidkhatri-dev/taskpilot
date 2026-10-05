@@ -5,7 +5,8 @@
             "@/*": ["./src/*"],
             "@middlewares/*": ["./src/middlewares/*"],
             "@utils/*": ["./src/utils/*"],
-            "@errors/*": ["./src/errors/*"]
+            "@errors/*": ["./src/errors/*"],
+            "@modules/*": ["./src/modules/*"]
         }
     }
 }

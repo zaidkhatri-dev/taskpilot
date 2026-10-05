@@ -1,12 +1,13 @@
 import { config } from "@repo/config";
 import { getRedis } from "@repo/redis/client";
 import { RedisStore } from "connect-redis";
+import { getSessionKey } from "@/utils/redis.js";
 import { RequestHandler } from "express";
 import session from "express-session";
 
 let redisStore = new RedisStore({
     client: getRedis(),
-    prefix: "session:",
+    prefix: getSessionKey(""),
     ttl: config.SESSION_LIFESPAN / 1000
 })
 

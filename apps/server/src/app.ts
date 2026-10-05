@@ -6,6 +6,7 @@ import { sessionHandler } from "@middlewares/session.js";
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import { config } from "@repo/config";
+import authRoutes from "@modules/auth/routes.js"
 
 const app: Express = express()
 
@@ -29,6 +30,10 @@ app.get("/health", (req: Request, res: Response) => {
 })
 
 app.use(sessionHandler)
+
+const API_PREFIX = config.API_PREFIX
+
+app.use(`${API_PREFIX}/auth`, authRoutes)
 
 app.use(globalErrorHandler)
 
