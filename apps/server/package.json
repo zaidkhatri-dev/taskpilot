@@ -1,6 +1,12 @@
 {
   "name": "http-server",
   "module": "index.ts",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun dist/index.js",
+    "build": "tsc --rootDir ./src --outDir ./dist",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@repo/config": "workspace:*",
     "@repo/contracts": "workspace:*",
@@ -8,14 +14,13 @@
     "@repo/errors": "workspace:*",
     "@repo/redis": "workspace:*",
     "@repo/validation": "workspace:*",
-    "dotenv": "^18.0.0",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "pg": "^8.23.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",
     "@types/pg": "^8.23.1",

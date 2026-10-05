@@ -1,0 +1,113 @@
+export declare const membership: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "membership";
+    schema: undefined;
+    columns: {
+        createdAt: import("drizzle-orm/pg-core").PgBuildColumn<"membership", import("drizzle-orm/pg-core").SetHasDefault<import("drizzle-orm/pg-core").SetNotNull<import("drizzle-orm/pg-core").PgTimestampBuilder>>, {
+            name: string;
+            tableName: "membership";
+            dataType: "object date";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            identity: undefined;
+            generated: undefined;
+        }>;
+        updatedAt: import("drizzle-orm/pg-core").PgBuildColumn<"membership", import("drizzle-orm/pg-core").SetHasDefault<import("drizzle-orm/pg-core").SetNotNull<import("drizzle-orm/pg-core").PgTimestampBuilder>>, {
+            name: string;
+            tableName: "membership";
+            dataType: "object date";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            identity: undefined;
+            generated: undefined;
+        }>;
+        id: import("drizzle-orm/pg-core").PgBuildColumn<"membership", import("drizzle-orm/pg-core").SetHasDefault<import("drizzle-orm/pg-core").SetIsPrimaryKey<import("drizzle-orm/pg-core").PgUUIDBuilder>>, {
+            name: string;
+            tableName: "membership";
+            dataType: "string uuid";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            identity: undefined;
+            generated: undefined;
+        }>;
+        userId: import("drizzle-orm/pg-core").PgBuildColumn<"membership", import("drizzle-orm/pg-core").SetNotNull<import("drizzle-orm/pg-core").PgUUIDBuilder>, {
+            name: string;
+            tableName: "membership";
+            dataType: "string uuid";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            identity: undefined;
+            generated: undefined;
+        }>;
+        organizationId: import("drizzle-orm/pg-core").PgBuildColumn<"membership", import("drizzle-orm/pg-core").SetNotNull<import("drizzle-orm/pg-core").PgUUIDBuilder>, {
+            name: string;
+            tableName: "membership";
+            dataType: "string uuid";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            identity: undefined;
+            generated: undefined;
+        }>;
+        role: import("drizzle-orm/pg-core").PgBuildColumn<"membership", import("drizzle-orm/pg-core").SetHasDefault<import("drizzle-orm/pg-core").SetNotNull<import("drizzle-orm/pg-core").PgEnumColumnBuilder<["admin", "member"]>>>, {
+            name: string;
+            tableName: "membership";
+            dataType: "string enum";
+            data: "admin" | "member";
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: ["admin", "member"];
+            identity: undefined;
+            generated: undefined;
+        }>;
+        accepted: import("drizzle-orm/pg-core").PgBuildColumn<"membership", import("drizzle-orm/pg-core").SetHasDefault<import("drizzle-orm/pg-core").SetNotNull<import("drizzle-orm/pg-core").PgBooleanBuilder>>, {
+            name: string;
+            tableName: "membership";
+            dataType: "boolean";
+            data: boolean;
+            driverParam: boolean;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            identity: undefined;
+            generated: undefined;
+        }>;
+    };
+    dialect: 'pg';
+}>;
+//# sourceMappingURL=memberships.d.ts.map

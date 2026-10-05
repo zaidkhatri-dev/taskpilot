@@ -16,7 +16,8 @@
     }
   },
   "scripts": {
-    "build": "tsc --rootDir ./src --outDir ./dist"
+    "build": "tsc --rootDir ./src --outDir ./dist",
+    "typecheck": "tsc --noEmit"
   },
   "type": "module"
 }
