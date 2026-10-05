@@ -14,9 +14,11 @@
     "@repo/errors": "workspace:*",
     "@repo/redis": "workspace:*",
     "@repo/validation": "workspace:*",
+    "connect-redis": "^10.0.0",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "pg": "^8.23.1",
+    "ws": "^8.22.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
@@ -24,6 +26,7 @@
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",
     "@types/pg": "^8.23.1",
+    "@types/ws": "^8.18.2",
     "typescript": "^7.0.2"
   },
   "private": true,

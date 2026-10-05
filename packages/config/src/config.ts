@@ -11,6 +11,9 @@ const envSchema = z.object({
   SHUTDOWN_TIMEOUT: z.coerce.number().default(30_000),
   CLEANUP_TIMEOUT: z.coerce.number().default(5_000),
 
+  SESSION_SECRET: z.string(),
+  SESSION_LIFESPAN: z.coerce.number().default(1000 * 60 * 60 * 7),
+
   DATABASE_URL: z.url(),
   DB_MAX_POOL_SIZE: z.coerce.number().default(10),
   DB_IDLE_TIMEOUT: z.coerce.number().default(30_000),
