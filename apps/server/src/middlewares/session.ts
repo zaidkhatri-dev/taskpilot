@@ -18,7 +18,7 @@ export const sessionHandler: RequestHandler = session({
     cookie: {
         secure: config.NODE_ENV === "production",
         httpOnly: true,
-        sameSite: config.NODE_ENV === "production" ? "strict" : "lax",
+        sameSite: "none",
         maxAge: config.SESSION_LIFESPAN,
     },
     rolling: true

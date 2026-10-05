@@ -2,11 +2,11 @@ import { appErrorMapper } from "@/errors/app-mapper.js";
 import { dbErrorMapper } from "@/errors/db-mapper.js";
 import { validationErrorMapper } from "@/errors/validation-mapper.js";
 import type { ErrorMapper } from "@/types/error.js";
-import { HttpResponse } from "@repo/contracts/http";
 import { AppError } from "@repo/errors/app-error";
 import type { NextFunction, Request, Response } from "express";
 import { DatabaseError } from "pg";
 import { ZodError } from "zod";
+import type { BaseResponse } from "@repo/contracts/response";
 
 export const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (res.headersSent) {
@@ -38,7 +38,7 @@ export const globalErrorHandler = (err: Error, req: Request, res: Response, next
         }
     }
 
-    const response: HttpResponse<null> = {
+    const response: BaseResponse = {
         success: false,
         message: mappedError.message,
         data: null

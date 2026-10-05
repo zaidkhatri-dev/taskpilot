@@ -6,9 +6,17 @@
     "typescript": "^7.0.2"
   },
   "exports": {
-    "./http": {
-      "types": "./src/http.ts",
-      "default": "./dist/http.js"
+    "./request": {
+      "import": {
+        "types": "./src/request.ts",
+        "default": "./dist/request.js"
+      }
+    },
+    "./response": {
+      "import": {
+        "types": "./src/response.ts",
+        "default": "./dist/response.js"
+      }
     }
   },
   "scripts": {

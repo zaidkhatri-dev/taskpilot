@@ -13,6 +13,7 @@ const envSchema = z.object({
 
   SESSION_SECRET: z.string(),
   SESSION_LIFESPAN: z.coerce.number().default(1000 * 60 * 60 * 7),
+  AUTH_TOKEN_EXPIRY_TIME: z.coerce.number().default(60 * 5),
 
   DATABASE_URL: z.url(),
   DB_MAX_POOL_SIZE: z.coerce.number().default(10),

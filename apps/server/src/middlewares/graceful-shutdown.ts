@@ -1,9 +1,9 @@
+import { BaseResponse } from "@repo/contracts/response";
 import type { NextFunction, Request, Response } from "express";
-import type { HttpResponse } from "@repo/contracts/http";
 
 export const checkIsServerShuttingDown = (req: Request, res: Response, next: NextFunction) => {
     if (res.locals.isShuttingDown){
-        const response: HttpResponse<null> = {
+        const response: BaseResponse = {
             success: false,
             message: "Server is shutting down",
             data: null
