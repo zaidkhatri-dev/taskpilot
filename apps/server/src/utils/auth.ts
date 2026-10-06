@@ -1,7 +1,7 @@
 import { config } from "@repo/config";
 
 export const generateMagicLink = (token: string) => {
-    return `${config.CORS_ORIGIN}/verify-email?token=${token}`
+    return `${config.EMAIL_VERIFICATION_BASE_URL}?token=${token}`
 }
 
 export const getEmailBody = (email: string, link: string) => {

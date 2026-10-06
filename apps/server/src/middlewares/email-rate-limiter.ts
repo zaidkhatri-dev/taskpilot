@@ -1,5 +1,5 @@
-import { getCounterKey } from "@/utils/redis.js";
-import { getValue, incrValue } from "@modules/auth/repository.js";
+import { getMagicLinkKey } from "@/utils/redis.js";
+import { getHValue } from "@modules/auth/repository.js";
 import { config } from "@repo/config";
 import { AppError } from "@repo/errors/app-error";
 import type { NextFunction, Request, Response } from "express";
@@ -7,18 +7,14 @@ import type { NextFunction, Request, Response } from "express";
 export const emailRateLimiter = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const email = req.body.email
-        const COUNTER_KEY = getCounterKey(email)
+        const LINK_KEY = getMagicLinkKey(email)
 
-        const val = await getValue(COUNTER_KEY)
+        const val = await getHValue(LINK_KEY)
     
-        if (val === null){
-            await incrValue(COUNTER_KEY, config.AUTH_TOKEN_EXPIRY_TIME)
-        } 
-        else if (Number(val) < config.RATE_LIMIT_PER_EMAIL){
-            await incrValue(COUNTER_KEY)
-        }
-        else {
-            throw new AppError(`You have made too many requests. Please try again after some time`, 403)
+        if (val && Object.keys(val).length > 0){
+            if (Number(val.count) >= config.RATE_LIMIT_PER_EMAIL){
+                throw new AppError("You have requested too many emails, please try again later", 400)
+            }
         }
     } catch (error) {
         next(error)

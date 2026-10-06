@@ -1,19 +1,32 @@
 import { generateRandomToken, hashToken } from "@utils/crypto.js";
-import { getValue, setValue } from "./repository.js";
+import { getHValue, getHValueByToken, setHValue, delKey, getUserByEmail, createUser, getUserById } from "./repository.js";
 import { emailQueue } from "@repo/email/queue";
 import { config } from "@repo/config";
 import { getMagicLinkKey } from "@/utils/redis.js";
 import { generateMagicLink, getEmailBody } from "@/utils/auth.js";
 import { EmailJobData } from "@repo/contracts/other";
+import { MagicLinkPayload } from "@/types/redis.js";
+import { AppError } from "@repo/errors/app-error";
 
-export const generateLinkService = async (email: string) => {
-
+export const generateMagicLinkService = async (email: string) => {
     const rawToken = generateRandomToken()
 
     const hashedToken = hashToken(rawToken)
     
-    const MAGIC_KEY = getMagicLinkKey(hashedToken)
-    await setValue(MAGIC_KEY, email, config.AUTH_TOKEN_EXPIRY_TIME)
+    const MAGIC_KEY = getMagicLinkKey(email)
+
+    const payload: MagicLinkPayload = {
+        token: hashedToken,
+        count: 1
+    }
+    
+    const val = await getHValue(MAGIC_KEY)
+    
+    if (val && Object.keys(val).length > 0) {
+        payload.count = Number(val.count) + 1
+    }
+
+    await setHValue(MAGIC_KEY, payload, config.AUTH_TOKEN_EXPIRY_TIME)
 
     const link = generateMagicLink(rawToken)
     const emailBody = getEmailBody(email, link)
@@ -27,4 +40,46 @@ export const generateLinkService = async (email: string) => {
 
     await emailQueue.add("send-email", jobData)
 
+}
+
+export const verifyMagicLinkService = async (rawToken: string) => {
+    const hashedToken = hashToken(rawToken)
+    
+    const result = await getHValueByToken(hashedToken)
+    if (!result) {
+        throw new AppError("The link is invalid or has expired", 400)
+    }
+    
+    const { key, value } = result;
+
+    if (hashedToken !== value.token) {
+        throw new AppError("The link is invalid or has expired", 400)
+    }
+
+    const email = key.split(":")[1]!
+
+    let user = await getUserByEmail(email)
+
+    if (!user){
+        user = await createUser(email)
+    }
+
+    const sessionData = {
+        userId: user.userId,
+        email: user.email,
+    }
+
+    await delKey(key)
+
+    return sessionData;
+}
+
+export const checkIfSignedUpService = async (userId: string) => {
+    const user = await getUserById(userId)
+    
+    if (!user) {
+        throw new AppError("User not found", 404)
+    }
+
+    return Boolean(user.username && user.profilePictureUrl)
 }

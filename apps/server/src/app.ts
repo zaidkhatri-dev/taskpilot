@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser"
 import cors from "cors"
 import { config } from "@repo/config";
 import authRoutes from "@modules/auth/routes.js"
+import { requireAuth } from "@middlewares/auth.js"
 
 const app: Express = express()
 
@@ -35,6 +36,7 @@ const API_PREFIX = config.API_PREFIX
 
 app.use(`${API_PREFIX}/auth`, authRoutes)
 
+app.use(requireAuth)
 app.use(globalErrorHandler)
 
 export default app

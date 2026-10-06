@@ -4,6 +4,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(8000),
   CORS_ORIGIN: z.url().default('http://localhost:3000'),
+  EMAIL_VERIFICATION_BASE_URL: z.url().default("http://localhost:3000/auth/verify"),
   DEFAULT_PAGE_SIZE: z.coerce.number().default(10),
   DEFAULT_PAGE: z.coerce.number().default(1),
   

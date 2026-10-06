@@ -2,6 +2,7 @@ import type { Server } from "http";
 import type { Socket } from "node:net";
 import type { GracefulShutdownOptions, CleanupHandler } from "./types/graceful-shutdown.js";
 
+// TODO: add graceful shutdown for websocket server
 export class GracefulShutdownManager {
     private shutdownTimeout: number;
     private cleanupTimeout: number;

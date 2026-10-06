@@ -12,11 +12,13 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@repo/typescript-config": "workspace:*",
+    "@types/bun": "latest",
+    "@types/node": "^26.6.4",
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@repo/config": "workspace:*",
     "zod": "^4.6.5"
   }
 }
