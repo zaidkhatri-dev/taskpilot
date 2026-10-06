@@ -31,7 +31,7 @@ export const globalErrorHandler = (err: Error, req: Request, res: Response, next
     }
 
     else {
-        console.error("[Unknown Error]: ", err.message)
+        console.error("[Unknown Error]: ", err)
         mappedError = {
             message: "Something went wrong",
             statusCode: 500

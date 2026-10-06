@@ -72,3 +72,17 @@ export async function getUserById(id: string) {
     )
     return user
 }
+
+export async function updateUser(id: string, username: string, profilePictureUrl: string) {
+    const [user] = await dbClient.update(users).set({
+        username,
+        profilePictureUrl
+    }).where(
+        eq(users.id, id)
+    ).returning({
+        userId: users.id,
+        email: users.email
+    })
+
+    return user!
+}

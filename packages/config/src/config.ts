@@ -33,6 +33,9 @@ const envSchema = z.object({
   REDIS_URL: z.url().default('redis://localhost:6379'),
 
   RESEND_API_KEY: z.string(),
+
+  IMAGEKIT_PRIVATE_KEY: z.string(),
+  IMAGE_FILE_UPLOAD_LIMIT: z.coerce.number().default(5 * 1024 * 1024),
 });
 
 const parsedConfig = envSchema.safeParse(process.env);

@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import type { GetTypeFromSchema } from "../../types/validation.js"
-import { generateMagicLinkSchema, verifyMagicLinkSchema } from "@repo/validation/auth"
-import { generateMagicLinkService, verifyMagicLinkService, checkIfSignedUpService } from "./services.js";
+import { generateMagicLinkSchema, signupSchema, verifyMagicLinkSchema } from "@repo/validation/auth"
+import { generateMagicLinkService, verifyMagicLinkService, signupService, checkIfSignedUpService } from "./services.js";
 import { BaseResponse, IsUserSignedUpResponse } from "@repo/contracts/response";
 import { regenerateSession, saveSession } from "@/utils/session.js";
+import { AppError } from "@repo/errors/app-error";
 
 export const generateMagicLinkController = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -58,6 +59,37 @@ export const checkIfSignedUpController = async (req: Request, res: Response, nex
             success: true,
             message: hasSignedUp ? "User is already signed up" : "Please complete the sign up process before moving forward",
             data: hasSignedUp
+        }
+
+        res.status(200).json(response)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const signupController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { username } = req.body as GetTypeFromSchema<typeof signupSchema>
+
+        const userId = req.session.userId!
+        
+        if (!req.file){
+            throw new AppError("Profile picture is required", 400)
+        }
+
+       const sessionData = await signupService(userId, username, req.file)
+
+       await regenerateSession(req)
+        
+        req.session.userId = sessionData.userId
+        req.session.email = sessionData.email
+        
+        await saveSession(req) 
+
+        const response: BaseResponse = {
+            success: true,
+            message: "Profile updated successfully",
+            data: null
         }
 
         res.status(200).json(response)

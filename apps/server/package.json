@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@imagekit/nodejs": "^7.12.1",
     "@repo/config": "workspace:*",
     "@repo/contracts": "workspace:*",
     "@repo/db": "workspace:*",
@@ -21,6 +22,7 @@
     "drizzle-orm": "^1.0.0-rc.4",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "multer": "^2.4.0",
     "pg": "^8.23.1",
     "ws": "^8.22.0",
     "zod": "^4.6.5"
@@ -31,6 +33,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",
+    "@types/multer": "^2.3.0",
     "@types/pg": "^8.23.1",
     "@types/ws": "^8.18.2",
     "typescript": "^7.0.2"

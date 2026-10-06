@@ -15,3 +15,14 @@ export const verifyMagicLinkSchema = z.object({
     })
     .refine((token) => (token !== null && token.length > 0 && token.length <= 64), INVALID_URL_MSG)
 })
+
+export const signupSchema = z.object({
+    username: z.string()
+    .min(3, "Username must be at least 3 characters long")
+    .max(20, "Username must be at most 20 characters long")
+    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+    fieldname: z.string(),
+    originalname: z.string(),
+    mimetype: z.enum(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
+    size: z.number().max(config.IMAGE_FILE_UPLOAD_LIMIT, "File must be under 5MB"),
+})
