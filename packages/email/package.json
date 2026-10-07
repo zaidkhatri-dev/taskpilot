@@ -22,7 +22,6 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@repo/config": "workspace:*",
     "@repo/redis": "workspace:*",
     "bullmq": "^6.3.11",
     "resend": "^6.32.0"

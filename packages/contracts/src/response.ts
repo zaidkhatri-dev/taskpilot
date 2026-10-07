@@ -1,12 +1,14 @@
-interface Response {
+interface BaseResponse {
     success: boolean;
     message: string;
 }
 
-export interface BaseResponse extends Response {
+export interface DefaultResponse extends BaseResponse {
     data: null;
 }
 
-export interface IsUserSignedUpResponse extends Response {
-    data: boolean;
+export interface ProfileNotCompletedResponse extends BaseResponse {
+    data: {
+        isProfileComplete: false
+    }
 }

@@ -18,7 +18,6 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@repo/config": "workspace:*",
     "zod": "^4.6.5"
   }
 }

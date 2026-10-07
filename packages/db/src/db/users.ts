@@ -1,5 +1,5 @@
 import { check, uniqueIndex, pgTable } from "drizzle-orm/pg-core";
-import { timestamps } from "./shared.js";
+import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";
 
@@ -8,7 +8,8 @@ export const users = pgTable("users", {
     email: text("email").notNull(),
     username: text("username"),
     profilePictureUrl: text("profile_picture_url"),
-    ...timestamps
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
     uniqueIndex('email_lower_idx').on(sql`lower(${table.email})`),
     check("valid_email_format", sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'`),

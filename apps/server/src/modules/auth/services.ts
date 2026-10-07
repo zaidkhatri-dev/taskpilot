@@ -1,7 +1,7 @@
 import { generateRandomToken, hashToken } from "@utils/crypto.js";
 import { getHValue, getHValueByToken, setHValue, delKey, updateUser, getUserByEmail, createUser, getUserById } from "./repository.js";
-import { emailQueue } from "@repo/email/queue";
-import { config } from "@repo/config";
+import { getEmailQueue } from "@repo/email/queue";
+import { serverConfig } from "@repo/config/server";
 import { getMagicLinkKey } from "@/utils/redis.js";
 import { generateMagicLink, getEmailBody } from "@/utils/auth.js";
 import { EmailJobData } from "@repo/contracts/other";
@@ -27,18 +27,23 @@ export const generateMagicLinkService = async (email: string) => {
         payload.count = Number(val.count) + 1
     }
 
-    await setHValue(MAGIC_KEY, payload, config.AUTH_TOKEN_EXPIRY_TIME)
+    await setHValue(MAGIC_KEY, payload, serverConfig.AUTH_TOKEN_EXPIRY_TIME)
 
     const link = generateMagicLink(rawToken)
     const emailBody = getEmailBody(email, link)
     
     const jobData: EmailJobData = {
-        from: config.SENDER_EMAIL,
+        from: serverConfig.SENDER_EMAIL,
         to: email,
         subject: "Please verify your email",
         html: emailBody
     }
 
+    const emailQueue = getEmailQueue({
+        redisUrl: serverConfig.REDIS_URL,
+        maxRetries: serverConfig.EMAIL_WORKER_MAX_RETRY,
+        attemptDelay: serverConfig.EMAIL_WORKER_ATTEMPT_DELAY
+    });
     await emailQueue.add("send-email", jobData)
 
 }
@@ -59,15 +64,23 @@ export const verifyMagicLinkService = async (rawToken: string) => {
 
     const email = key.split(":")[1]!
 
+    let sessionData = null
+    
     let user = await getUserByEmail(email)
 
     if (!user){
         user = await createUser(email)
-    }
-
-    const sessionData = {
-        userId: user.userId,
-        email: user.email,
+        sessionData = {
+            userId: user.userId,
+            email: user.email,
+            isProfileComplete: false
+        }
+    } else {
+        sessionData = {
+            userId: user.userId,
+            email: user.email,
+            isProfileComplete: true
+        }
     }
 
     await delKey(key)
@@ -75,17 +88,7 @@ export const verifyMagicLinkService = async (rawToken: string) => {
     return sessionData;
 }
 
-export const checkIfSignedUpService = async (userId: string) => {
-    const user = await getUserById(userId)
-    
-    if (!user) {
-        throw new AppError("User not found", 404)
-    }
-
-    return Boolean(user.username && user.profilePictureUrl)
-}
-
-export const signupService = async (userId: string, username: string, file: Express.Multer.File) => {
+export const profileService = async (userId: string, username: string, file: Express.Multer.File) => {
     const user = await getUserById(userId)
 
     if (!user) {

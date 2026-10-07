@@ -1,15 +1,22 @@
 import { Queue } from "bullmq";
-import { config } from "@repo/config";
 
-export const emailQueue = new Queue('email', {
-    connection: { url: config.REDIS_URL },
-    defaultJobOptions: {
-        attempts: config.EMAIL_WORKER_MAX_RETRY,
-        backoff: {
-            type: 'exponential',
-            delay: config.EMAIL_WORKER_ATTEMPT_DELAY
-        },
-        removeOnComplete: true,
-        removeOnFail: false
+let emailQueue: Queue | null = null;
+
+export const getEmailQueue = (options?: { redisUrl: string, maxRetries: number, attemptDelay: number }) => {
+    if (!emailQueue) {
+        if (!options) throw new Error("Options required for initialization");
+        emailQueue = new Queue('email', {
+            connection: { url: options.redisUrl },
+            defaultJobOptions: {
+                attempts: options.maxRetries,
+                backoff: {
+                    type: 'exponential',
+                    delay: options.attemptDelay
+                },
+                removeOnComplete: true,
+                removeOnFail: false
+            }
+        });
     }
-})
+    return emailQueue!;
+};

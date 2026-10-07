@@ -1,5 +1,5 @@
 import { integer, pgTable, check } from "drizzle-orm/pg-core";
-import { timestamps } from "./shared.js";
+import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";
 import { sections } from "./sections.js";
@@ -12,7 +12,8 @@ export const issues = pgTable("issues", {
     sectionId: uuid("section_id").notNull().references(() => sections.id, { onDelete: "restrict" }),
     boardId: uuid("board_id").notNull().references(() => boards.id, { onDelete: "cascade" }),
     order: integer("order").notNull().default(0),
-    ...timestamps
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
     check("order_check", sql`${table.order} >= 0`)
 ]);

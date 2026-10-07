@@ -1,12 +1,24 @@
 import { Redis } from "ioredis";
-import { config } from "@repo/config";
 
-const redis = new Redis(config.REDIS_URL)
+let redis: Redis | null = null;
+
+export const initRedis = (url: string) => {
+    if (!redis) {
+        redis = new Redis(url);
+    }
+    return redis!;
+};
 
 export const getRedis = () => {
-    return redis
+    if (!redis) {
+        throw new Error("Redis not initialized. Call initRedis first.");
+    }
+    return redis;
 }
 
 export const closeRedis = async () => {
-    await redis.quit();
+    if (redis) {
+        await redis.quit();
+        redis = null;
+    }
 }

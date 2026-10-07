@@ -1,6 +1,6 @@
 import { getMagicLinkKey } from "@/utils/redis.js";
 import { getHValue } from "@modules/auth/repository.js";
-import { config } from "@repo/config";
+import { serverConfig } from "@repo/config/server";
 import { AppError } from "@repo/errors/app-error";
 import type { NextFunction, Request, Response } from "express";
 
@@ -12,7 +12,7 @@ export const emailRateLimiter = async(req: Request, res: Response, next: NextFun
         const val = await getHValue(LINK_KEY)
     
         if (val && Object.keys(val).length > 0){
-            if (Number(val.count) >= config.RATE_LIMIT_PER_EMAIL){
+            if (Number(val.count) >= serverConfig.RATE_LIMIT_PER_EMAIL){
                 throw new AppError("You have requested too many emails, please try again later", 400)
             }
         }

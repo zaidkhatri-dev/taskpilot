@@ -1,12 +1,15 @@
 import { inputValidator } from "@/middlewares/input-validator.js";
-import { generateMagicLinkSchema, verifyMagicLinkSchema, signupSchema } from "@repo/validation/auth";
+import { generateMagicLinkSchema, generateVerifyMagicLinkSchema, generateSignupSchema } from "@repo/validation/auth";
 import { Router } from "express";
-import { generateMagicLinkController, verifyMagicLinkController, checkIfSignedUpController, signupController } from "./controller.js";
+import { generateMagicLinkController, verifyMagicLinkController, profileController } from "./controller.js";
 import { emailRateLimiter } from "@/middlewares/email-rate-limiter.js";
-import { requireAuth } from "@/middlewares/auth.js";
 import { fileUpload } from "@/middlewares/file-upload.js";
+import { serverConfig } from "@repo/config/server";
 
 const router: Router = Router()
+
+const verifyMagicLinkSchema = generateVerifyMagicLinkSchema(serverConfig.EMAIL_VERIFICATION_BASE_URL);
+const signupSchema = generateSignupSchema(serverConfig.IMAGE_FILE_UPLOAD_LIMIT);
 
 router.post("/generate-link", 
     inputValidator(generateMagicLinkSchema),
@@ -19,16 +22,10 @@ router.post("/verify-link",
     verifyMagicLinkController
 )
 
-router.use(requireAuth)
-
-router.get("/signed-up",
-    checkIfSignedUpController
-)
-
-router.post("/signup",
+router.patch("/profile",
     fileUpload.single('avatar'),
     inputValidator(signupSchema),
-    signupController
+    profileController
 )
 
 export default router

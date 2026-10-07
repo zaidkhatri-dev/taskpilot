@@ -1,5 +1,5 @@
 import { Worker, type Job } from 'bullmq';
-import { config } from '@repo/config';
+import { workerConfig } from '@repo/config/worker';
 import { sendEmail } from '@repo/email/send';
 import { EmailJobData } from "@repo/contracts/other"
 
@@ -10,17 +10,17 @@ const emailWorker = new Worker<EmailJobData>(
 
         console.log(`[worker] Processing job ${job.id} — sending email to ${to}`);
 
-        await sendEmail(from, to, subject, html);
+        await sendEmail(from, to, subject, html, workerConfig.RESEND_API_KEY);
         
         console.log(`[worker] Job ${job.id} completed`);
     },
     {
-        connection: { url: config.REDIS_URL },
+        connection: { url: workerConfig.REDIS_URL },
         limiter: {
-            max: config.EMAIL_RATE_LIMIT_PER_MINUTE,
+            max: workerConfig.EMAIL_RATE_LIMIT_PER_MINUTE,
             duration: 1000 * 60,
         },
-        concurrency: config.EMAIL_WORKER_CONCURRENCY,
+        concurrency: workerConfig.EMAIL_WORKER_CONCURRENCY,
     }
 );
 

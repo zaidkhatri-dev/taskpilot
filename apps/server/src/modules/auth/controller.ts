@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import type { GetTypeFromSchema } from "../../types/validation.js"
-import { generateMagicLinkSchema, signupSchema, verifyMagicLinkSchema } from "@repo/validation/auth"
-import { generateMagicLinkService, verifyMagicLinkService, signupService, checkIfSignedUpService } from "./services.js";
-import { BaseResponse, IsUserSignedUpResponse } from "@repo/contracts/response";
+import { generateMagicLinkSchema, VerifyMagicLinkSchema, SignupSchema } from "@repo/validation/auth"
+import { generateMagicLinkService, verifyMagicLinkService, profileService } from "./services.js";
+import { DefaultResponse } from "@repo/contracts/response";
 import { regenerateSession, saveSession } from "@/utils/session.js";
 import { AppError } from "@repo/errors/app-error";
 
@@ -12,7 +12,7 @@ export const generateMagicLinkController = async (req: Request, res: Response, n
 
         await generateMagicLinkService(email)
 
-        const response: BaseResponse = {
+        const response: DefaultResponse = {
             success: true,
             message: "If this email exists then a verification link has been sent on it",
             data: null
@@ -26,7 +26,7 @@ export const generateMagicLinkController = async (req: Request, res: Response, n
 
 export const verifyMagicLinkController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { url } = req.body as GetTypeFromSchema<typeof verifyMagicLinkSchema>
+        const { url } = req.body as GetTypeFromSchema<VerifyMagicLinkSchema>
 
         const sessionData = await verifyMagicLinkService(url!)
 
@@ -34,10 +34,11 @@ export const verifyMagicLinkController = async (req: Request, res: Response, nex
         
         req.session.userId = sessionData.userId
         req.session.email = sessionData.email
+        req.session.isProfileComplete = sessionData.isProfileComplete
         
         await saveSession(req) 
         
-        const response: BaseResponse = {
+        const response: DefaultResponse = {
             success: true,
             message: "Email verified successfully",
             data: null
@@ -49,27 +50,9 @@ export const verifyMagicLinkController = async (req: Request, res: Response, nex
     }
 }
 
-export const checkIfSignedUpController = async (req: Request, res: Response, next: NextFunction) => {
+export const profileController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = req.session.userId!
-        
-        const hasSignedUp = await checkIfSignedUpService(userId)
-        
-        const response: IsUserSignedUpResponse = {
-            success: true,
-            message: hasSignedUp ? "User is already signed up" : "Please complete the sign up process before moving forward",
-            data: hasSignedUp
-        }
-
-        res.status(200).json(response)
-    } catch (error) {
-        next(error)
-    }
-}
-
-export const signupController = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { username } = req.body as GetTypeFromSchema<typeof signupSchema>
+        const { username } = req.body as GetTypeFromSchema<SignupSchema>
 
         const userId = req.session.userId!
         
@@ -77,16 +60,17 @@ export const signupController = async (req: Request, res: Response, next: NextFu
             throw new AppError("Profile picture is required", 400)
         }
 
-       const sessionData = await signupService(userId, username, req.file)
+       const sessionData = await profileService(userId, username, req.file)
 
        await regenerateSession(req)
         
         req.session.userId = sessionData.userId
         req.session.email = sessionData.email
+        req.session.isProfileComplete = true
         
         await saveSession(req) 
 
-        const response: BaseResponse = {
+        const response: DefaultResponse = {
             success: true,
             message: "Profile updated successfully",
             data: null

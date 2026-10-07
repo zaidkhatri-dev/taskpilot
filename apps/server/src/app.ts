@@ -5,7 +5,7 @@ import { globalErrorHandler } from "@middlewares/global-error.js";
 import { sessionHandler } from "@middlewares/session.js";
 import cookieParser from "cookie-parser"
 import cors from "cors"
-import { config } from "@repo/config";
+import { serverConfig } from "@repo/config/server";
 import authRoutes from "@modules/auth/routes.js"
 import { requireAuth } from "@middlewares/auth.js"
 
@@ -15,7 +15,7 @@ app.use(cookieParser())
 app.use(express.json())
 
 app.use(cors({
-    origin: config.CORS_ORIGIN,
+    origin: serverConfig.CORS_ORIGIN,
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -32,7 +32,7 @@ app.get("/health", (req: Request, res: Response) => {
 
 app.use(sessionHandler)
 
-const API_PREFIX = config.API_PREFIX
+const API_PREFIX = serverConfig.API_PREFIX
 
 app.use(`${API_PREFIX}/auth`, authRoutes)
 

@@ -1,26 +1,28 @@
-import { config } from "@repo/config";
-import { getRedis } from "@repo/redis/client";
+import { serverConfig } from "@repo/config/server";
+import { getRedis, initRedis } from "@repo/redis/client";
 import { RedisStore } from "connect-redis";
 import { getSessionKey } from "@/utils/redis.js";
 import { RequestHandler } from "express";
 import session from "express-session";
 
+initRedis(serverConfig.REDIS_URL);
+
 let redisStore = new RedisStore({
     client: getRedis(),
     prefix: getSessionKey(""),
-    ttl: config.SESSION_LIFESPAN / 1000
+    ttl: serverConfig.SESSION_LIFESPAN / 1000
 })
 
 export const sessionHandler: RequestHandler = session({
     store: redisStore,
-    secret: config.SESSION_SECRET,
+    secret: serverConfig.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: config.NODE_ENV === "production",
+        secure: serverConfig.NODE_ENV === "production",
         httpOnly: true,
         sameSite: "none",
-        maxAge: config.SESSION_LIFESPAN,
+        maxAge: serverConfig.SESSION_LIFESPAN,
     },
     rolling: true
 })

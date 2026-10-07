@@ -1,10 +1,11 @@
-import { getRedis } from "@repo/redis/client";
+import { initRedis } from "@repo/redis/client";
 import type { MagicLinkPayload } from "../../types/redis.js";
 import { users } from "@repo/db/users";
-import { getDb } from "@repo/db/client";
+import { initDb } from "@repo/db/client";
 import { eq } from "drizzle-orm";
+import { serverConfig } from "@repo/config/server";
 
-const redisClient = getRedis()
+const redisClient = initRedis(serverConfig.REDIS_URL);
 
 export async function setHValue(key: string, payload: MagicLinkPayload, expireIn: number) {
     const transaction = redisClient
@@ -41,12 +42,18 @@ export async function delKey(key: string) {
     await redisClient.del(key)
 }
 
-const dbClient = getDb()
+const dbClient = initDb({
+    DATABASE_URL: serverConfig.DATABASE_URL,
+    DB_MAX_POOL_SIZE: serverConfig.DB_MAX_POOL_SIZE,
+    DB_CONNECTION_TIMEOUT: serverConfig.DB_CONNECTION_TIMEOUT,
+    DB_IDLE_TIMEOUT: serverConfig.DB_IDLE_TIMEOUT,
+    DB_SSL: serverConfig.DB_SSL,
+});
 
 export async function getUserByEmail(email: string){
     let [user] = await dbClient.select({
         userId: users.id,
-        email: users.email
+        email: users.email,
     }).from(users).where(
         eq(users.email, email)
     )

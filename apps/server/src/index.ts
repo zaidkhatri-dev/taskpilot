@@ -1,4 +1,4 @@
-import { config } from "@repo/config";
+import { serverConfig } from "@repo/config/server";
 import { closeDb } from "@repo/db/client";
 import { closeRedis } from "@repo/redis/client"; 
 import { GracefulShutdownManager } from "./shutdown.js";
@@ -6,15 +6,15 @@ import app from "./app.js";
 import { roomWss } from "./ws.js";
 
 const shutdown = new GracefulShutdownManager({
-    shutdownTimeout: config.SHUTDOWN_TIMEOUT,
-    cleanupTimeout: config.CLEANUP_TIMEOUT
+    shutdownTimeout: serverConfig.SHUTDOWN_TIMEOUT,
+    cleanupTimeout: serverConfig.CLEANUP_TIMEOUT
 })
 
 shutdown.registerCleanup("Database", closeDb);
 shutdown.registerCleanup("Redis", closeRedis);
 
-const server = app.listen(config.PORT, () => {
-    console.log(`Server running on port ${config.PORT}`);
+const server = app.listen(serverConfig.PORT, () => {
+    console.log(`Server running on port ${serverConfig.PORT}`);
 })
 
 shutdown.trackConnections(server);

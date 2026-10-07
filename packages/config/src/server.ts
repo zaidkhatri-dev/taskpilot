@@ -1,21 +1,17 @@
 import { z } from "zod";
 
-const envSchema = z.object({
+const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(8000),
   CORS_ORIGIN: z.url().default('http://localhost:3000'),
   EMAIL_VERIFICATION_BASE_URL: z.url().default("http://localhost:3000/auth/verify"),
-  DEFAULT_PAGE_SIZE: z.coerce.number().default(10),
-  DEFAULT_PAGE: z.coerce.number().default(1),
-  
+
   APP_NAME: z.string().default('TaskPilot'),
   API_PREFIX: z.string().default("/api/v1"),
-  EMAIL_RATE_LIMIT_PER_MINUTE: z.coerce.number().default(50),
   RATE_LIMIT_PER_EMAIL: z.coerce.number().default(5),
-  EMAIL_WORKER_CONCURRENCY: z.coerce.number().default(5),
+  SENDER_EMAIL: z.email(),
   EMAIL_WORKER_MAX_RETRY: z.coerce.number().default(5),
   EMAIL_WORKER_ATTEMPT_DELAY: z.coerce.number().default(1000 * 10),
-  SENDER_EMAIL: z.email(),
 
   SHUTDOWN_TIMEOUT: z.coerce.number().default(30_000),
   CLEANUP_TIMEOUT: z.coerce.number().default(5_000),
@@ -32,17 +28,15 @@ const envSchema = z.object({
 
   REDIS_URL: z.url().default('redis://localhost:6379'),
 
-  RESEND_API_KEY: z.string(),
-
   IMAGEKIT_PRIVATE_KEY: z.string(),
   IMAGE_FILE_UPLOAD_LIMIT: z.coerce.number().default(5 * 1024 * 1024),
 });
 
-const parsedConfig = envSchema.safeParse(process.env);
+const parsedServerConfig = serverEnvSchema.safeParse(process.env);
 
-if (!parsedConfig.success){
-    console.error("Invalid environment variables: ", parsedConfig.error.issues.map(iss => ({ [iss.path.join(".")] : iss.message}))) 
-    process.exit(1)
+if (!parsedServerConfig.success) {
+  console.error("Invalid environment variables: ", parsedServerConfig.error.issues.map(iss => ({ [iss.path.join(".")]: iss.message })));
+  process.exit(1);
 }
 
-export const config = parsedConfig.data!;
+export const serverConfig = parsedServerConfig.data!;

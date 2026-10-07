@@ -1,8 +1,8 @@
 import ImageKit, { toFile } from '@imagekit/nodejs';
-import { config } from '@repo/config';
+import { serverConfig } from '@repo/config/server';
 
 const imageKit = new ImageKit({
-    privateKey: config.IMAGEKIT_PRIVATE_KEY,
+    privateKey: serverConfig.IMAGEKIT_PRIVATE_KEY,
 });
 
 export const uploadImage = async (file: Express.Multer.File) => {

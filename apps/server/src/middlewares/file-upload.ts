@@ -1,11 +1,11 @@
 import multer from "multer"
 import { AppError } from "@repo/errors/app-error"
-import { config } from "@repo/config"
+import { serverConfig } from "@repo/config/server"
 
 export const fileUpload = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: config.IMAGE_FILE_UPLOAD_LIMIT,
+        fileSize: serverConfig.IMAGE_FILE_UPLOAD_LIMIT,
         files: 1,
     },
     fileFilter: (req, file, cb) => {

@@ -13,6 +13,14 @@
     ".": {
       "types": "./src/config.ts",
       "default": "./dist/config.js"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "default": "./dist/server.js"
+    },
+    "./worker": {
+      "types": "./src/worker.ts",
+      "default": "./dist/worker.js"
     }
   },
   "scripts": {

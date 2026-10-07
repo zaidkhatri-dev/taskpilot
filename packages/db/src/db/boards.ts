@@ -1,5 +1,5 @@
 import { pgTable } from "drizzle-orm/pg-core";
-import { timestamps } from "./shared.js";
+import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";
 import { organizations } from "./organizations.js";
@@ -9,5 +9,6 @@ export const boards = pgTable("boards", {
     title: text("title").notNull(),
     description: text("description"),
     organizationId: uuid("organization_id").notNull().references(() => organizations.id, { onDelete: "cascade" }),
-    ...timestamps
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });

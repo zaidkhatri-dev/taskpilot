@@ -19,7 +19,6 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@repo/config": "workspace:*",
     "ioredis": "^6.0.0",
     "redis": "^6.2.1"
   }

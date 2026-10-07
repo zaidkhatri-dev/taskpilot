@@ -6,7 +6,7 @@ import { AppError } from "@repo/errors/app-error";
 import type { NextFunction, Request, Response } from "express";
 import { DatabaseError } from "pg";
 import { ZodError } from "zod";
-import type { BaseResponse } from "@repo/contracts/response";
+import type { DefaultResponse } from "@repo/contracts/response";
 
 export const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (res.headersSent) {
@@ -38,7 +38,7 @@ export const globalErrorHandler = (err: Error, req: Request, res: Response, next
         }
     }
 
-    const response: BaseResponse = {
+    const response: DefaultResponse = {
         success: false,
         message: mappedError.message,
         data: null
