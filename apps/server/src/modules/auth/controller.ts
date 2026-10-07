@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import type { GetTypeFromSchema } from "../../types/validation.js"
-import { generateMagicLinkSchema, VerifyMagicLinkSchema, SignupSchema } from "@repo/validation/auth"
+import { generateMagicLinkSchema, VerifyMagicLinkSchema, ProfileSchema } from "@repo/validation/auth"
 import { generateMagicLinkService, verifyMagicLinkService, profileService } from "./services.js";
 import { DefaultResponse } from "@repo/contracts/response";
 import { regenerateSession, saveSession } from "@/utils/session.js";
@@ -52,7 +52,7 @@ export const verifyMagicLinkController = async (req: Request, res: Response, nex
 
 export const profileController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { username } = req.body as GetTypeFromSchema<SignupSchema>
+        const { username } = req.body as GetTypeFromSchema<ProfileSchema>
 
         const userId = req.session.userId!
         
