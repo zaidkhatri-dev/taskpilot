@@ -1,0 +1,141 @@
+/* ==========================================================================
+   TYPOGRAPHY — Base type styles
+   Uses tokens from tokens.css exclusively. Do NOT define new values here.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Font loading is handled by next/font/google in app/layout.tsx.
+   Inter  → injected as var(--font-sans) on <html>
+   JetBrains Mono → injected as var(--font-mono) on <html>
+   No external network requests — Next.js self-hosts and preloads both fonts.
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   Document base — applied to <html> via layout.tsx className
+   -------------------------------------------------------------------------- */
+html {
+  font-family: var(--font-sans);
+  font-size: 16px; /* rem anchor */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* --------------------------------------------------------------------------
+   Typography scale — semantic utility classes
+   Usage: className="type-display-xl" etc.
+   -------------------------------------------------------------------------- */
+
+/* Display — used for hero and section opener headlines */
+.type-display-xl {
+  font-family: var(--font-sans);
+  font-size: var(--text-display-xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tightest);
+  letter-spacing: var(--tracking-display-xl);
+}
+
+.type-display-lg {
+  font-family: var(--font-sans);
+  font-size: var(--text-display-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display-lg);
+}
+
+.type-display-md {
+  font-family: var(--font-sans);
+  font-size: var(--text-display-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-display-md);
+}
+
+/* Headline — pricing tier titles, CTA banner heading */
+.type-headline {
+  font-family: var(--font-sans);
+  font-size: var(--text-headline);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-headline);
+}
+
+/* Card title — feature card titles */
+.type-card-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-card-title);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-card);
+  letter-spacing: var(--tracking-card-title);
+}
+
+/* Subhead — intro paragraphs, lead body */
+.type-subhead {
+  font-family: var(--font-sans);
+  font-size: var(--text-subhead);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-relaxed);
+  letter-spacing: var(--tracking-subhead);
+}
+
+/* Body — default paragraph text */
+.type-body-lg {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body-lg);
+}
+
+.type-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+}
+
+.type-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-normal);
+}
+
+/* Caption — meta, status, footnotes */
+.type-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-relaxed);
+  letter-spacing: var(--tracking-normal);
+}
+
+/* Button — all button labels */
+.type-button {
+  font-family: var(--font-sans);
+  font-size: var(--text-button);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-normal);
+}
+
+/* Eyebrow — section taxonomy labels (positive tracking) */
+.type-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-subhead);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+/* Mono — code in product screenshots only */
+.type-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-normal);
+}

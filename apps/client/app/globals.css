@@ -1,0 +1,21 @@
+/* ==========================================================================
+   GLOBALS — Entry point only.
+   This file is imported once in app/layout.tsx per Next.js App Router rules.
+   Do NOT add styles here — only @import directives.
+   Order matters: tokens first, then everything that depends on them.
+   ========================================================================== */
+
+/* 1. Tailwind v4 */
+@import "tailwindcss";
+
+/* 2. Design tokens — CSS custom properties + @theme inline for Tailwind */
+@import "../styles/tokens.css";
+
+/* 3. Typography — font import + .type-* utility classes */
+@import "../styles/typography.css";
+
+/* 4. Animations — keyframes + .animate-* + .transition-* helpers */
+@import "../styles/animations.css";
+
+/* 5. Base — resets, document defaults, element styles */
+@import "../styles/base.css";

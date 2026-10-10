@@ -1,0 +1,151 @@
+/* ==========================================================================
+   ANIMATIONS — Keyframes & transition helpers
+   Uses tokens from tokens.css exclusively.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Transition durations & easings
+   -------------------------------------------------------------------------- */
+:root {
+  --duration-fast:    100ms;
+  --duration-normal:  200ms;
+  --duration-slow:    350ms;
+  --ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-decelerate:  cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate:  cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes
+   -------------------------------------------------------------------------- */
+
+/* Gentle fade in — used for page content, modals */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Fade in + slide up — used for cards appearing on scroll, modals */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in + slide down — used for dropdowns, tooltips */
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale in — used for modal/overlay appearance */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Shimmer — used for skeleton loading states */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+/* Pulse — subtle breathing for loading indicators */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* Spin — spinner / loading icons */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   Animation utility classes
+   -------------------------------------------------------------------------- */
+.animate-fade-in {
+  animation: fade-in var(--duration-normal) var(--ease-decelerate) both;
+}
+
+.animate-fade-up {
+  animation: fade-up var(--duration-slow) var(--ease-decelerate) both;
+}
+
+.animate-fade-down {
+  animation: fade-down var(--duration-normal) var(--ease-decelerate) both;
+}
+
+.animate-scale-in {
+  animation: scale-in var(--duration-normal) var(--ease-decelerate) both;
+}
+
+.animate-pulse {
+  animation: pulse 2s var(--ease-standard) infinite;
+}
+
+.animate-spin {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Skeleton loading shimmer */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-1) 25%,
+    var(--color-surface-2) 50%,
+    var(--color-surface-1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s var(--ease-standard) infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Transition shorthand helpers
+   -------------------------------------------------------------------------- */
+.transition-base {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-duration: var(--duration-normal);
+  transition-timing-function: var(--ease-standard);
+}
+
+.transition-fast {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-standard);
+}
+
+.transition-slow {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: var(--duration-slow);
+  transition-timing-function: var(--ease-decelerate);
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -15,7 +15,7 @@ export const generateVerifyMagicLinkSchema = (baseUrl: string) => z.object({
     .refine((token) => (token !== null && token.length > 0 && token.length <= 64), INVALID_URL_MSG)
 })
 
-export const generateProfileSchema = (uploadLimit: number) => z.object({
+export const generateProfileSetupSchema = (uploadLimit: number) => z.object({
     username: z.string()
     .min(3, "Username must be at least 3 characters long")
     .max(20, "Username must be at most 20 characters long")
@@ -27,4 +27,4 @@ export const generateProfileSchema = (uploadLimit: number) => z.object({
 })
 
 export type VerifyMagicLinkSchema = ReturnType<typeof generateVerifyMagicLinkSchema>;
-export type ProfileSchema = ReturnType<typeof generateProfileSchema>;
+export type ProfileSetupSchema = ReturnType<typeof generateProfileSetupSchema>;

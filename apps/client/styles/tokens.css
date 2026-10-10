@@ -1,0 +1,200 @@
+/* ==========================================================================
+   DESIGN TOKENS — Single source of truth
+   Source: DESIGN-linear.app.md
+   All CSS custom properties are defined here and exposed to Tailwind v4
+   via @theme inline. Do NOT duplicate these in any other file.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   COLOR TOKENS
+   -------------------------------------------------------------------------- */
+:root {
+  /* Brand / Accent */
+  --color-primary:       #5e6ad2;
+  --color-on-primary:    #ffffff;
+  --color-primary-hover: #828fff;
+  --color-primary-focus: #5e69d1;
+  --color-brand-secure:  #7a7fad;
+
+  /* Canvas & Surface ladder */
+  --color-canvas:    #010102;
+  --color-surface-1: #0f1011;
+  --color-surface-2: #141516;
+  --color-surface-3: #18191a;
+  --color-surface-4: #191a1b;
+
+  /* Borders / Hairlines */
+  --color-hairline:          #23252a;
+  --color-hairline-strong:   #34343a;
+  --color-hairline-tertiary: #3e3e44;
+
+  /* Ink / Text */
+  --color-ink:          #f7f8f8;
+  --color-ink-muted:    #d0d6e0;
+  --color-ink-subtle:   #8a8f98;
+  --color-ink-tertiary: #62666d;
+
+  /* Inverse surfaces (light on dark — used for inverse CTAs) */
+  --color-inverse-canvas:    #ffffff;
+  --color-inverse-surface-1: #f5f6f6;
+  --color-inverse-surface-2: #f6f7f7;
+  --color-inverse-ink:       #000000;
+
+  /* Semantic */
+  --color-success: #27a644;
+  --color-overlay: #000000;
+}
+
+/* --------------------------------------------------------------------------
+   SPACING TOKENS
+   Base unit: 4px
+   -------------------------------------------------------------------------- */
+:root {
+  --spacing-xxs:     0.25rem;  /* 4px  */
+  --spacing-xs:      0.5rem;   /* 8px  */
+  --spacing-sm:      0.75rem;  /* 12px */
+  --spacing-md:      1rem;     /* 16px */
+  --spacing-lg:      1.5rem;   /* 24px */
+  --spacing-xl:      2rem;     /* 32px */
+  --spacing-xxl:     3rem;     /* 48px */
+  --spacing-section: 6rem;     /* 96px */
+}
+
+/* --------------------------------------------------------------------------
+   BORDER RADIUS TOKENS
+   -------------------------------------------------------------------------- */
+:root {
+  --radius-xs:   0.25rem;  /* 4px    */
+  --radius-sm:   0.375rem; /* 6px    */
+  --radius-md:   0.5rem;   /* 8px    */
+  --radius-lg:   0.75rem;  /* 12px   */
+  --radius-xl:   1rem;     /* 16px   */
+  --radius-xxl:  1.5rem;   /* 24px   */
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+}
+
+/* --------------------------------------------------------------------------
+   TYPOGRAPHY TOKENS
+   All sizes use rem (16px base) for accessibility.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Font families — fallback stacks only.
+     next/font/google in layout.tsx injects the real font files as:
+       var(--font-sans)  →  Inter (self-hosted, preloaded, zero external request)
+       var(--font-mono)  →  JetBrains Mono (self-hosted, preloaded)
+     These fallback values apply only if next/font hasn't loaded yet. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Font sizes */
+  --text-display-xl: 5rem;      /* 80px  */
+  --text-display-lg: 3.5rem;    /* 56px  */
+  --text-display-md: 2.5rem;    /* 40px  */
+  --text-headline:   1.75rem;   /* 28px  */
+  --text-card-title: 1.375rem;  /* 22px  */
+  --text-subhead:    1.25rem;   /* 20px  */
+  --text-body-lg:    1.125rem;  /* 18px  */
+  --text-body:       1rem;      /* 16px  */
+  --text-body-sm:    0.875rem;  /* 14px  */
+  --text-caption:    0.75rem;   /* 12px  */
+  --text-button:     0.875rem;  /* 14px  */
+  --text-eyebrow:    0.8125rem; /* 13px  */
+  --text-mono:       0.8125rem; /* 13px  */
+
+  /* Font weights */
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold: 600;
+
+  /* Line heights */
+  --leading-tightest: 1.05;
+  --leading-tight:    1.10;
+  --leading-snug:     1.15;
+  --leading-heading:  1.20;
+  --leading-card:     1.25;
+  --leading-subhead:  1.30;
+  --leading-relaxed:  1.40;
+  --leading-body:     1.50;
+
+  /* Letter spacing */
+  --tracking-display-xl: -0.1875rem;   /* -3.0px  */
+  --tracking-display-lg: -0.1125rem;   /* -1.8px  */
+  --tracking-display-md: -0.0625rem;   /* -1.0px  */
+  --tracking-headline:   -0.0375rem;   /* -0.6px  */
+  --tracking-card-title: -0.025rem;    /* -0.4px  */
+  --tracking-subhead:    -0.0125rem;   /* -0.2px  */
+  --tracking-body-lg:    -0.00625rem;  /* -0.1px  */
+  --tracking-body:       -0.003125rem; /* -0.05px */
+  --tracking-normal:     0;
+  --tracking-eyebrow:    0.025rem;     /* +0.4px  */
+}
+
+/* --------------------------------------------------------------------------
+   TAILWIND v4 THEME EXPOSURE
+   Maps every token above into Tailwind utility classes.
+   Only register here — never in globals.css or component files.
+   -------------------------------------------------------------------------- */
+@theme inline {
+  /* Colors */
+  --color-primary:            var(--color-primary);
+  --color-primary-hover:      var(--color-primary-hover);
+  --color-primary-focus:      var(--color-primary-focus);
+  --color-brand-secure:       var(--color-brand-secure);
+  --color-canvas:             var(--color-canvas);
+  --color-surface-1:          var(--color-surface-1);
+  --color-surface-2:          var(--color-surface-2);
+  --color-surface-3:          var(--color-surface-3);
+  --color-surface-4:          var(--color-surface-4);
+  --color-hairline:           var(--color-hairline);
+  --color-hairline-strong:    var(--color-hairline-strong);
+  --color-hairline-tertiary:  var(--color-hairline-tertiary);
+  --color-ink:                var(--color-ink);
+  --color-ink-muted:          var(--color-ink-muted);
+  --color-ink-subtle:         var(--color-ink-subtle);
+  --color-ink-tertiary:       var(--color-ink-tertiary);
+  --color-inverse-canvas:     var(--color-inverse-canvas);
+  --color-inverse-surface-1:  var(--color-inverse-surface-1);
+  --color-inverse-surface-2:  var(--color-inverse-surface-2);
+  --color-inverse-ink:        var(--color-inverse-ink);
+  --color-success:            var(--color-success);
+
+  /* Spacing */
+  --spacing-xxs:     var(--spacing-xxs);
+  --spacing-xs:      var(--spacing-xs);
+  --spacing-sm:      var(--spacing-sm);
+  --spacing-md:      var(--spacing-md);
+  --spacing-lg:      var(--spacing-lg);
+  --spacing-xl:      var(--spacing-xl);
+  --spacing-xxl:     var(--spacing-xxl);
+  --spacing-section: var(--spacing-section);
+
+  /* Border radius */
+  --radius-xs:   var(--radius-xs);
+  --radius-sm:   var(--radius-sm);
+  --radius-md:   var(--radius-md);
+  --radius-lg:   var(--radius-lg);
+  --radius-xl:   var(--radius-xl);
+  --radius-xxl:  var(--radius-xxl);
+  --radius-pill: var(--radius-pill);
+  --radius-full: var(--radius-full);
+
+  /* Font families */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Font sizes */
+  --text-display-xl: var(--text-display-xl);
+  --text-display-lg: var(--text-display-lg);
+  --text-display-md: var(--text-display-md);
+  --text-headline:   var(--text-headline);
+  --text-card-title: var(--text-card-title);
+  --text-subhead:    var(--text-subhead);
+  --text-body-lg:    var(--text-body-lg);
+  --text-body:       var(--text-body);
+  --text-body-sm:    var(--text-body-sm);
+  --text-caption:    var(--text-caption);
+  --text-button:     var(--text-button);
+  --text-eyebrow:    var(--text-eyebrow);
+  --text-mono:       var(--text-mono);
+}

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import type { GetTypeFromSchema } from "../../types/validation.js"
-import { generateMagicLinkSchema, VerifyMagicLinkSchema, ProfileSchema } from "@repo/validation/auth"
-import { generateMagicLinkService, verifyMagicLinkService, profileService } from "./services.js";
+import { generateMagicLinkSchema, VerifyMagicLinkSchema, ProfileSetupSchema } from "@repo/validation/auth"
+import { generateMagicLinkService, verifyMagicLinkService, profileSetupService } from "./services.js";
 import { DefaultResponse } from "@repo/contracts/response";
 import { regenerateSession, saveSession } from "@/utils/session.js";
 import { AppError } from "@repo/errors/app-error";
@@ -50,9 +50,9 @@ export const verifyMagicLinkController = async (req: Request, res: Response, nex
     }
 }
 
-export const profileController = async (req: Request, res: Response, next: NextFunction) => {
+export const profileSetupController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { username } = req.body as GetTypeFromSchema<ProfileSchema>
+        const { username } = req.body as GetTypeFromSchema<ProfileSetupSchema>
 
         const userId = req.session.userId!
         
@@ -60,7 +60,7 @@ export const profileController = async (req: Request, res: Response, next: NextF
             throw new AppError("Profile picture is required", 400)
         }
 
-       const sessionData = await profileService(userId, username, req.file)
+       const sessionData = await profileSetupService(userId, username, req.file)
 
        await regenerateSession(req)
         

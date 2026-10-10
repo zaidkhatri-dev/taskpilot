@@ -88,7 +88,7 @@ export const verifyMagicLinkService = async (rawToken: string) => {
     return sessionData;
 }
 
-export const profileService = async (userId: string, username: string, file: Express.Multer.File) => {
+export const profileSetupService = async (userId: string, username: string, file: Express.Multer.File) => {
     const user = await getUserById(userId)
 
     if (!user) {
