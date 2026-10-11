@@ -3,12 +3,17 @@
 import { generateMagicLinkSchema } from "@repo/validation/auth"
 import { validateAction } from "../utils/validate-action"
 import { clientConfig } from "@repo/config/client"
+import { type DefaultResponse } from "@repo/contracts/response"
 
-export async function generateLink(formData: FormData) {
+export async function generateLink(formData: FormData): Promise<DefaultResponse> {
     const result = validateAction(formData, generateMagicLinkSchema)
 
     if (!result.success){
-        return result.message
+        return {
+            success: false,
+            message: result.message!,
+            data: null
+        }
     }
     
     const response = await fetch(`${clientConfig.NEXT_PUBLIC_API_URL}/auth/link/generate`, {
@@ -20,10 +25,7 @@ export async function generateLink(formData: FormData) {
         credentials: "include"
     })
 
-    const data = await response.json()
+    const data: DefaultResponse = await response.json()
 
-    return {
-        success: response.ok,
-        message: data.message
-    }
+    return data
 }

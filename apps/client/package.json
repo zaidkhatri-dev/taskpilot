@@ -15,7 +15,8 @@
     "zod": "^4.6.6",
     "@repo/validation": "workspace:*",
     "@repo/config": "workspace:*",
-    "@repo/ui": "workspace:*"
+    "@repo/ui": "workspace:*",
+    "@repo/contracts": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
