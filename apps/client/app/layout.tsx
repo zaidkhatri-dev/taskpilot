@@ -83,15 +83,6 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * Viewport is exported separately from Metadata in the Next.js App Router.
- * Merging them into the metadata object is a common mistake that silently fails.
- */
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html

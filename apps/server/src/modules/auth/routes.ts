@@ -11,13 +11,13 @@ const router: Router = Router()
 const verifyMagicLinkSchema = generateVerifyMagicLinkSchema(serverConfig.EMAIL_VERIFICATION_BASE_URL);
 const profileSetupSchema = generateProfileSetupSchema(serverConfig.IMAGE_FILE_UPLOAD_LIMIT);
 
-router.post("/generate-link", 
+router.post("/link/generate", 
     inputValidator(generateMagicLinkSchema),
     emailRateLimiter,
     generateMagicLinkController
 )
 
-router.post("/verify-link",
+router.post("/link/verify",
     inputValidator(verifyMagicLinkSchema),
     verifyMagicLinkController
 )

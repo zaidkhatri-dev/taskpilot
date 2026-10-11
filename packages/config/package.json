@@ -21,6 +21,10 @@
     "./worker": {
       "types": "./src/worker.ts",
       "default": "./dist/worker.js"
+    },
+    "./client": {
+      "types": "./src/client.ts",
+      "default": "./dist/client.js"
     }
   },
   "scripts": {
