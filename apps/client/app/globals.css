@@ -8,6 +8,11 @@
 /* 1. Tailwind v4 */
 @import "tailwindcss";
 
+/* @tailwindcss/turbopack only auto-scans files inside apps/client.
+   ui-safelist.ts lives here and enumerates every class name used in
+   @repo/ui components, so Tailwind generates utilities for them. */
+@source "../styles/ui-safelist.ts";
+
 /* 2. Design tokens — CSS custom properties + @theme inline for Tailwind */
 @import "../styles/tokens.css";
 

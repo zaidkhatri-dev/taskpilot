@@ -30,6 +30,9 @@ const serverEnvSchema = z.object({
 
   IMAGEKIT_PRIVATE_KEY: z.string(),
   IMAGE_FILE_UPLOAD_LIMIT: z.coerce.number().default(5 * 1024 * 1024),
+
+  OTEL_SERVICE_NAME: z.string().default("TaskPilot"),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.url().default("http://localhost:4318/v1/traces"),
 });
 
 const parsedServerConfig = serverEnvSchema.safeParse(process.env);

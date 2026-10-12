@@ -42,6 +42,8 @@
 
   /* Semantic */
   --color-success: #27a644;
+  --color-warning: #f2994a;
+  --color-failure: #eb5757;
   --color-overlay: #000000;
 }
 
@@ -79,13 +81,12 @@
    All sizes use rem (16px base) for accessibility.
    -------------------------------------------------------------------------- */
 :root {
-  /* Font families — fallback stacks only.
-     next/font/google in layout.tsx injects the real font files as:
-       var(--font-sans)  →  Inter (self-hosted, preloaded, zero external request)
-       var(--font-mono)  →  JetBrains Mono (self-hosted, preloaded)
-     These fallback values apply only if next/font hasn't loaded yet. */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  /* Font families — set exclusively by next/font/google in layout.tsx.
+     --font-sans  →  Inter    (injected as a class on <html>)
+     --font-mono  →  JetBrains Mono (injected as a class on <html>)
+     Do NOT redeclare these here: the :root block has equal specificity to
+     next/font's class selector, so any value set here would override Inter
+     with the system fallback stack (cascade: last declaration wins). */
 
   /* Font sizes */
   --text-display-xl: 5rem;      /* 80px  */
@@ -158,6 +159,8 @@
   --color-inverse-surface-2:  var(--color-inverse-surface-2);
   --color-inverse-ink:        var(--color-inverse-ink);
   --color-success:            var(--color-success);
+  --color-warning:            var(--color-warning);
+  --color-failure:            var(--color-failure);
 
   /* Spacing */
   --spacing-xxs:     var(--spacing-xxs);

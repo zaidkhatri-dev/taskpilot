@@ -89,9 +89,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       // Both font variables are applied here so every component in the tree
       // can access var(--font-sans) and var(--font-mono) via CSS.
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full bg-canvas text-ink`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+      </body>
     </html>
   );
 }

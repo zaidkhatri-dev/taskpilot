@@ -12,3 +12,18 @@ export interface ProfileNotCompletedResponse extends BaseResponse {
         isProfileComplete: false
     }
 }
+
+/**
+ * FormActionResponse — returned by server actions wired to useActionState.
+ * Extends DefaultResponse with an optional `path` field that names the
+ * specific form field that failed validation (e.g. "email"), enabling
+ * the client form to render an inline error below the correct input.
+ *
+ * `path` is only present on validation failures originating from
+ * validateAction(). API-level failures omit it.
+ */
+export interface FormActionResponse extends BaseResponse {
+    data: null;
+    /** Dot-joined field path from Zod (e.g. "email", "username.first"). Present on validation errors only. */
+    path?: string;
+}

@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./*": "./src/*.tsx",
-    "./form/*": "./src/form/*.tsx"
+    "./form/*": "./src/form/*.tsx",
+    "./buttons/*": "./src/buttons/*.tsx",
+    "./small/*": "./src/small/*.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
