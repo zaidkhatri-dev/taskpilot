@@ -1,30 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
-/**
- * Inter — primary typeface for all display, body, and UI text.
- * next/font self-hosts the font files, eliminating external requests to Google.
- * The `variable` option injects the font as var(--font-sans) on <html>,
- * which is consumed by tokens.css and all downstream styles.
- */
-const inter = Inter({
-  subsets: ["latin"],
-  // Inter is a variable font — no weight array needed; all weights included.
-  variable: "--font-sans",
-  display: "swap",
-});
-
-/**
- * JetBrains Mono — monospace typeface for code in product screenshots.
- * Injected as var(--font-mono) on <html>.
- */
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-mono",
-  display: "swap",
-});
+const geist = Geist({
+  subsets:['latin'],
+  variable:'--font-geist',
+})
 
 export const metadata: Metadata = {
   /**
@@ -87,11 +69,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      // Both font variables are applied here so every component in the tree
-      // can access var(--font-sans) and var(--font-mono) via CSS.
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full bg-canvas text-ink`}
+      className={`h-full ${geist.variable} dark`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className={`min-h-full`}>
         {children}
       </body>
     </html>

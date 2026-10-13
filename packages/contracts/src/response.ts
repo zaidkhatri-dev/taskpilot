@@ -1,16 +1,16 @@
 interface BaseResponse {
-    success: boolean;
-    message: string;
+  success: boolean;
+  message: string;
 }
 
 export interface DefaultResponse extends BaseResponse {
-    data: null;
+  data: null;
 }
 
 export interface ProfileNotCompletedResponse extends BaseResponse {
-    data: {
-        isProfileComplete: false
-    }
+  data: {
+    isProfileComplete: false;
+  };
 }
 
 /**
@@ -23,7 +23,7 @@ export interface ProfileNotCompletedResponse extends BaseResponse {
  * validateAction(). API-level failures omit it.
  */
 export interface FormActionResponse extends BaseResponse {
-    data: null;
-    /** Dot-joined field path from Zod (e.g. "email", "username.first"). Present on validation errors only. */
-    path?: string;
+  data: null | Record<string, unknown>;
+  path: null | string;
+  values: null | Record<string, unknown>;
 }
