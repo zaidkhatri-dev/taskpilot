@@ -3,7 +3,7 @@ import type { GetTypeFromSchema } from "../../types/validation.js";
 import {
   generateMagicLinkSchema,
   verifyMagicLinkSchema,
-  OnboardingSchema,
+  onboardingSchema,
 } from "@repo/validation/auth";
 import {
   generateMagicLinkService,
@@ -77,15 +77,13 @@ export const onboardingController = async (
   next: NextFunction,
 ) => {
   try {
-    const { username } = req.body as GetTypeFromSchema<OnboardingSchema>;
+    const { username, avatarId } = req.body as GetTypeFromSchema<
+      typeof onboardingSchema
+    >;
 
     const userId = req.session.userId!;
 
-    if (!req.file) {
-      throw new AppError("Profile picture is required", 400);
-    }
-
-    const sessionData = await onboardingService(userId, username, req.file);
+    const sessionData = await onboardingService(userId, username, avatarId);
 
     await regenerateSession(req);
 

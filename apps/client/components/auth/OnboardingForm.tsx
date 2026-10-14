@@ -4,12 +4,16 @@ import {
   FieldDescription,
   FieldError,
   FieldGroup,
+  FieldLabel,
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import type { FormActionResponse } from "@repo/contracts/response";
+import { useState } from "react";
+import AvatarModel from "@/components/auth/AvatarDialog";
 
 interface OnboardingFormProps {
   formAction: (formData: FormData) => void;
@@ -26,20 +30,46 @@ export default function OnboardingForm({
   errorMsg,
   values,
 }: OnboardingFormProps) {
+  const [selected, setSelected] = useState<string | null>(null);
+
   return (
     <form noValidate className="w-full max-w-xs" action={formAction}>
       <FieldSet>
-        <FieldLegend className="text-center mb-4">
-          Complete your profile
-        </FieldLegend>
+        <Avatar className="size-22 mx-auto">
+          <AvatarImage
+            src={
+              selected ? `/avatars/${selected}.svg` : "/avatars/avatar_01.svg"
+            }
+          />
+          <AvatarFallback>{selected || "avatar_01"}</AvatarFallback>
+        </Avatar>
+
+        <AvatarModel selected={selected} setSelected={setSelected} />
 
         <FieldGroup>
           <Field>
             <Input
+              type="hidden"
+              name="avatar"
+              value={selected || "avatar_01"}
+              required
+              aria-invalid={errorPath === "avatar"}
+              aria-describedby={
+                errorPath === "avatar" ? "avatar-error" : "avatar-error"
+              }
+            />
+            {errorPath === "avatar" && (
+              <FieldError id="avatar-error">{errorMsg}</FieldError>
+            )}
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="username">Username</FieldLabel>
+            <Input
               type="text"
               name="username"
+              id="username"
               required
-              placeholder="Username"
               aria-invalid={errorPath === "username"}
               defaultValue={values?.username ? String(values.username) : ""}
               aria-describedby={
@@ -49,32 +79,9 @@ export default function OnboardingForm({
             {errorPath === "username" ? (
               <FieldError id="username-error">{errorMsg}</FieldError>
             ) : (
-              <FieldDescription id="username-desc">
-                Must be 3-20 characters long and can only contain letters, numbers, and underscores.
-              </FieldDescription>
+              <FieldDescription id="username-desc"></FieldDescription>
             )}
           </Field>
-
-          <Field>
-            <Input
-              type="file"
-              name="avatar"
-              required
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              aria-invalid={errorPath === "avatar"}
-              aria-describedby={
-                errorPath === "avatar" ? "avatar-error" : "avatar-desc"
-              }
-            />
-            {errorPath === "avatar" ? (
-              <FieldError id="avatar-error">{errorMsg}</FieldError>
-            ) : (
-              <FieldDescription id="avatar-desc">
-                Upload your profile picture
-              </FieldDescription>
-            )}
-          </Field>
-
           <Field>
             <Button type="submit" disabled={isPending}>
               {isPending && <Spinner data-icon="inline-start" />}

@@ -1,12 +1,16 @@
 import { z } from "zod";
 
 const serverEnvSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
   PORT: z.coerce.number().default(8000),
-  CORS_ORIGIN: z.url().default('http://localhost:3000'),
-  EMAIL_VERIFICATION_BASE_URL: z.url().default("http://localhost:3000/auth/verify"),
+  CORS_ORIGIN: z.url().default("http://localhost:3000"),
+  EMAIL_VERIFICATION_BASE_URL: z
+    .url()
+    .default("http://localhost:3000/auth/verify"),
 
-  APP_NAME: z.string().default('TaskPilot'),
+  APP_NAME: z.string().default("TaskPilot"),
   API_PREFIX: z.string().default("/api/v1"),
   RATE_LIMIT_PER_EMAIL: z.coerce.number().default(5),
   SENDER_EMAIL: z.email(),
@@ -26,19 +30,23 @@ const serverEnvSchema = z.object({
   DB_CONNECTION_TIMEOUT: z.coerce.number().default(5_000),
   DB_SSL: z.boolean().default(false),
 
-  REDIS_URL: z.url().default('redis://localhost:6379'),
-
-  IMAGEKIT_PRIVATE_KEY: z.string(),
-  IMAGE_FILE_UPLOAD_LIMIT: z.coerce.number().default(5 * 1024 * 1024),
+  REDIS_URL: z.url().default("redis://localhost:6379"),
 
   OTEL_SERVICE_NAME: z.string().default("TaskPilot"),
-  OTEL_EXPORTER_OTLP_ENDPOINT: z.url().default("http://localhost:4318/v1/traces"),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z
+    .url()
+    .default("http://localhost:4318/v1/traces"),
 });
 
 const parsedServerConfig = serverEnvSchema.safeParse(process.env);
 
 if (!parsedServerConfig.success) {
-  console.error("Invalid environment variables: ", parsedServerConfig.error.issues.map(iss => ({ [iss.path.join(".")]: iss.message })));
+  console.error(
+    "Invalid environment variables: ",
+    parsedServerConfig.error.issues.map((iss) => ({
+      [iss.path.join(".")]: iss.message,
+    })),
+  );
   process.exit(1);
 }
 

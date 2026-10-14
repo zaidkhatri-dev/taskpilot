@@ -16,7 +16,7 @@ import { generateMagicLink, getEmailBody } from "@/utils/auth.js";
 import { EmailJobData } from "@repo/contracts/other";
 import { MagicLinkPayload } from "@/types/redis.js";
 import { AppError } from "@repo/errors/app-error";
-import { uploadImage } from "@/utils/image-upload.js";
+import { AvatarIds } from "@repo/validation/auth";
 
 export const generateMagicLinkService = async (email: string) => {
   const rawToken = generateRandomToken();
@@ -99,7 +99,7 @@ export const verifyMagicLinkService = async (rawToken: string) => {
 export const onboardingService = async (
   userId: string,
   username: string,
-  file: Express.Multer.File,
+  avatarId: AvatarIds,
 ) => {
   const user = await getUserById(userId);
 
@@ -107,17 +107,11 @@ export const onboardingService = async (
     throw new AppError("User not found", 404);
   }
 
-  if (user.username || user.profilePictureUrl) {
+  if (user.username || user.avatarId) {
     throw new AppError("User is already signed up", 400);
   }
 
-  const imageUrl = await uploadImage(file);
-
-  if (!imageUrl) {
-    throw new AppError("Profile picture upload failed", 500);
-  }
-
-  const updatedUser = await updateUser(userId, username, imageUrl);
+  const updatedUser = await updateUser(userId, username, avatarId);
 
   const sessionData = {
     userId: updatedUser.userId,

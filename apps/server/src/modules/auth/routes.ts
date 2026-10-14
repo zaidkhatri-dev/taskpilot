@@ -1,7 +1,7 @@
 import { inputValidator } from "@/middlewares/input-validator.js";
 import {
   generateMagicLinkSchema,
-  generateOnboardingSchema,
+  onboardingSchema,
   verifyMagicLinkSchema,
 } from "@repo/validation/auth";
 import { Router } from "express";
@@ -11,14 +11,8 @@ import {
   onboardingController,
 } from "./controller.js";
 import { emailRateLimiter } from "@/middlewares/email-rate-limiter.js";
-import { fileUpload } from "@/middlewares/file-upload.js";
-import { serverConfig } from "@repo/config/server";
 
 const router: Router = Router();
-
-const onboardingSchema = generateOnboardingSchema(
-  serverConfig.IMAGE_FILE_UPLOAD_LIMIT,
-);
 
 router.post(
   "/link/generate",
@@ -35,7 +29,6 @@ router.post(
 
 router.post(
   "/onboarding",
-  fileUpload.single("avatar"),
   inputValidator(onboardingSchema),
   onboardingController,
 );
