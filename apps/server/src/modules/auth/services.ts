@@ -1,5 +1,14 @@
 import { generateRandomToken, hashToken } from "@utils/crypto.js";
-import { getHValue, getHValueByToken, setHValue, delKey, updateUser, getUserByEmail, createUser, getUserById } from "./repository.js";
+import {
+  getHValue,
+  getHValueByToken,
+  setHValue,
+  delKey,
+  updateUser,
+  getUserByEmail,
+  createUser,
+  getUserById,
+} from "./repository.js";
 import { getEmailQueue } from "@repo/email/queue";
 import { serverConfig } from "@repo/config/server";
 import { getMagicLinkKey } from "@/utils/redis.js";
@@ -10,107 +19,111 @@ import { AppError } from "@repo/errors/app-error";
 import { uploadImage } from "@/utils/image-upload.js";
 
 export const generateMagicLinkService = async (email: string) => {
-    const rawToken = generateRandomToken()
+  const rawToken = generateRandomToken();
 
-    const hashedToken = hashToken(rawToken)
-    
-    const MAGIC_KEY = getMagicLinkKey(email)
+  const hashedToken = hashToken(rawToken);
 
-    const payload: MagicLinkPayload = {
-        token: hashedToken,
-        count: 1
-    }
-    
-    const val = await getHValue(MAGIC_KEY)
-    
-    if (val && Object.keys(val).length > 0) {
-        payload.count = Number(val.count) + 1
-    }
+  const MAGIC_KEY = getMagicLinkKey(email);
 
-    await setHValue(MAGIC_KEY, payload, serverConfig.AUTH_TOKEN_EXPIRY_TIME)
+  const payload: MagicLinkPayload = {
+    token: hashedToken,
+    count: 1,
+  };
 
-    const link = generateMagicLink(rawToken)
-    const emailBody = getEmailBody(email, link)
-    
-    const jobData: EmailJobData = {
-        from: serverConfig.SENDER_EMAIL,
-        to: email,
-        subject: "Please verify your email",
-        html: emailBody
-    }
+  const val = await getHValue(MAGIC_KEY);
 
-    const emailQueue = getEmailQueue({
-        redisUrl: serverConfig.REDIS_URL,
-        maxRetries: serverConfig.EMAIL_WORKER_MAX_RETRY,
-        attemptDelay: serverConfig.EMAIL_WORKER_ATTEMPT_DELAY
-    });
-    await emailQueue.add("send-email", jobData)
+  if (val && Object.keys(val).length > 0) {
+    payload.count = Number(val.count) + 1;
+  }
 
-}
+  await setHValue(MAGIC_KEY, payload, serverConfig.AUTH_TOKEN_EXPIRY_TIME);
+
+  const link = generateMagicLink(rawToken);
+  const emailBody = getEmailBody(email, link);
+
+  const jobData: EmailJobData = {
+    from: serverConfig.SENDER_EMAIL,
+    to: email,
+    subject: "Please verify your email",
+    html: emailBody,
+  };
+
+  const emailQueue = getEmailQueue({
+    redisUrl: serverConfig.REDIS_URL,
+    maxRetries: serverConfig.EMAIL_WORKER_MAX_RETRY,
+    attemptDelay: serverConfig.EMAIL_WORKER_ATTEMPT_DELAY,
+  });
+  await emailQueue.add("send-email", jobData);
+};
 
 export const verifyMagicLinkService = async (rawToken: string) => {
-    const hashedToken = hashToken(rawToken)
-    
-    const result = await getHValueByToken(hashedToken)
-    if (!result) {
-        throw new AppError("The link is invalid or has expired", 400)
-    }
-    
-    const { key, value } = result;
+  const hashedToken = hashToken(rawToken);
 
-    if (hashedToken !== value.token) {
-        throw new AppError("The link is invalid or has expired", 400)
-    }
+  const result = await getHValueByToken(hashedToken);
+  if (!result) {
+    throw new AppError("The link is invalid or has expired", 400);
+  }
 
-    const email = key.split(":")[1]!
+  const { key, value } = result;
 
-    let sessionData = null
-    
-    let user = await getUserByEmail(email)
+  if (hashedToken !== value.token) {
+    throw new AppError("The link is invalid or has expired", 400);
+  }
 
-    if (!user){
-        user = await createUser(email)
-        sessionData = {
-            userId: user.userId,
-            email: user.email,
-            isProfileComplete: false
-        }
-    } else {
-        sessionData = {
-            userId: user.userId,
-            email: user.email,
-            isProfileComplete: true
-        }
-    }
+  const email = key.split(":")[1]!;
 
-    await delKey(key)
+  let sessionData = null;
 
-    return sessionData;
-}
+  let user = await getUserByEmail(email);
 
-export const profileSetupService = async (userId: string, username: string, file: Express.Multer.File) => {
-    const user = await getUserById(userId)
+  if (!user) {
+    user = await createUser(email);
+    sessionData = {
+      userId: user.userId,
+      email: user.email,
+      isUserOnboarded: false,
+    };
+  } else {
+    sessionData = {
+      userId: user.userId,
+      email: user.email,
+      isUserOnboarded: true,
+    };
+  }
 
-    if (!user) {
-        throw new AppError("User not found", 404)
-    }
+  await delKey(key);
 
-    if (user.username || user.profilePictureUrl) {
-        throw new AppError("User is already signed up", 400)
-    }
+  return sessionData;
+};
 
-    const imageUrl = await uploadImage(file)
+export const onboardingService = async (
+  userId: string,
+  username: string,
+  file: Express.Multer.File,
+) => {
+  const user = await getUserById(userId);
 
-    if (!imageUrl){
-        throw new AppError("Profile picture upload failed", 500)
-    }
-    
-    const updatedUser = await updateUser(userId, username, imageUrl)
-    
-    const sessionData = {
-        userId: updatedUser.userId,
-        email: updatedUser.email
-    }
-    
-    return sessionData
-}
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  if (user.username || user.profilePictureUrl) {
+    throw new AppError("User is already signed up", 400);
+  }
+
+  const imageUrl = await uploadImage(file);
+
+  if (!imageUrl) {
+    throw new AppError("Profile picture upload failed", 500);
+  }
+
+  const updatedUser = await updateUser(userId, username, imageUrl);
+
+  const sessionData = {
+    userId: updatedUser.userId,
+    email: updatedUser.email,
+    isUserOnboarded: true,
+  };
+
+  return sessionData;
+};
