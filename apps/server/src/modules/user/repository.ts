@@ -41,6 +41,7 @@ export async function updateUser(
     .set({
       username,
       avatarId,
+      updatedAt: new Date(),
     })
     .where(eq(users.id, id))
     .returning({

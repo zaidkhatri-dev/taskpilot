@@ -53,7 +53,7 @@ export default function LoginForm({
               <FieldError id="email-error">{errorMsg}</FieldError>
             ) : (
               <FieldDescription id="email-desc">
-                We&apos;ll send an email with a verification link.
+                We&apos;ll send an email with a one-time secure link to sign in.
               </FieldDescription>
             )}
           </Field>

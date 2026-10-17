@@ -44,6 +44,7 @@ export default function OnboardingForm({
             alt={selected || "avatar_01"}
             width={175}
             height={175}
+            loading="eager"
           />
           <AvatarFallback>{selected || "avatar_01"}</AvatarFallback>
         </Avatar>

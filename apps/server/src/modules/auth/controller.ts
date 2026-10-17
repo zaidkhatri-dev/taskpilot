@@ -28,8 +28,7 @@ export const generateMagicLinkController = async (
 
     const response: DefaultResponse = {
       success: true,
-      message:
-        "If this email exists then a verification link has been sent on it",
+      message: "If this email exists then a sign in link has been sent on it",
       data: null,
     };
 
@@ -67,6 +66,27 @@ export const verifyMagicLinkController = async (
       },
     };
 
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sessionController = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { isUserOnboarded } = req.session;
+
+    const response: UserOnboardedResponse = {
+      success: true,
+      message: "Session retrieved successfully",
+      data: {
+        isUserOnboarded: isUserOnboarded!,
+      },
+    };
     res.status(200).json(response);
   } catch (error) {
     next(error);

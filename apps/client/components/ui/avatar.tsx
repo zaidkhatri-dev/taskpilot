@@ -11,6 +11,7 @@ interface AvatarImageProps {
   width: number;
   height: number;
   className?: string;
+  loading?: "eager";
 }
 
 function Avatar({
@@ -33,7 +34,14 @@ function Avatar({
   );
 }
 
-function AvatarImage({ className, src, alt, width, height }: AvatarImageProps) {
+function AvatarImage({
+  className,
+  src,
+  alt,
+  width,
+  height,
+  loading,
+}: AvatarImageProps) {
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
@@ -43,7 +51,15 @@ function AvatarImage({ className, src, alt, width, height }: AvatarImageProps) {
         "aspect-square size-full rounded-full object-cover",
         className,
       )}
-      render={<NextImage src={src} alt={alt} width={width} height={height} />}
+      render={
+        <NextImage
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          loading={loading}
+        />
+      }
     />
   );
 }

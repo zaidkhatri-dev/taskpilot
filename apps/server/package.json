@@ -1,5 +1,5 @@
 {
-  "name": "http-server",
+  "name": "server",
   "module": "index.ts",
   "scripts": {
     "dev": "bun --watch src/index.ts",

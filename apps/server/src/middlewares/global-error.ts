@@ -20,6 +20,12 @@ export const globalErrorHandler = (err: Error, req: Request, res: Response, next
         mappedError = validationErrorMapper(err)
     }
     
+    // Drizzle wraps the original pg DatabaseError in `cause` — unwrap it first.
+    else if (err.cause instanceof DatabaseError) {
+        console.error("[Database Error]: ", err.cause.message)
+        mappedError = dbErrorMapper(err.cause)
+    }
+
     else if (err instanceof DatabaseError){
         console.error("[Database Error]: ", err.message)
         mappedError = dbErrorMapper(err)

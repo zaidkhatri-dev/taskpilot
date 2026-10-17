@@ -41,7 +41,8 @@ export const generateMagicLinkService = async (email: string) => {
   const jobData: EmailJobData = {
     from: serverConfig.SENDER_EMAIL,
     to: email,
-    subject: `[${serverConfig.APP_NAME}] Verify your email address`,
+
+    subject: `Your sign-in link for ${serverConfig.APP_NAME}`,
     html: emailBody,
   };
 

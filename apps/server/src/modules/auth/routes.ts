@@ -6,15 +6,18 @@ import {
 import { Router } from "express";
 import {
   generateMagicLinkController,
+  sessionController,
   verifyMagicLinkController,
 } from "./controller.js";
 import { emailRateLimiter } from "@/middlewares/email-rate-limiter.js";
+import { requireGuest, requireSession } from "@/middlewares/auth.js";
 
 const router: Router = Router();
 
 router.post(
   "/link/generate",
   inputValidator(generateMagicLinkSchema),
+  requireGuest,
   emailRateLimiter,
   generateMagicLinkController,
 );
@@ -24,5 +27,7 @@ router.post(
   inputValidator(verifyMagicLinkSchema),
   verifyMagicLinkController,
 );
+
+router.get("/session", requireSession, sessionController);
 
 export default router;

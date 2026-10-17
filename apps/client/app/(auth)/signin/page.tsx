@@ -4,8 +4,9 @@ import LoginForm from "@/components/auth/LoginForm";
 import { useActionState, useEffect } from "react";
 import { generateLink } from "@/lib/actions/auth";
 import { toast, Toaster } from "@/components/ui/toast";
+import GuestRoute from "@/components/auth/GuestRoute";
 
-export default function Login() {
+export default function Signin() {
   const [state, formAction, isPending] = useActionState(generateLink, null);
 
   useEffect(() => {
@@ -28,15 +29,17 @@ export default function Login() {
   }, [state]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <LoginForm
-        formAction={formAction}
-        isPending={isPending}
-        errorPath={state?.path || null}
-        errorMsg={state?.message || ""}
-        values={state?.values || {}}
-      />
-      <Toaster />
-    </div>
+    <GuestRoute>
+      <div className="flex min-h-screen items-center justify-center">
+        <LoginForm
+          formAction={formAction}
+          isPending={isPending}
+          errorPath={state?.path || null}
+          errorMsg={state?.message || ""}
+          values={state?.values || {}}
+        />
+        <Toaster />
+      </div>
+    </GuestRoute>
   );
 }

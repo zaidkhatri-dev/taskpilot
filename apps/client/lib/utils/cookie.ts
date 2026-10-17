@@ -1,56 +1,53 @@
 import { cookies } from "next/headers";
 
 export async function forwardCookieFromServerToBrowser(res: Response) {
-  const setCookieHeader = res.headers.get("set-cookie");
+  const cookieStore = await cookies();
 
-  if (setCookieHeader) {
-    const cookieStore = await cookies();
+  const setCookies =
+    typeof res.headers.getSetCookie === "function"
+      ? res.headers.getSetCookie()
+      : [res.headers.get("set-cookie")].filter((value): value is string =>
+          Boolean(value),
+        );
 
-    const parts = setCookieHeader.split(";").map((part) => part.trim());
-    const [cookieNameValuePair] = parts;
-    const [name, ...valParts] = cookieNameValuePair.split("=");
-    const value = valParts.join("=");
+  for (const setCookie of setCookies) {
+    const parts = setCookie.split(";").map((part) => part.trim());
+    const [nameValue, ...attributes] = parts;
+    const separatorIndex = nameValue.indexOf("=");
 
-    const isHttpOnly = parts.some((part) => part.toLowerCase() === "httponly");
-    const isSecure = parts.some((part) => part.toLowerCase() === "secure");
+    if (separatorIndex < 1) continue;
 
-    const pathPart = parts.find((part) =>
-      part.toLowerCase().startsWith("path="),
-    );
-    const path = pathPart
-      ? pathPart.split("=").slice(1).join("=").trim()
-      : undefined;
+    const name = nameValue.slice(0, separatorIndex).trim();
+    const value = nameValue.slice(separatorIndex + 1).trim();
 
-    const maxAgePart = parts.find((part) =>
-      part.toLowerCase().startsWith("max-age="),
-    );
-    const maxAge = maxAgePart
-      ? parseInt(maxAgePart.split("=")[1].trim(), 10)
-      : undefined;
+    const getAttribute = (attribute: string) =>
+      attributes
+        .find((part) =>
+          part.toLowerCase().startsWith(`${attribute.toLowerCase()}=`),
+        )
+        ?.split("=")
+        .slice(1)
+        .join("=")
+        .trim();
 
-    const expiresPart = parts.find((part) =>
-      part.toLowerCase().startsWith("expires="),
-    );
-    const expiresVal = expiresPart
-      ? expiresPart.split("=").slice(1).join("=").trim()
-      : undefined;
-    const expires = expiresVal ? new Date(expiresVal) : undefined;
+    const sameSite = getAttribute("samesite")?.toLowerCase();
 
-    const sameSitePart = parts.find((part) =>
-      part.toLowerCase().startsWith("samesite="),
-    );
-    const sameSiteVal = sameSitePart
-      ? (sameSitePart.split("=")[1].trim().toLowerCase() as
-          "lax" | "strict" | "none")
-      : undefined;
+    const maxAgeValue = getAttribute("max-age");
+    const expiresValue = getAttribute("expires");
 
-    cookieStore.set(name.trim(), value.trim(), {
-      path,
-      httpOnly: isHttpOnly,
-      secure: isSecure,
-      sameSite: sameSiteVal,
-      maxAge: typeof maxAge === "number" && !isNaN(maxAge) ? maxAge : undefined,
-      expires: expires && !isNaN(expires.getTime()) ? expires : undefined,
+    cookieStore.set(name, value, {
+      httpOnly: attributes.some((part) => part.toLowerCase() === "httponly"),
+      secure: attributes.some((part) => part.toLowerCase() === "secure"),
+      path: getAttribute("path") ?? "/",
+      sameSite:
+        sameSite === "strict" || sameSite === "lax" || sameSite === "none"
+          ? sameSite
+          : undefined,
+      maxAge:
+        maxAgeValue !== undefined && Number.isFinite(Number(maxAgeValue))
+          ? Number(maxAgeValue)
+          : undefined,
+      expires: expiresValue ? new Date(expiresValue) : undefined,
     });
   }
 }

@@ -35,6 +35,7 @@ export async function generateLink(
         body: JSON.stringify(result.data),
         headers: {
           "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
         },
         credentials: "include",
       },
@@ -75,6 +76,8 @@ export async function verifyLink(token: string) {
         credentials: "include",
       },
     );
+
+    console.log(response.headers.getSetCookie());
 
     const data: UserOnboardedResponse = await response.json();
 
@@ -135,5 +138,33 @@ export async function completeOnboarding(
     };
   } catch (error) {
     return handleNetworkError(error);
+  }
+}
+
+export async function getSession(): Promise<{
+  ok: boolean;
+  data: { isUserOnboarded: boolean } | null;
+}> {
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/auth/session`,
+      {
+        method: "GET",
+        headers: {
+          Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+        cache: "no-store",
+      },
+    );
+
+    if (!response.ok) {
+      return { ok: false, data: null };
+    }
+
+    const result: UserOnboardedResponse = await response.json();
+    return { ok: true, data: result.data };
+  } catch {
+    return { ok: false, data: null };
   }
 }

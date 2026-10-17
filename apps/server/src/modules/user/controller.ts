@@ -40,7 +40,7 @@ export const onboardingController = async (
 
     const response: DefaultResponse = {
       success: true,
-      message: "Profile updated successfully",
+      message: "Onboarding completed successfully",
       data: null,
     };
 

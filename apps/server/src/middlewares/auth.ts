@@ -37,3 +37,25 @@ export const requireAuth = (
 
   next();
 };
+
+export const requireSession = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.session || !req.session.userId || !req.session.email) {
+    throw new AppError("Unauthorized access", 401);
+  }
+  next();
+};
+
+export const requireGuest = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.session && (req.session.userId || req.session.email)) {
+    throw new AppError("Unauthorized access", 401);
+  }
+  next();
+};
