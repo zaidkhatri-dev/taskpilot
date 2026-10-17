@@ -5,7 +5,6 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import type { FormActionResponse } from "@repo/contracts/response";
 import { useState } from "react";
-import AvatarModel from "@/components/auth/AvatarDialog";
+import AvatarDialog from "@/components/auth/AvatarDialog";
 
 interface OnboardingFormProps {
   formAction: (formData: FormData) => void;
@@ -30,36 +29,36 @@ export default function OnboardingForm({
   errorMsg,
   values,
 }: OnboardingFormProps) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string>(
+    values?.avatar ? String(values.avatar) : "avatar_01",
+  );
 
   return (
     <form noValidate className="w-full max-w-xs" action={formAction}>
       <FieldSet>
-        <Avatar className="size-22 mx-auto">
+        <Avatar className="mx-auto size-20">
           <AvatarImage
             src={
               selected ? `/avatars/${selected}.svg` : "/avatars/avatar_01.svg"
             }
+            alt={selected || "avatar_01"}
+            width={175}
+            height={175}
           />
           <AvatarFallback>{selected || "avatar_01"}</AvatarFallback>
         </Avatar>
 
-        <AvatarModel selected={selected} setSelected={setSelected} />
+        <AvatarDialog selected={selected} setSelected={setSelected} />
 
         <FieldGroup>
           <Field>
-            <Input
-              type="hidden"
-              name="avatar"
-              value={selected || "avatar_01"}
-              required
-              aria-invalid={errorPath === "avatar"}
-              aria-describedby={
-                errorPath === "avatar" ? "avatar-error" : "avatar-error"
-              }
-            />
-            {errorPath === "avatar" && (
-              <FieldError id="avatar-error">{errorMsg}</FieldError>
+            <Input type="hidden" name="avatarId" value={selected} required />
+            {errorPath === "avatarId" ? (
+              <FieldError id="avatarId-error">{errorMsg}</FieldError>
+            ) : (
+              <FieldDescription id="avatarId-desc" className="sr-only">
+                Select your avatar
+              </FieldDescription>
             )}
           </Field>
 
@@ -70,6 +69,7 @@ export default function OnboardingForm({
               name="username"
               id="username"
               required
+              autoComplete="off"
               aria-invalid={errorPath === "username"}
               defaultValue={values?.username ? String(values.username) : ""}
               aria-describedby={

@@ -6,9 +6,7 @@ const serverEnvSchema = z.object({
     .default("development"),
   PORT: z.coerce.number().default(8000),
   CORS_ORIGIN: z.url().default("http://localhost:3000"),
-  EMAIL_VERIFICATION_BASE_URL: z
-    .url()
-    .default("http://localhost:3000/auth/verify"),
+  EMAIL_VERIFICATION_BASE_URL: z.url().default("http://localhost:3000/verify"),
 
   APP_NAME: z.string().default("TaskPilot"),
   API_PREFIX: z.string().default("/api/v1"),

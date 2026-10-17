@@ -12,7 +12,6 @@
     "@base-ui/react": "^1.9.0",
     "@repo/config": "workspace:*",
     "@repo/contracts": "workspace:*",
-    "@repo/ui": "workspace:*",
     "@repo/validation": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",

@@ -1,5 +1,5 @@
 import z from "zod";
-import { emailSchema } from "./shared.js";
+import { emailSchema, userNameSchema } from "./shared.js";
 
 export const generateMagicLinkSchema = z.object({
   email: emailSchema,
@@ -38,14 +38,11 @@ const avatarIds = [
 
 export type AvatarIds = (typeof avatarIds)[number];
 
+export const checkUsernameAvailabilitySchema = z.object({
+  username: userNameSchema,
+});
+
 export const onboardingSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters long")
-    .max(20, "Username must be at most 20 characters long")
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores",
-    ),
+  username: userNameSchema,
   avatarId: z.enum(avatarIds),
 });

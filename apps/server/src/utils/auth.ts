@@ -1,16 +1,17 @@
 import { serverConfig } from "@repo/config/server";
 
 export const generateMagicLink = (token: string) => {
-    return `${serverConfig.EMAIL_VERIFICATION_BASE_URL}?token=${token}`
-}
+  return `${serverConfig.EMAIL_VERIFICATION_BASE_URL}?token=${token}`;
+};
 
 export const getEmailBody = (email: string, link: string) => {
-    return `
+  return `
         <div>
-            <h1>Welcome to ${serverConfig.APP_NAME}</h1>
-            <p>To move forward, verify your email: <b>${email}</b></p>
-            <a href="${link}">Verify Email</a>
+            <p>Dear ${email},</p>
+            <p>To move forward, please click on the link below</p>
+            <a href="${link}">${link}</a>
             <p>This link will expire in ${serverConfig.AUTH_TOKEN_EXPIRY_TIME / 60} minutes</p>
+            <p>If you did not initiate this request, please ignore this email.</p>
         </div>
-    `
-}
+    `;
+};

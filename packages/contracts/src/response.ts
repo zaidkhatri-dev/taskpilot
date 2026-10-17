@@ -7,9 +7,9 @@ export interface DefaultResponse extends BaseResponse {
   data: null;
 }
 
-export interface UserNotOnboardedResponse extends BaseResponse {
+export interface UserOnboardedResponse extends BaseResponse {
   data: {
-    isUserOnboarded: false;
+    isUserOnboarded: boolean;
   };
 }
 

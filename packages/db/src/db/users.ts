@@ -2,6 +2,11 @@ import { check, uniqueIndex, pgTable, pgEnum } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";
+import {
+  EMAIL_FORMAT_CHECK,
+  USERNAME_CHARS_CHECK,
+  USERNAME_LENGTH_CHECK,
+} from "../constraints.js";
 
 export const avatarIds = pgEnum("avatar_id", [
   "avatar_01",
@@ -36,20 +41,21 @@ export const users = pgTable(
     id: uuid("id")
       .primaryKey()
       .default(sql`uuidv7()`),
-    email: text("email").notNull(),
-    username: text("username"),
+    email: text("email").notNull().unique(),
+    username: text("username").unique(),
     avatarId: avatarIds("avatar_id"),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("email_lower_idx").on(sql`lower(${table.email})`),
     check(
-      "valid_email_format",
-      sql`${table.email} ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'`,
+      EMAIL_FORMAT_CHECK,
+      sql`${table.email} ~* '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$'`,
     ),
-    check("valid_username_chars", sql`${table.username} ~* '^[A-Za-z0-9_]+$'`),
-    check("username_min_length", sql`length(${table.username}) >= 3`),
-    check("username_max_length", sql`length(${table.username}) <= 20`),
+    check(USERNAME_CHARS_CHECK, sql`${table.username} ~* '^[a-z0-9_.]+$'`),
+    check(
+      USERNAME_LENGTH_CHECK,
+      sql`length(${table.username}) between 1 and 30`,
+    ),
   ],
 );

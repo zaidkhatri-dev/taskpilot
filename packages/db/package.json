@@ -37,6 +37,10 @@
     "./comments": {
       "types": "./src/db/comments.ts",
       "default": "./src/db/comments.ts"
+    },
+    "./constraints": {
+      "types": "./src/constraints.ts",
+      "default": "./src/constraints.ts"
     }
   },
   "devDependencies": {

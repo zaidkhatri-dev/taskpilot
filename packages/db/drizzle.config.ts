@@ -5,6 +5,6 @@ export default defineConfig({
   schema: "./src/db/*.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: "",
+    url: "postgresql://postgres:zaidk1055@localhost:5432/taskpilot",
   },
 });

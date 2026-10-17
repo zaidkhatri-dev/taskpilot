@@ -1,3 +1,5 @@
+import { clientConfig } from "@repo/config/client";
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -12,6 +14,17 @@ const nextConfig: NextConfig = {
       },
     },
   },
+
+  redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/login",
+        permanent: false,
+      },
+    ];
+  },
+  reactStrictMode: false,
 
   /**
    * images.remotePatterns — required before using <Image src="https://...">

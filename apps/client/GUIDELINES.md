@@ -1,0 +1,6 @@
+- Every page should be broken down into components
+- Use ShadCN ui components where possible, don't create a new component if the component already exists in ShadCN UI
+- For Page/Component, interface for props must be declared in the file itself
+- Follow the naming convention for components `PascalCase`, components should be written in components directory
+- Do not overcomplicate code
+- No need to write comments, unless specified

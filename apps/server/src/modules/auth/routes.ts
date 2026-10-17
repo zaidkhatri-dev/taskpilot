@@ -1,14 +1,12 @@
 import { inputValidator } from "@/middlewares/input-validator.js";
 import {
   generateMagicLinkSchema,
-  onboardingSchema,
   verifyMagicLinkSchema,
 } from "@repo/validation/auth";
 import { Router } from "express";
 import {
   generateMagicLinkController,
   verifyMagicLinkController,
-  onboardingController,
 } from "./controller.js";
 import { emailRateLimiter } from "@/middlewares/email-rate-limiter.js";
 
@@ -25,12 +23,6 @@ router.post(
   "/link/verify",
   inputValidator(verifyMagicLinkSchema),
   verifyMagicLinkController,
-);
-
-router.post(
-  "/onboarding",
-  inputValidator(onboardingSchema),
-  onboardingController,
 );
 
 export default router;

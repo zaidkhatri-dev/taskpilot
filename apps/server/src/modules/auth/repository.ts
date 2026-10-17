@@ -4,44 +4,49 @@ import { users } from "@repo/db/users";
 import { initDb } from "@repo/db/client";
 import { eq } from "drizzle-orm";
 import { serverConfig } from "@repo/config/server";
-import { AvatarIds } from "@repo/validation/auth";
 
-const redisClient = initRedis(serverConfig.REDIS_URL);
+// Connect before using Redis.
+// Requires top-level await support in your module.
+const redisClient = await initRedis(serverConfig.REDIS_URL);
 
 export async function setHValue(
   key: string,
   payload: MagicLinkPayload,
   expireIn: number,
 ) {
-  const transaction = redisClient
+  await redisClient
     .multi()
-    .hset(key, payload)
-    .expire(key, expireIn);
-
-  await transaction.exec();
+    .hSet(key, {
+      token: payload.token,
+      count: String(payload.count),
+    })
+    .expire(key, expireIn)
+    .exec();
 }
 
 export async function getHValue(key: string) {
-  const value = await redisClient.hgetall(key);
-  return value;
+  return await redisClient.hGetAll(key);
 }
 
 export async function getHValueByToken(token: string) {
   let cursor = "0";
-  do {
-    const [nextCursor, keys] = await redisClient.scan(
-      cursor,
-      "MATCH",
-      "link:*",
-      "COUNT",
-      100,
-    );
-    cursor = nextCursor;
 
-    for (const key of keys) {
-      const value = await redisClient.hgetall(key);
-      if (value && value.token === token) {
-        return { key, value: value as unknown as MagicLinkPayload };
+  do {
+    const result = await redisClient.scan(cursor, {
+      MATCH: "link:*",
+      COUNT: 100,
+    });
+
+    cursor = result.cursor;
+
+    for (const key of result.keys) {
+      const value = await redisClient.hGetAll(key);
+
+      if (value.token === token) {
+        return {
+          key,
+          value: value as unknown as MagicLinkPayload,
+        };
       }
     }
   } while (cursor !== "0");
@@ -62,56 +67,24 @@ const dbClient = initDb({
 });
 
 export async function getUserByEmail(email: string) {
-  let [user] = await dbClient
+  const [user] = await dbClient
     .select({
       userId: users.id,
       email: users.email,
+      avatarId: users.avatarId,
+      username: users.username,
     })
     .from(users)
     .where(eq(users.email, email));
+
   return user;
 }
 
 export async function createUser(email: string) {
-  const [user] = await dbClient
-    .insert(users)
-    .values({
-      email,
-    })
-    .returning({
-      userId: users.id,
-      email: users.email,
-    });
-  return user!;
-}
-
-export async function getUserById(id: string) {
-  const [user] = await dbClient
-    .select({
-      username: users.username,
-      avatarId: users.avatarId,
-    })
-    .from(users)
-    .where(eq(users.id, id));
-  return user;
-}
-
-export async function updateUser(
-  id: string,
-  username: string,
-  avatarId: AvatarIds,
-) {
-  const [user] = await dbClient
-    .update(users)
-    .set({
-      username,
-      avatarId,
-    })
-    .where(eq(users.id, id))
-    .returning({
-      userId: users.id,
-      email: users.email,
-    });
+  const [user] = await dbClient.insert(users).values({ email }).returning({
+    userId: users.id,
+    email: users.email,
+  });
 
   return user!;
 }

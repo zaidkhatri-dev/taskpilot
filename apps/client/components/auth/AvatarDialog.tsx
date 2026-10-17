@@ -1,30 +1,46 @@
+import { useState } from "react";
 import { PencilIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
-  DialogClose,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
-// ["avatar_01", "avatar_02", ..., "avatar_24"]
 const AVATARS = Array.from(
   { length: 24 },
   (_, i) => `avatar_${String(i + 1).padStart(2, "0")}`,
 );
 
+interface AvatarDialogProps {
+  selected: string | null;
+  setSelected: (selected: string) => void;
+}
+
 export default function AvatarDialog({
   selected,
   setSelected,
-}: {
-  selected: string | null;
-  setSelected: (selected: string) => void;
-}) {
+}: AvatarDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [tempSelected, setTempSelected] = useState(selected || "avatar_01");
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen) {
+      setTempSelected(selected || "avatar_01");
+    }
+  };
+
+  const handleConfirm = () => {
+    setSelected(tempSelected);
+    setOpen(false);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button variant="outline">
@@ -38,23 +54,30 @@ export default function AvatarDialog({
             <button
               key={name}
               type="button"
-              onClick={() => setSelected(name)}
-              aria-pressed={selected === name}
+              onClick={() => setTempSelected(name)}
+              aria-pressed={tempSelected === name}
               className={cn(
                 "rounded-full p-1 transition",
                 "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                selected === name && "ring-2 ring-primary bg-muted",
+                tempSelected === name && "ring-2 ring-primary bg-muted",
               )}
             >
-              <Avatar className="size-14">
-                <AvatarImage src={`/avatars/${name}.svg`} />
+              <Avatar className="size-15">
+                <AvatarImage
+                  src={`/avatars/${name}.svg`}
+                  width={56}
+                  height={56}
+                  alt={name}
+                />
                 <AvatarFallback>{name}</AvatarFallback>
               </Avatar>
             </button>
           ))}
         </div>
         <DialogFooter className="sm:justify-end">
-          <DialogClose render={<Button type="button">Okay</Button>} />
+          <Button type="button" onClick={handleConfirm}>
+            Okay
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -4,10 +4,8 @@ import {
   getHValueByToken,
   setHValue,
   delKey,
-  updateUser,
   getUserByEmail,
   createUser,
-  getUserById,
 } from "./repository.js";
 import { getEmailQueue } from "@repo/email/queue";
 import { serverConfig } from "@repo/config/server";
@@ -16,7 +14,6 @@ import { generateMagicLink, getEmailBody } from "@/utils/auth.js";
 import { EmailJobData } from "@repo/contracts/other";
 import { MagicLinkPayload } from "@/types/redis.js";
 import { AppError } from "@repo/errors/app-error";
-import { AvatarIds } from "@repo/validation/auth";
 
 export const generateMagicLinkService = async (email: string) => {
   const rawToken = generateRandomToken();
@@ -44,7 +41,7 @@ export const generateMagicLinkService = async (email: string) => {
   const jobData: EmailJobData = {
     from: serverConfig.SENDER_EMAIL,
     to: email,
-    subject: "Please verify your email",
+    subject: `[${serverConfig.APP_NAME}] Verify your email address`,
     html: emailBody,
   };
 
@@ -74,50 +71,30 @@ export const verifyMagicLinkService = async (rawToken: string) => {
 
   let sessionData = null;
 
-  let user = await getUserByEmail(email);
+  let fetchedUser = await getUserByEmail(email);
 
-  if (!user) {
-    user = await createUser(email);
+  if (!fetchedUser) {
+    let user = await createUser(email);
     sessionData = {
       userId: user.userId,
       email: user.email,
       isUserOnboarded: false,
     };
+  } else if (!fetchedUser?.avatarId && !fetchedUser?.username) {
+    sessionData = {
+      userId: fetchedUser.userId,
+      email: fetchedUser.email,
+      isUserOnboarded: false,
+    };
   } else {
     sessionData = {
-      userId: user.userId,
-      email: user.email,
+      userId: fetchedUser.userId,
+      email: fetchedUser.email,
       isUserOnboarded: true,
     };
   }
 
   await delKey(key);
-
-  return sessionData;
-};
-
-export const onboardingService = async (
-  userId: string,
-  username: string,
-  avatarId: AvatarIds,
-) => {
-  const user = await getUserById(userId);
-
-  if (!user) {
-    throw new AppError("User not found", 404);
-  }
-
-  if (user.username || user.avatarId) {
-    throw new AppError("User is already signed up", 400);
-  }
-
-  const updatedUser = await updateUser(userId, username, avatarId);
-
-  const sessionData = {
-    userId: updatedUser.userId,
-    email: updatedUser.email,
-    isUserOnboarded: true,
-  };
 
   return sessionData;
 };

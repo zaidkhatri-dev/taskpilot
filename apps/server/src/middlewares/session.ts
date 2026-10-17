@@ -8,21 +8,21 @@ import session from "express-session";
 initRedis(serverConfig.REDIS_URL);
 
 let redisStore = new RedisStore({
-    client: getRedis(),
-    prefix: getSessionKey(""),
-    ttl: serverConfig.SESSION_LIFESPAN / 1000
-})
+  client: getRedis(),
+  prefix: getSessionKey(""),
+  ttl: serverConfig.SESSION_LIFESPAN / 1000,
+});
 
 export const sessionHandler: RequestHandler = session({
-    store: redisStore,
-    secret: serverConfig.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: serverConfig.NODE_ENV === "production",
-        httpOnly: true,
-        sameSite: "none",
-        maxAge: serverConfig.SESSION_LIFESPAN,
-    },
-    rolling: true
-})
+  store: redisStore,
+  secret: serverConfig.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: serverConfig.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: serverConfig.SESSION_LIFESPAN,
+  },
+  rolling: true,
+});
