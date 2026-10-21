@@ -14,3 +14,10 @@ export const userNameSchema = z
     /^[a-z0-9_.]+$/,
     "Username can only contain lowercase letters, numbers, underscores, and dots",
   );
+
+export const namePartSchema = z
+  .string()
+  .trim()
+  .min(1, "Must be at least 1 character long")
+  .max(50, "Must be at most 50 characters long")
+  .toLowerCase();

@@ -3,8 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { getSession } from "@/lib/actions/auth";
-import { Spinner } from "../ui/spinner";
-
+import Image from "next/image";
 export default function GuestRoute({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [isGuest, setIsGuest] = useState(false);
@@ -23,7 +22,7 @@ export default function GuestRoute({ children }: { children: ReactNode }) {
       }
 
       router.replace(
-        session.data.isUserOnboarded ? "/dashboard" : "/onboarding",
+        session.data.isUserOnboarded ? "/workspace" : "/onboarding",
       );
     }
 
@@ -45,8 +44,15 @@ export default function GuestRoute({ children }: { children: ReactNode }) {
 
   if (!isGuest) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner className="size-20" />
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <Image
+          src="/logo.webp"
+          alt="TaskPilot Logo"
+          width={48}
+          height={48}
+          priority
+          className="h-12 w-12 object-contain animate-pulse"
+        />
       </div>
     );
   }

@@ -73,6 +73,8 @@ export async function getUserByEmail(email: string) {
       email: users.email,
       avatarId: users.avatarId,
       username: users.username,
+      firstName: users.firstName,
+      lastName: users.lastName,
     })
     .from(users)
     .where(eq(users.email, email));

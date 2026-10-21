@@ -12,7 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
 import type { FormActionResponse } from "@repo/contracts/response";
 
-interface LoginFormProps {
+interface SignInFormProps {
   formAction: (formData: FormData) => void;
   isPending: boolean;
   errorPath: FormActionResponse["path"];
@@ -20,13 +20,13 @@ interface LoginFormProps {
   values: Record<string, unknown>;
 }
 
-export default function LoginForm({
+export default function SignInForm({
   formAction,
   isPending,
   errorPath,
   errorMsg,
   values,
-}: LoginFormProps) {
+}: SignInFormProps) {
   const [emailCount, setEmailCount] = useState(0);
 
   return (

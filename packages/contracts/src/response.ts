@@ -13,17 +13,54 @@ export interface UserOnboardedResponse extends BaseResponse {
   };
 }
 
-/**
- * FormActionResponse — returned by server actions wired to useActionState.
- * Extends DefaultResponse with an optional `path` field that names the
- * specific form field that failed validation (e.g. "email"), enabling
- * the client form to render an inline error below the correct input.
- *
- * `path` is only present on validation failures originating from
- * validateAction(). API-level failures omit it.
- */
-export interface FormActionResponse extends BaseResponse {
-  data: null | Record<string, unknown>;
-  path: null | string;
-  values: null | Record<string, unknown>;
+const avatarIds = [
+  "avatar_01",
+  "avatar_02",
+  "avatar_03",
+  "avatar_04",
+  "avatar_05",
+  "avatar_06",
+  "avatar_07",
+  "avatar_08",
+  "avatar_09",
+  "avatar_10",
+  "avatar_11",
+  "avatar_12",
+  "avatar_13",
+  "avatar_14",
+  "avatar_15",
+  "avatar_16",
+  "avatar_17",
+  "avatar_18",
+  "avatar_19",
+  "avatar_20",
+  "avatar_21",
+  "avatar_22",
+  "avatar_23",
+  "avatar_24",
+] as const;
+
+export type AvatarIds = (typeof avatarIds)[number];
+export interface GetMeResponse extends BaseResponse {
+  data: {
+    user: {
+      firstName: string;
+      lastName: string;
+      username: string;
+      email: string;
+      avatarId: AvatarIds;
+    };
+    organization: Array<{
+      organizationName: string;
+      joiningStatus: boolean;
+    }>;
+  };
+}
+
+export interface FormActionResponse {
+  success: boolean;
+  message: string;
+  path: string | null;
+  values: Record<string, unknown> | null;
+  data: Record<string, unknown> | null;
 }

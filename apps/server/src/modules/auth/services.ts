@@ -81,7 +81,12 @@ export const verifyMagicLinkService = async (rawToken: string) => {
       email: user.email,
       isUserOnboarded: false,
     };
-  } else if (!fetchedUser?.avatarId && !fetchedUser?.username) {
+  } else if (
+    !fetchedUser.avatarId &&
+    !fetchedUser.username &&
+    !fetchedUser.firstName &&
+    !fetchedUser.lastName
+  ) {
     sessionData = {
       userId: fetchedUser.userId,
       email: fetchedUser.email,

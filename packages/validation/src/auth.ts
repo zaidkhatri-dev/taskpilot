@@ -1,5 +1,5 @@
 import z from "zod";
-import { emailSchema, userNameSchema } from "./shared.js";
+import { emailSchema, userNameSchema, namePartSchema } from "./shared.js";
 
 export const generateMagicLinkSchema = z.object({
   email: emailSchema,
@@ -36,8 +36,6 @@ const avatarIds = [
   "avatar_24",
 ] as const;
 
-export type AvatarIds = (typeof avatarIds)[number];
-
 export const checkUsernameAvailabilitySchema = z.object({
   username: userNameSchema,
 });
@@ -45,4 +43,13 @@ export const checkUsernameAvailabilitySchema = z.object({
 export const onboardingSchema = z.object({
   username: userNameSchema,
   avatarId: z.enum(avatarIds),
+  firstName: namePartSchema,
+  lastName: namePartSchema,
+});
+
+export const updateMeSchema = z.object({
+  username: userNameSchema.optional(),
+  avatarId: z.enum(avatarIds).optional(),
+  firstName: namePartSchema.optional(),
+  lastName: namePartSchema.optional(),
 });

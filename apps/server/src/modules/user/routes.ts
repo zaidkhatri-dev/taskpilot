@@ -2,13 +2,15 @@ import { inputValidator } from "@/middlewares/input-validator.js";
 import {
   checkUsernameAvailabilitySchema,
   onboardingSchema,
+  updateMeSchema,
 } from "@repo/validation/auth";
 import { Router } from "express";
 import {
   checkUsernameAvailabilityController,
+  getMeController,
   onboardingController,
+  updateMeController,
 } from "./controller.js";
-import { requireAuth } from "@/middlewares/auth.js";
 
 const router: Router = Router();
 
@@ -24,6 +26,8 @@ router.post(
   checkUsernameAvailabilityController,
 );
 
-router.use(requireAuth);
+router.get("/me", getMeController);
+
+router.patch("/me", inputValidator(updateMeSchema), updateMeController);
 
 export default router;

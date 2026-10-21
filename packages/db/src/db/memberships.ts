@@ -8,8 +8,8 @@ import { USER_ORG_IDX } from "../constraints.js";
 
 export const memberRoles = pgEnum("member_role", ["admin", "member"]);
 
-export const membership = pgTable(
-  "membership",
+export const memberships = pgTable(
+  "memberships",
   {
     id: uuid("id")
       .primaryKey()

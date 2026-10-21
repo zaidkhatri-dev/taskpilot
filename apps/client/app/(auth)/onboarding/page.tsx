@@ -26,7 +26,7 @@ export default function OnboardingPage() {
         type: "success",
       });
 
-      router.replace("/dashboard");
+      router.replace("/workspace");
     } else {
       toast.add({
         description: state.message,

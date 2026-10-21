@@ -4,9 +4,9 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({
-  subsets:['latin'],
-  variable:'--font-geist',
-})
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
 
 export const metadata: Metadata = {
   /**
@@ -33,6 +33,12 @@ export const metadata: Metadata = {
     siteName: "TaskPilot",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/logo.webp",
+        alt: "TaskPilot Logo",
+      },
+    ],
   },
 
   /**
@@ -44,6 +50,7 @@ export const metadata: Metadata = {
     title: "TaskPilot",
     description:
       "TaskPilot helps modern teams manage tasks, projects, and priorities in one place.",
+    images: ["/logo.webp"],
   },
 
   /**
@@ -55,25 +62,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-
-  /**
-   * Icons — Next.js auto-detects app/favicon.ico and app/icon.* but
-   * declaring them here gives full control over shortcut and Apple icons.
-   */
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`h-full ${geist.variable} dark`}
-    >
-      <body className={`min-h-full`}>
-        {children}
-      </body>
+    <html lang="en" className={`h-full ${geist.variable} dark`}>
+      <body className={`min-h-full`}>{children}</body>
     </html>
   );
 }
