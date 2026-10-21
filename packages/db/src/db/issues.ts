@@ -16,10 +16,10 @@ export const issues = pgTable(
     description: text("description"),
     sectionId: uuid("section_id")
       .notNull()
-      .references(() => sections.id, { onDelete: "restrict" }),
-    assignedToId: uuid("assigned_to_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "set null" }),
+      .references(() => sections.id, { onDelete: "cascade" }),
+    assignedToId: uuid("assigned_to_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     position: text("position").notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

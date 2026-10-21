@@ -3,13 +3,13 @@ import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { uuid } from "drizzle-orm/pg-core";
 import { users } from "./users.js";
-import { organizations } from "./organizations.js";
-import { USER_ORG_IDX } from "../constraints.js";
+import { teams } from "./teams.js";
+import { USER_TEAM_IDX } from "../constraints.js";
 
 export const memberRoles = pgEnum("member_role", ["admin", "member"]);
 
-export const memberships = pgTable(
-  "memberships",
+export const teamMemberships = pgTable(
+  "team_memberships",
   {
     id: uuid("id")
       .primaryKey()
@@ -17,13 +17,13 @@ export const memberships = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    organizationId: uuid("organization_id")
+    teamId: uuid("team_id")
       .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
+      .references(() => teams.id, { onDelete: "cascade" }),
     role: memberRoles("role").notNull().default("member"),
     accepted: boolean("accepted").notNull().default(false),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [uniqueIndex(USER_ORG_IDX).on(table.userId, table.organizationId)],
+  (table) => [uniqueIndex(USER_TEAM_IDX).on(table.userId, table.teamId)],
 );

@@ -1,5 +1,5 @@
 import {
-  getUserAndOrganization,
+  getUserAndTeam,
   getUserById,
   getUserByUsername,
   updateUser,
@@ -48,7 +48,7 @@ export const checkUsernameAvailabilityService = async (username: string) => {
 };
 
 export const getMeService = async (userId: string) => {
-  const data = await getUserAndOrganization(userId);
+  const data = await getUserAndTeam(userId);
 
   if (data.length === 0) {
     throw new AppError("Failed to get user data. Please sign in again", 400);
@@ -64,8 +64,8 @@ export const getMeService = async (userId: string) => {
       email: first.email,
       avatarId: first.avatarId!,
     },
-    organization: data.map((row) => ({
-      organizationName: row.organizationName,
+    teams: data.map((row) => ({
+      teamName: row.teamName,
       joiningStatus: row.joiningStatus,
     })),
   };
@@ -90,10 +90,5 @@ export const updateMeService = async (
     throw new AppError("Failed to update user. Please sign in again", 400);
   }
 
-  const sessionData = {
-    userId: updatedUser.userId,
-    email: updatedUser.email,
-  };
-
-  return sessionData;
+  return;
 };

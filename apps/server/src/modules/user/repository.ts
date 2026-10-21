@@ -1,6 +1,6 @@
 import { users } from "@repo/db/users";
-import { memberships } from "@repo/db/memberships";
-import { organizations } from "@repo/db/organizations";
+import { teamMemberships } from "@repo/db/memberships";
+import { teams } from "@repo/db/teams";
 import { initDb } from "@repo/db/client";
 import { eq, and, isNull } from "drizzle-orm";
 import { serverConfig } from "@repo/config/server";
@@ -36,7 +36,7 @@ export async function getUserByUsername(username: string) {
   return user;
 }
 
-export async function getUserAndOrganization(userId: string) {
+export async function getUserAndTeam(userId: string) {
   const result = await dbClient
     .select({
       username: users.username,
@@ -44,22 +44,22 @@ export async function getUserAndOrganization(userId: string) {
       lastname: users.lastName,
       email: users.email,
       avatarId: users.avatarId,
-      organizationName: organizations.name,
-      joiningStatus: memberships.accepted,
+      teamName: teams.name,
+      joiningStatus: teamMemberships.accepted,
     })
     .from(users)
-    .innerJoin(memberships, eq(memberships.userId, users.id))
-    .innerJoin(organizations, eq(memberships.organizationId, organizations.id))
-    .where(and(eq(users.id, userId), eq(memberships.role, "member")));
+    .innerJoin(teamMemberships, eq(teamMemberships.userId, users.id))
+    .innerJoin(teams, eq(teamMemberships.teamId, teams.id))
+    .where(and(eq(users.id, userId), eq(teamMemberships.role, "member")));
 
   return result;
 }
 
 export async function getUserRole(userId: string) {
   const [user] = await dbClient
-    .select({ role: memberships.role })
-    .from(memberships)
-    .where(eq(memberships.userId, userId));
+    .select({ role: teamMemberships.role })
+    .from(teamMemberships)
+    .where(eq(teamMemberships.userId, userId));
   return user;
 }
 
@@ -114,8 +114,7 @@ export async function updateUser(
     })
     .where(eq(users.id, userId))
     .returning({
-      userId: users.id,
-      email: users.email,
+      id: users.id,
     });
 
   return user;

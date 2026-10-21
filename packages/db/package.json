@@ -22,6 +22,10 @@
       "types": "./src/db/memberships.ts",
       "default": "./src/db/memberships.ts"
     },
+    "./teams": {
+      "types": "./src/db/teams.ts",
+      "default": "./src/db/teams.ts"
+    },
     "./boards": {
       "types": "./src/db/boards.ts",
       "default": "./src/db/boards.ts"

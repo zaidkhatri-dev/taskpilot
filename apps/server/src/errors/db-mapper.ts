@@ -7,7 +7,7 @@ import {
   TITLE_LENGTH_CHECK,
   USERNAME_CHARS_CHECK,
   USERNAME_LENGTH_CHECK,
-  USER_ORG_IDX,
+  USER_TEAM_IDX,
 } from "@repo/db/constraints";
 
 // ─── Unique Constraint Messages (PG error code: 23505) ───────────────────────
@@ -19,8 +19,8 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
   users_username_key: "This username is already taken.",
   users_email_key: "An account with this email already exists.",
 
-  // membership (schema-defined uniqueIndex)
-  [USER_ORG_IDX]: "User is already a member of this organization.",
+  // team membership (schema-defined uniqueIndex)
+  [USER_TEAM_IDX]: "User is already a member of this team.",
 };
 
 // ─── Foreign Key Constraint Messages (PG error code: 23503) ──────────────────
@@ -28,30 +28,47 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
 // Scenario B: Delete — child records block deletion (onDelete: "restrict")
 
 const FOREIGN_KEY_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
-  // boards → organizations (onDelete: cascade — parent missing on insert)
-  boards_organization_id_fkey: "The specified organization does not exist.",
+  // organizations → users (onDelete: restrict — blocks deletion of user who is an admin)
+  organizations_admin_id_users_id_fkey: "The specified user does not exist.",
+
+  // teams → organizations (onDelete: cascade — parent missing on insert)
+  teams_organization_id_organizations_id_fkey:
+    "The specified organization does not exist.",
+
+  // boards → teams (onDelete: cascade — parent missing on insert)
+  boards_team_id_teams_id_fkey: "The specified team does not exist.",
 
   // sections → boards (onDelete: cascade — parent missing on insert)
-  sections_board_id_fkey: "The specified board does not exist.",
+  sections_board_id_boards_id_fkey: "The specified board does not exist.",
 
-  // issues → sections (onDelete: restrict — blocks deletion of sections with issues)
-  issues_section_id_fkey:
-    "Cannot delete this section because it still contains issues.",
+  // issues → sections (onDelete: cascade — parent missing on insert)
+  issues_section_id_sections_id_fkey: "The specified section does not exist.",
 
   // issues → users (onDelete: set null — assignee missing on insert)
-  issues_assigned_to_id_fkey: "The specified user to assign does not exist.",
+  issues_assigned_to_id_users_id_fkey:
+    "The specified user to assign does not exist.",
 
   // comments → users (onDelete: cascade — parent missing on insert)
-  comments_commented_by_id_fkey: "The user who commented could not be found.",
+  comments_commented_by_users_id_fkey:
+    "The user who commented could not be found.",
 
   // comments → issues (onDelete: cascade — parent missing on insert)
-  comments_issue_id_fkey: "The specified issue does not exist.",
+  comments_issue_id_issues_id_fkey: "The specified issue does not exist.",
 
   // membership → users (onDelete: cascade — parent missing on insert)
-  membership_user_id_fkey: "The specified user account does not exist.",
+  team_memberships_user_id_users_id_fkey:
+    "The specified user account does not exist.",
 
   // membership → organizations (onDelete: cascade — parent missing on insert)
-  membership_organization_id_fkey: "The specified organization does not exist.",
+  team_memberships_team_id_teams_id_fkey: "The specified team does not exist.",
+};
+
+// ─── Restrict Constraint Messages (PG error code: 23001) ──────────────────────
+
+const RESTRICT_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
+  // organizations → users (onDelete: restrict — blocks deletion of user who is an admin)
+  organizations_admin_id_users_id_fkey:
+    "Cannot delete this user because they are an admin of an organization.",
 };
 
 // ─── Check Constraint Messages (PG error code: 23514) ────────────────────────
@@ -79,11 +96,14 @@ const NOT_NULL_COLUMN_MESSAGES: Readonly<Record<string, string>> = {
   // users
   email: "Email address is required.",
 
-  // boards
+  // organizations
+  admin_id: "Admin is required.",
+
+  // teams
   organization_id: "Organization is required.",
 
-  // sections
-  board_id: "Board is required.",
+  // boards
+  team_id: "Team is required.",
   title: "Title is required.",
   position: "Position is required.",
 
@@ -96,7 +116,7 @@ const NOT_NULL_COLUMN_MESSAGES: Readonly<Record<string, string>> = {
   commented_by_id: "Author information is required.",
   issue_id: "Issue reference is required.",
 
-  // membership
+  // team memberships
   user_id: "User reference is required.",
   role: "Member role is required.",
 };
@@ -187,9 +207,11 @@ export const dbErrorMapper = (err: DatabaseError): ErrorMapper => {
 
     // Restrict violation (triggered by onDelete: "restrict")
     case "23001": {
+      const message =
+        (err.constraint && RESTRICT_CONSTRAINT_MESSAGES[err.constraint]) ||
+        "Cannot delete this resource because it is referenced by other records.";
       return {
-        message:
-          "Cannot delete this resource because it is referenced by other records.",
+        message,
         statusCode: 409,
       };
     }
@@ -235,4 +257,3 @@ export const dbErrorMapper = (err: DatabaseError): ErrorMapper => {
       };
   }
 };
-

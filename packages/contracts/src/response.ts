@@ -50,8 +50,8 @@ export interface GetMeResponse extends BaseResponse {
       email: string;
       avatarId: AvatarIds;
     };
-    organization: Array<{
-      organizationName: string;
+    teams: Array<{
+      teamName: string;
       joiningStatus: boolean;
     }>;
   };

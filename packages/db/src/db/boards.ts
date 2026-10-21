@@ -2,7 +2,7 @@ import { pgTable, check } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";
-import { organizations } from "./organizations.js";
+import { teams } from "./teams.js";
 import { NAME_LENGTH_CHECK } from "../constraints.js";
 
 export const boards = pgTable(
@@ -13,9 +13,9 @@ export const boards = pgTable(
       .default(sql`uuidv7()`),
     name: text("title").notNull(),
     description: text("description"),
-    organizationId: uuid("organization_id")
+    teamId: uuid("team_id")
       .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
+      .references(() => teams.id, { onDelete: "cascade" }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },

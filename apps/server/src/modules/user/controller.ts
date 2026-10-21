@@ -114,21 +114,7 @@ export const updateMeController = async (
     const { username, avatarId, firstName, lastName } =
       req.body as GetTypeFromSchema<typeof updateMeSchema>;
 
-    const user = await updateMeService(
-      userId,
-      username,
-      avatarId,
-      firstName,
-      lastName,
-    );
-
-    await regenerateSession(req);
-
-    req.session.userId = user.userId;
-    req.session.email = user.email;
-    req.session.isUserOnboarded = req.session.isUserOnboarded;
-
-    await saveSession(req);
+    await updateMeService(userId, username, avatarId, firstName, lastName);
 
     const response: DefaultResponse = {
       success: true,
