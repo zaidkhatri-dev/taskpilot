@@ -119,3 +119,13 @@ export async function updateUser(
 
   return user;
 }
+
+export async function getUserOrganizationStatus(userId: string) {
+  const [row] = await dbClient
+    .select({ membershipId: teamMemberships.id })
+    .from(teamMemberships)
+    .where(eq(teamMemberships.userId, userId))
+    .limit(1);
+
+  return { hasOrganization: !!row };
+}

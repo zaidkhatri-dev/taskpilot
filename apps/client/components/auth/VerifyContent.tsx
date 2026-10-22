@@ -84,7 +84,7 @@ export default function VerifyContent() {
         <div className="flex flex-col items-center gap-2">
           <XCircleIcon className="size-15 text-destructive" />
           <p className="text-sm font-medium text-destructive">{errorMessage}</p>
-          <p className="text-sm font-medium text-destructive">
+          <p className="text-sm font-medium text-destructive mb-3">
             Request a new sign in link to continue
           </p>
           <Link href="/signin">

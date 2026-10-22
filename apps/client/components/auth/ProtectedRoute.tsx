@@ -8,11 +8,13 @@ import Image from "next/image";
 type ProtectedRouteProps = {
   children: ReactNode;
   requireOnboarding: boolean;
+  requireOrganization: boolean;
 };
 
 export default function ProtectedRoute({
   children,
   requireOnboarding,
+  requireOrganization,
 }: ProtectedRouteProps) {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
@@ -32,13 +34,25 @@ export default function ProtectedRoute({
 
       const isOnboarded = session.data.isUserOnboarded;
 
-      if (requireOnboarding && isOnboarded) {
+      if (requireOnboarding && !isOnboarded) {
+        router.replace("/onboarding");
+        return;
+      }
+
+      if (!requireOnboarding && isOnboarded) {
         router.replace("/workspace");
         return;
       }
 
-      if (!requireOnboarding && !isOnboarded) {
-        router.replace("/onboarding");
+      const hasOrganization = session.data.hasOrganization;
+
+      if (requireOrganization && !hasOrganization) {
+        router.replace("/create-organization");
+        return;
+      }
+
+      if (!requireOrganization && hasOrganization) {
+        router.replace("/workspace");
         return;
       }
 
@@ -52,7 +66,7 @@ export default function ProtectedRoute({
     return () => {
       cancelled = true;
     };
-  }, [router, requireOnboarding]);
+  }, [router, requireOnboarding, requireOrganization]);
 
   if (!authorized) {
     return (

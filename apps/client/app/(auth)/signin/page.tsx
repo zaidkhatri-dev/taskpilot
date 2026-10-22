@@ -13,7 +13,7 @@ export default function Signin() {
   useEffect(() => {
     if (!state) return;
 
-    if (state.path) return;
+    if (state.errors?.length) return;
 
     if (state.success) {
       toast.add({
@@ -43,9 +43,10 @@ export default function Signin() {
           <SignInForm
             formAction={formAction}
             isPending={isPending}
-            errorPath={state?.path || null}
+            errorPath={state?.errors || null}
             errorMsg={state?.message || ""}
             values={state?.values || {}}
+            isSuccess={state?.success}
           />
         </div>
         <Toaster />

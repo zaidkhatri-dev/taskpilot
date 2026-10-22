@@ -4,7 +4,7 @@ import {
   checkUsernameAvailabilitySchema,
   onboardingSchema,
   updateMeSchema,
-} from "@repo/validation/auth";
+} from "@repo/validation/user";
 import {
   onboardingService,
   checkUsernameAvailabilityService,

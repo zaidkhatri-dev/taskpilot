@@ -1,26 +1,36 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import type { FormActionResponse } from "@repo/contracts/response";
+import { FieldError } from "@/components/ui/field";
+import type { FieldError as FieldErrorType } from "@repo/contracts/response";
 
 interface ProfileCardProps {
   formAction: (formData: FormData) => void;
   isPending: boolean;
-  errorPath: FormActionResponse["path"];
+  errorPath: FieldErrorType[] | null;
   errorMsg: string;
   values: Record<string, unknown>;
+}
+
+function getFieldError(
+  errors: FieldErrorType[] | null,
+  path: string,
+): string | undefined {
+  return errors?.find((e) => e.path === path)?.message;
 }
 
 export default function ProfileCard({
   formAction,
   isPending,
-  errorPath,
-  errorMsg,
+  errorPath: errors,
   values,
 }: ProfileCardProps) {
+  const [isActive, setIsActive] = useState(false);
+
   const avatarId = values?.avatarId ? String(values.avatarId) : "avatar_01";
   const avatarSrc = `/avatars/${avatarId}.svg`;
   const firstName = values?.firstName ? String(values.firstName) : "";
@@ -28,13 +38,19 @@ export default function ProfileCard({
   const initials =
     `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase() || "UN";
 
+  const firstNameError = getFieldError(errors, "firstName");
+  const lastNameError = getFieldError(errors, "lastName");
+  const usernameError = getFieldError(errors, "username");
+
   return (
     <form noValidate action={formAction}>
       <Card className="w-full max-w-2xl border-0 shadow-none bg-card/50 py-0">
         <CardContent className="px-6 py-2 divide-y divide-border">
           {/* Avatar */}
           <div className="flex h-14 items-center justify-between">
-            <Label className="text-sm font-normal text-foreground">Avatar</Label>
+            <Label className="text-sm font-normal text-foreground">
+              Avatar
+            </Label>
             <Avatar className="h-9 w-9">
               <AvatarImage
                 src={avatarSrc}
@@ -63,20 +79,21 @@ export default function ProfileCard({
             </Label>
             <div className="flex flex-col items-end gap-1 max-w-xs w-full">
               <Input
+                data-invalid={!!firstNameError}
                 name="firstName"
                 key={firstName}
                 defaultValue={firstName}
-                aria-invalid={errorPath === "firstName"}
+                aria-invalid={!!firstNameError}
                 aria-describedby={
-                  errorPath === "firstName" ? "firstName-error" : undefined
+                  firstNameError ? "firstName-error" : "firstName-desc"
                 }
                 className="max-w-xs"
               />
-              {errorPath === "firstName" && (
-                <p id="firstName-error" className="text-sm text-destructive">
-                  {errorMsg}
-                </p>
-              )}
+              <div className="min-h-10">
+                {firstNameError && (
+                  <FieldError id="firstName-error">{firstNameError}</FieldError>
+                )}
+              </div>
             </div>
           </div>
 
@@ -87,20 +104,21 @@ export default function ProfileCard({
             </Label>
             <div className="flex flex-col items-end gap-1 max-w-xs w-full">
               <Input
+                data-invalid={!!lastNameError}
                 name="lastName"
                 key={lastName}
                 defaultValue={lastName}
-                aria-invalid={errorPath === "lastName"}
+                aria-invalid={!!lastNameError}
                 aria-describedby={
-                  errorPath === "lastName" ? "lastName-error" : undefined
+                  lastNameError ? "lastName-error" : "lastName-desc"
                 }
                 className="max-w-xs"
               />
-              {errorPath === "lastName" && (
-                <p id="lastName-error" className="text-sm text-destructive">
-                  {errorMsg}
-                </p>
-              )}
+              <div className="min-h-10">
+                {lastNameError && (
+                  <FieldError id="lastName-error">{lastNameError}</FieldError>
+                )}
+              </div>
             </div>
           </div>
 
@@ -114,16 +132,16 @@ export default function ProfileCard({
                 name="username"
                 key={values?.username ? String(values.username) : ""}
                 defaultValue={values?.username ? String(values.username) : ""}
-                aria-invalid={errorPath === "username"}
+                onFocus={() => setIsActive(true)}
+                onBlur={() => setIsActive(false)}
+                aria-invalid={isActive && !!usernameError}
                 aria-describedby={
-                  errorPath === "username" ? "username-error" : undefined
+                  isActive && usernameError ? "username-error" : undefined
                 }
                 className="max-w-xs"
               />
-              {errorPath === "username" && (
-                <p id="username-error" className="text-sm text-destructive">
-                  {errorMsg}
-                </p>
+              {isActive && usernameError && (
+                <FieldError id="username-error">{usernameError}</FieldError>
               )}
             </div>
           </div>

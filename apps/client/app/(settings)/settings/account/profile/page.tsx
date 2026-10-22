@@ -32,7 +32,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!state) return;
 
-    if (state.path) return;
+    if (state.errors?.length) return;
 
     if (state.success) {
       toast.add({
@@ -57,7 +57,7 @@ export default function ProfilePage() {
         <ProfileCard
           formAction={formAction}
           isPending={isPending}
-          errorPath={state?.path || null}
+          errorPath={state?.errors || null}
           errorMsg={state?.message || ""}
           values={state?.values || initialValues}
         />

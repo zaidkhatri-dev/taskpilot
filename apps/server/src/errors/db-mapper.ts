@@ -8,6 +8,8 @@ import {
   USERNAME_CHARS_CHECK,
   USERNAME_LENGTH_CHECK,
   USER_TEAM_IDX,
+  FIRST_NAME_LENGTH_CHECK,
+  LAST_NAME_LENGTH_CHECK,
 } from "@repo/db/constraints";
 
 // ─── Unique Constraint Messages (PG error code: 23505) ───────────────────────
@@ -88,6 +90,9 @@ const CHECK_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
 
   // comments (schema-defined name)
   [CONTENT_NOT_EMPTY]: "Comment content cannot be empty or blank.",
+
+  [FIRST_NAME_LENGTH_CHECK]: "First name must be between 1 and 50 characters.",
+  [LAST_NAME_LENGTH_CHECK]: "Last name must be between 1 and 50 characters.",
 };
 
 // ─── Not-Null Constraint Column Messages (PG error code: 23502) ──────────────

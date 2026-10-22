@@ -2,9 +2,9 @@
 
 import {
   generateMagicLinkSchema,
-  onboardingSchema,
   verifyMagicLinkSchema,
 } from "@repo/validation/auth";
+import { onboardingSchema } from "@repo/validation/user";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
 import type {
@@ -12,7 +12,8 @@ import type {
   DefaultResponse,
   UserOnboardedResponse,
 } from "@repo/contracts/response";
-import { handleNetworkError, handleUnauthorizedAccess } from "../utils/error";
+import { handleUnauthorizedAccess } from "../utils/error";
+import { handleNetworkError } from "../utils/network";
 import { forwardCookieFromServerToBrowser, getCookie } from "../utils/cookie";
 
 export async function generateLink(
@@ -45,11 +46,11 @@ export async function generateLink(
 
     return {
       ...data,
-      path: null,
+      errors: null,
       values: objFormData,
     };
   } catch (error) {
-    return handleNetworkError(error);
+    return handleNetworkError(error, objFormData);
   }
 }
 
@@ -87,7 +88,7 @@ export async function verifyLink(token: string) {
 
     return {
       ...data,
-      path: null,
+      errors: null,
       values: null,
     };
   } catch (error) {
@@ -133,17 +134,17 @@ export async function completeOnboarding(
 
     return {
       ...data,
-      path: null,
+      errors: null,
       values: objFormData,
     };
   } catch (error) {
-    return handleNetworkError(error);
+    return handleNetworkError(error, objFormData);
   }
 }
 
 export async function getSession(): Promise<{
   ok: boolean;
-  data: { isUserOnboarded: boolean } | null;
+  data: UserOnboardedResponse["data"] | null;
 }> {
   try {
     const response = await fetch(

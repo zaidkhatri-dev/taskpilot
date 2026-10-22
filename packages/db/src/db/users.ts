@@ -4,6 +4,8 @@ import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";
 import {
   EMAIL_FORMAT_CHECK,
+  FIRST_NAME_LENGTH_CHECK,
+  LAST_NAME_LENGTH_CHECK,
   USERNAME_CHARS_CHECK,
   USERNAME_LENGTH_CHECK,
 } from "../constraints.js";
@@ -58,6 +60,14 @@ export const users = pgTable(
     check(
       USERNAME_LENGTH_CHECK,
       sql`length(${table.username}) between 1 and 30`,
+    ),
+    check(
+      FIRST_NAME_LENGTH_CHECK,
+      sql`length(${table.firstName}) between 1 and 50`,
+    ),
+    check(
+      LAST_NAME_LENGTH_CHECK,
+      sql`length(${table.lastName}) between 1 and 50`,
     ),
   ],
 );

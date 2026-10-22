@@ -10,6 +10,7 @@ export interface DefaultResponse extends BaseResponse {
 export interface UserOnboardedResponse extends BaseResponse {
   data: {
     isUserOnboarded: boolean;
+    hasOrganization: boolean;
   };
 }
 
@@ -57,10 +58,15 @@ export interface GetMeResponse extends BaseResponse {
   };
 }
 
+export interface FieldError {
+  path: string;
+  message: string;
+}
+
 export interface FormActionResponse {
   success: boolean;
   message: string;
-  path: string | null;
+  errors: FieldError[] | null;
   values: Record<string, unknown> | null;
   data: Record<string, unknown> | null;
 }

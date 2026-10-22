@@ -6,6 +6,7 @@ import {
   delKey,
   getUserByEmail,
   createUser,
+  getUserOrganizationStatus,
 } from "./repository.js";
 import { getEmailQueue } from "@repo/email/queue";
 import { serverConfig } from "@repo/config/server";
@@ -80,6 +81,7 @@ export const verifyMagicLinkService = async (rawToken: string) => {
       userId: user.userId,
       email: user.email,
       isUserOnboarded: false,
+      hasOrganization: false,
     };
   } else if (
     !fetchedUser.avatarId &&
@@ -91,12 +93,15 @@ export const verifyMagicLinkService = async (rawToken: string) => {
       userId: fetchedUser.userId,
       email: fetchedUser.email,
       isUserOnboarded: false,
+      hasOrganization: false,
     };
   } else {
+    const orgStatus = await getUserOrganizationStatus(fetchedUser.userId);
     sessionData = {
       userId: fetchedUser.userId,
       email: fetchedUser.email,
       isUserOnboarded: true,
+      hasOrganization: orgStatus.hasOrganization,
     };
   }
 

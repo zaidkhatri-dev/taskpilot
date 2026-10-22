@@ -18,7 +18,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (!state) return;
 
-    if (state.path) return;
+    if (state.errors?.length) return;
 
     if (state.success) {
       toast.add({
@@ -37,17 +37,16 @@ export default function OnboardingPage() {
   }, [state, router]);
 
   return (
-    <ProtectedRoute requireOnboarding={true}>
-      <div className="flex min-h-screen justify-center items-center">
-        <OnboardingForm
-          formAction={formAction}
-          isPending={isPending}
-          errorPath={state?.path || null}
-          errorMsg={state?.message || ""}
-          values={state?.values || {}}
-        />
-        <Toaster />
-      </div>
-    </ProtectedRoute>
+    // <ProtectedRoute requireOnboarding={false} requireOrganization={false}>
+    <div className="flex min-h-screen justify-center items-center">
+      <OnboardingForm
+        formAction={formAction}
+        isPending={isPending}
+        errorPath={state?.errors || null}
+        errorMsg={state?.message || ""}
+        values={state?.values || {}}/>
+      <Toaster />
+    </div>
+    // </ProtectedRoute>
   );
 }

@@ -11,26 +11,43 @@ export const requireAuth = (
     throw new AppError("Unauthorized access", 401);
   }
 
-  if (req.session.isUserOnboarded && req.url.includes("/onboarding")) {
+  const isOnboarding = req.url.includes("/onboarding") && req.method === "POST";
+  if (req.session.isUserOnboarded && isOnboarding) {
     const response: UserOnboardedResponse = {
       success: false,
       message: "You have already completed onboarding",
       data: {
         isUserOnboarded: true,
+        hasOrganization: req.session.hasOrganization!,
       },
     };
 
     return res.status(403).json(response);
   }
 
-  if (!req.session.isUserOnboarded && !req.url.includes("/onboarding")) {
+  if (!req.session.isUserOnboarded && !isOnboarding) {
     const response: UserOnboardedResponse = {
       success: false,
       message: "Please complete onboarding before proceeding",
       data: {
         isUserOnboarded: false,
+        hasOrganization: req.session.hasOrganization!,
       },
     };
+
+    if (
+      req.session.isUserOnboarded &&
+      !req.session.hasOrganization &&
+      !req.url.includes("/organization")
+    ) {
+      const response: UserOnboardedResponse = {
+        success: false,
+        message: "You must be part of an organization to proceed",
+        data: { isUserOnboarded: true, hasOrganization: false },
+      };
+
+      return res.status(403).json(response);
+    }
 
     return res.status(403).json(response);
   }

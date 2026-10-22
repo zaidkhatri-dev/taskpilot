@@ -5,6 +5,14 @@
     "./auth": {
       "types": "./src/auth.ts",
       "default": "./dist/auth.js"
+    },
+    "./organization": {
+      "types": "./src/organization.ts",
+      "default": "./dist/organization.js"
+    },
+    "./user": {
+      "types": "./src/user.ts",
+      "default": "./dist/user.js"
     }
   },
   "scripts": {

@@ -55,6 +55,7 @@ export const verifyMagicLinkController = async (
     req.session.userId = sessionData.userId;
     req.session.email = sessionData.email;
     req.session.isUserOnboarded = sessionData.isUserOnboarded;
+    req.session.hasOrganization = sessionData.hasOrganization;
 
     await saveSession(req);
 
@@ -63,6 +64,7 @@ export const verifyMagicLinkController = async (
       message: "Securely Signed In!",
       data: {
         isUserOnboarded: sessionData.isUserOnboarded,
+        hasOrganization: sessionData.hasOrganization,
       },
     };
 
@@ -78,13 +80,14 @@ export const sessionController = (
   next: NextFunction,
 ) => {
   try {
-    const { isUserOnboarded } = req.session;
+    const { isUserOnboarded, hasOrganization } = req.session;
 
     const response: UserOnboardedResponse = {
       success: true,
       message: "Session retrieved successfully",
       data: {
         isUserOnboarded: isUserOnboarded!,
+        hasOrganization: hasOrganization!,
       },
     };
     res.status(200).json(response);

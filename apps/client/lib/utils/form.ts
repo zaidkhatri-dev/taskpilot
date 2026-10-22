@@ -8,11 +8,15 @@ export function validateAction(
   const result = schema.safeParse(formData);
 
   if (!result.success) {
+    const errors = result.error.issues.map((issue) => ({
+      path: issue.path.join("."),
+      message: issue.message,
+    }));
+
     return {
       success: false,
-      path: result.error.issues[0]?.path.join(".") ?? "",
-      message:
-        result.error.issues[0]?.message || "The provided input is invalid",
+      message: errors[0]?.message || "The provided input is invalid",
+      errors,
       data: null,
       values: formData,
     };
@@ -20,8 +24,8 @@ export function validateAction(
 
   return {
     success: true,
-    path: null,
     message: "Validation successful",
+    errors: null,
     data: result.data,
     values: formData,
   };

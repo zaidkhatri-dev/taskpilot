@@ -9,25 +9,34 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { useState } from "react";
-import type { FormActionResponse } from "@repo/contracts/response";
+import { useEffect, useState } from "react";
+import type { FieldError as FieldErrorType } from "@repo/contracts/response";
 
 interface SignInFormProps {
   formAction: (formData: FormData) => void;
   isPending: boolean;
-  errorPath: FormActionResponse["path"];
+  errorPath: FieldErrorType[] | null;
   errorMsg: string;
   values: Record<string, unknown>;
+  isSuccess?: boolean;
 }
 
 export default function SignInForm({
   formAction,
   isPending,
-  errorPath,
+  errorPath: errors,
   errorMsg,
   values,
+  isSuccess,
 }: SignInFormProps) {
   const [emailCount, setEmailCount] = useState(0);
+  const emailError = errors?.find((e) => e.path === "email")?.message;
+
+  useEffect(() => {
+    if (isSuccess) {
+      setEmailCount((prev) => prev + 1);
+    }
+  }, [isSuccess]);
 
   return (
     <form noValidate className="w-full max-w-xs" action={formAction}>
@@ -37,34 +46,28 @@ export default function SignInForm({
         </FieldLegend>
 
         <FieldGroup>
-          <Field>
+          <Field data-invalid={!!emailError}>
             <Input
               type="email"
               name="email"
               required
               placeholder="name@example.com"
-              aria-invalid={errorPath === "email"}
               defaultValue={values?.email ? String(values.email) : ""}
-              aria-describedby={
-                errorPath === "email" ? "email-error" : "email-desc"
-              }
+              aria-invalid={!!emailError}
+              aria-describedby={emailError ? "email-error" : "email-desc"}
             />
-            {errorPath === "email" ? (
-              <FieldError id="email-error">{errorMsg}</FieldError>
-            ) : (
-              <FieldDescription id="email-desc">
-                We&apos;ll send an email with a one-time secure link to sign in.
-              </FieldDescription>
-            )}
+            <div className="min-h-10">
+              {emailError ? (
+                <FieldError id="email-error">{emailError}</FieldError>
+              ) : (
+                <FieldDescription id="email-desc">
+                  We'll send an email with a one-time secure link to sign in.
+                </FieldDescription>
+              )}
+            </div>
           </Field>
           <Field>
-            <Button
-              type="submit"
-              disabled={isPending}
-              onClick={() =>
-                errorPath !== "email" && setEmailCount(emailCount + 1)
-              }
-            >
+            <Button type="submit" disabled={isPending}>
               {isPending && <Spinner data-icon="inline-start" />}
               {isPending
                 ? "Sending email"

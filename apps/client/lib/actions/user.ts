@@ -1,11 +1,12 @@
 "use server";
 
-import { updateMeSchema } from "@repo/validation/auth";
+import { updateMeSchema } from "@repo/validation/user";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
 import type { DefaultResponse, GetMeResponse } from "@repo/contracts/response";
 import type { FormActionResponse } from "@repo/contracts/response";
-import { handleNetworkError, handleUnauthorizedAccess } from "../utils/error";
+import { handleUnauthorizedAccess } from "../utils/error";
+import { handleNetworkError } from "../utils/network";
 import { forwardCookieFromServerToBrowser, getCookie } from "../utils/cookie";
 
 export async function getMe(): Promise<{
@@ -74,10 +75,10 @@ export async function updateMe(
 
     return {
       ...data,
-      path: null,
+      errors: null,
       values: objFormData,
     };
   } catch (error) {
-    return handleNetworkError(error);
+    return handleNetworkError(error, objFormData);
   }
 }

@@ -3,7 +3,7 @@ import {
   checkUsernameAvailabilitySchema,
   onboardingSchema,
   updateMeSchema,
-} from "@repo/validation/auth";
+} from "@repo/validation/user";
 import { Router } from "express";
 import {
   checkUsernameAvailabilityController,

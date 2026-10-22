@@ -1,0 +1,2 @@
+ALTER TABLE "users" ADD CONSTRAINT "first_name_length_check" CHECK (length("first_name") between 1 and 50);--> statement-breakpoint
+ALTER TABLE "users" ADD CONSTRAINT "last_name_length_check" CHECK (length("last_name") between 1 and 50);
