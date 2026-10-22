@@ -43,7 +43,7 @@ export default function AvatarDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
-          <Button className="mx-auto w-50" variant="outline">
+          <Button className="mx-auto w-38" variant="outline">
             <PencilIcon data-icon="inline-start" /> Select Avatar
           </Button>
         }

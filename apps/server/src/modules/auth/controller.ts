@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import type { GetTypeFromSchema } from "../../types/validation.js";
+import type { GetTypeFromSchema } from "@/types/validation.js";
 import {
   generateMagicLinkSchema,
   verifyMagicLinkSchema,
@@ -56,6 +56,7 @@ export const verifyMagicLinkController = async (
     req.session.email = sessionData.email;
     req.session.isUserOnboarded = sessionData.isUserOnboarded;
     req.session.hasOrganization = sessionData.hasOrganization;
+    req.session.isOrganizationAdmin = false;
 
     await saveSession(req);
 

@@ -57,16 +57,3 @@ export interface GetMeResponse extends BaseResponse {
     }>;
   };
 }
-
-export interface FieldError {
-  path: string;
-  message: string;
-}
-
-export interface FormActionResponse {
-  success: boolean;
-  message: string;
-  errors: FieldError[] | null;
-  values: Record<string, unknown> | null;
-  data: Record<string, unknown> | null;
-}

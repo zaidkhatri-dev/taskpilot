@@ -1,5 +1,5 @@
 import { initRedis } from "@repo/redis/client";
-import type { MagicLinkPayload } from "../../types/redis.js";
+import type { MagicLinkPayload } from "@/types/redis.js";
 import { users } from "@repo/db/users";
 import { initDb } from "@repo/db/client";
 import { eq } from "drizzle-orm";

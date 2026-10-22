@@ -26,7 +26,7 @@ export default function OnboardingPage() {
         type: "success",
       });
 
-      router.replace("/workspace");
+      router.replace("/create-organization");
     } else {
       toast.add({
         description: state.message,
@@ -37,16 +37,16 @@ export default function OnboardingPage() {
   }, [state, router]);
 
   return (
-    // <ProtectedRoute requireOnboarding={false} requireOrganization={false}>
-    <div className="flex min-h-screen justify-center items-center">
-      <OnboardingForm
-        formAction={formAction}
-        isPending={isPending}
-        errorPath={state?.errors || null}
-        errorMsg={state?.message || ""}
-        values={state?.values || {}}/>
-      <Toaster />
-    </div>
-    // </ProtectedRoute>
+    <ProtectedRoute requireOnboarding={false} requireOrganization={false}>
+      <div className="flex min-h-screen justify-center items-center">
+        <OnboardingForm
+          formAction={formAction}
+          isPending={isPending}
+          fieldErrors={state?.errors || null}
+          values={state?.values || {}}
+        />
+        <Toaster />
+      </div>
+    </ProtectedRoute>
   );
 }

@@ -1,12 +1,13 @@
 {
-    "extends": "@repo/typescript-config/base.json",
-    "compilerOptions": {
-        "paths": {
-            "@/*": ["./src/*"],
-            "@middlewares/*": ["./src/middlewares/*"],
-            "@utils/*": ["./src/utils/*"],
-            "@errors/*": ["./src/errors/*"],
-            "@modules/*": ["./src/modules/*"]
-        }
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@errors/*": ["./src/errors/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@types/*": ["./src/types/*"]
     }
+  }
 }

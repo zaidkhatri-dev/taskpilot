@@ -10,13 +10,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useEffect, useState } from "react";
-import type { FieldError as FieldErrorType } from "@repo/contracts/response";
+import type { FieldError as FieldErrorType } from "@/types/form";
+import { getFieldError } from "@/lib/utils/form";
 
 interface SignInFormProps {
   formAction: (formData: FormData) => void;
   isPending: boolean;
-  errorPath: FieldErrorType[] | null;
-  errorMsg: string;
+  fieldErrors: FieldErrorType[] | null;
   values: Record<string, unknown>;
   isSuccess?: boolean;
 }
@@ -24,13 +24,12 @@ interface SignInFormProps {
 export default function SignInForm({
   formAction,
   isPending,
-  errorPath: errors,
-  errorMsg,
+  fieldErrors,
   values,
   isSuccess,
 }: SignInFormProps) {
   const [emailCount, setEmailCount] = useState(0);
-  const emailError = errors?.find((e) => e.path === "email")?.message;
+  const emailError = getFieldError(fieldErrors, "email");
 
   useEffect(() => {
     if (isSuccess) {
@@ -51,7 +50,6 @@ export default function SignInForm({
               type="email"
               name="email"
               required
-              placeholder="name@example.com"
               defaultValue={values?.email ? String(values.email) : ""}
               aria-invalid={!!emailError}
               aria-describedby={emailError ? "email-error" : "email-desc"}

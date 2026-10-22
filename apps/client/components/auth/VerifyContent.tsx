@@ -39,8 +39,15 @@ export default function VerifyContent() {
           setVerificationState("verified");
 
           const isOnboarded = result.data?.isUserOnboarded;
+          const hasOrganization = result.data?.hasOrganization;
 
-          router.replace(isOnboarded ? "/workspace" : "/onboarding");
+          router.replace(
+            isOnboarded
+              ? hasOrganization
+                ? "/workspace"
+                : "/create-organization"
+              : "/onboarding",
+          );
         } else {
           setVerificationState("failed");
           setErrorMessage(result.message);

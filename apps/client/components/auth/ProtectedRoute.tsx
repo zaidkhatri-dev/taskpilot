@@ -40,7 +40,7 @@ export default function ProtectedRoute({
       }
 
       if (!requireOnboarding && isOnboarded) {
-        router.replace("/workspace");
+        router.replace("/create-organization");
         return;
       }
 

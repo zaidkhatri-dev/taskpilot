@@ -8,18 +8,18 @@ import { onboardingSchema } from "@repo/validation/user";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
 import type {
-  FormActionResponse,
   DefaultResponse,
   UserOnboardedResponse,
 } from "@repo/contracts/response";
 import { handleUnauthorizedAccess } from "../utils/error";
 import { handleNetworkError } from "../utils/network";
 import { forwardCookieFromServerToBrowser, getCookie } from "../utils/cookie";
+import type { FormActionState } from "@/types/form";
 
 export async function generateLink(
-  prevState: FormActionResponse | null,
+  prevState: FormActionState | null,
   formData: FormData,
-): Promise<FormActionResponse> {
+): Promise<FormActionState> {
   const objFormData = cleanFormData(formData);
 
   const result = validateAction(objFormData, generateMagicLinkSchema);
@@ -97,9 +97,9 @@ export async function verifyLink(token: string) {
 }
 
 export async function completeOnboarding(
-  prevState: FormActionResponse | null,
+  prevState: FormActionState | null,
   formData: FormData,
-): Promise<FormActionResponse> {
+): Promise<FormActionState> {
   const objFormData = cleanFormData(formData);
 
   const result = validateAction(objFormData, onboardingSchema);

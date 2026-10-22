@@ -9,40 +9,26 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import type { FieldError as FieldErrorType } from "@repo/contracts/response";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import type { FormProps } from "@/types/form";
 import { useState } from "react";
 import AvatarDialog from "@/components/auth/AvatarDialog";
-
-interface OnboardingFormProps {
-  formAction: (formData: FormData) => void;
-  isPending: boolean;
-  errorPath: FieldErrorType[] | null;
-  errorMsg: string;
-  values: Record<string, unknown>;
-}
-
-function getFieldError(
-  errors: FieldErrorType[] | null,
-  path: string,
-): string | undefined {
-  return errors?.find((e) => e.path === path)?.message;
-}
+import { getFieldError } from "@/lib/utils/form";
 
 export default function OnboardingForm({
   formAction,
   isPending,
-  errorPath: errors,
+  fieldErrors,
   values,
-}: OnboardingFormProps) {
+}: FormProps) {
   const [selected, setSelected] = useState<string>(
     values?.avatar ? String(values.avatar) : "avatar_01",
   );
 
-  const avatarIdError = getFieldError(errors, "avatarId");
-  const firstNameError = getFieldError(errors, "firstName");
-  const lastNameError = getFieldError(errors, "lastName");
-  const usernameError = getFieldError(errors, "username");
+  const avatarIdError = getFieldError(fieldErrors, "avatarId");
+  const firstNameError = getFieldError(fieldErrors, "firstName");
+  const lastNameError = getFieldError(fieldErrors, "lastName");
+  const usernameError = getFieldError(fieldErrors, "username");
 
   return (
     <form noValidate className="w-full max-w-sm" action={formAction}>
@@ -57,14 +43,22 @@ export default function OnboardingForm({
             height={175}
             loading="eager"
           />
-          <AvatarFallback>{selected || "avatar_01"}</AvatarFallback>
         </Avatar>
 
         <AvatarDialog selected={selected} setSelected={setSelected} />
 
         <FieldGroup>
           <Field data-invalid={!!avatarIdError}>
-            <Input type="hidden" name="avatarId" value={selected} required />
+            <Input
+              type="hidden"
+              name="avatarId"
+              value={selected}
+              required
+              aria-invalid={!!avatarIdError}
+              aria-describedby={
+                avatarIdError ? "avatarId-error" : "avatarId-desc"
+              }
+            />
             <div className="min-h-6">
               {avatarIdError ? (
                 <FieldError id="avatarId-error">{avatarIdError}</FieldError>
@@ -86,13 +80,18 @@ export default function OnboardingForm({
                 required
                 autoComplete="given-name"
                 defaultValue={values?.firstName ? String(values.firstName) : ""}
+                aria-invalid={!!firstNameError}
                 aria-describedby={
                   firstNameError ? "firstName-error" : "firstName-desc"
                 }
               />
               <div className="min-h-10">
-                {firstNameError && (
+                {firstNameError ? (
                   <FieldError id="firstName-error">{firstNameError}</FieldError>
+                ) : (
+                  <FieldDescription id="firstName-desc">
+                    Enter your name
+                  </FieldDescription>
                 )}
               </div>
             </Field>
@@ -106,13 +105,18 @@ export default function OnboardingForm({
                 required
                 autoComplete="family-name"
                 defaultValue={values?.lastName ? String(values.lastName) : ""}
+                aria-invalid={!!lastNameError}
                 aria-describedby={
                   lastNameError ? "lastName-error" : "lastName-desc"
                 }
               />
               <div className="min-h-10">
-                {lastNameError && (
+                {lastNameError ? (
                   <FieldError id="lastName-error">{lastNameError}</FieldError>
+                ) : (
+                  <FieldDescription id="lastName-desc">
+                    Enter your surname
+                  </FieldDescription>
                 )}
               </div>
             </Field>
@@ -127,13 +131,18 @@ export default function OnboardingForm({
               required
               autoComplete="off"
               defaultValue={values?.username ? String(values.username) : ""}
+              aria-invalid={!!usernameError}
               aria-describedby={
                 usernameError ? "username-error" : "username-desc"
               }
             />
             <div className="min-h-6">
-              {usernameError && (
+              {usernameError ? (
                 <FieldError id="username-error">{usernameError}</FieldError>
+              ) : (
+                <FieldDescription id="username-desc">
+                  Choose a unique username
+                </FieldDescription>
               )}
             </div>
           </Field>

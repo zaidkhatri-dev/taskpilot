@@ -8,6 +8,7 @@ import cors from "cors";
 import { serverConfig } from "@repo/config/server";
 import authRoutes from "@modules/auth/routes.js";
 import userRoutes from "@modules/user/routes.js";
+import organizationRoutes from "@modules/organization/routes.js";
 import { requireAuth } from "@middlewares/auth.js";
 
 const app: Express = express();
@@ -43,6 +44,7 @@ app.use(`${API_PREFIX}/auth`, authRoutes);
 
 app.use(requireAuth);
 app.use(`${API_PREFIX}/user`, userRoutes);
+app.use(`${API_PREFIX}/organization`, organizationRoutes);
 
 app.use(globalErrorHandler);
 

@@ -43,8 +43,7 @@ export default function Signin() {
           <SignInForm
             formAction={formAction}
             isPending={isPending}
-            errorPath={state?.errors || null}
-            errorMsg={state?.message || ""}
+            fieldErrors={state?.errors || null}
             values={state?.values || {}}
             isSuccess={state?.success}
           />

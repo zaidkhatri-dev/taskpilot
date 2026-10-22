@@ -1,10 +1,9 @@
 import { ZodObject } from "zod";
-import { FormActionResponse } from "@repo/contracts/response";
-
+import type { FieldError, FormActionState } from "@/types/form";
 export function validateAction(
   formData: Record<string, unknown>,
   schema: ZodObject,
-): FormActionResponse {
+): FormActionState {
   const result = schema.safeParse(formData);
 
   if (!result.success) {
@@ -35,3 +34,10 @@ export const cleanFormData = (formData: FormData): Record<string, unknown> =>
   Object.fromEntries(
     [...formData].filter(([key]) => !key.startsWith("$ACTION_")),
   );
+
+export function getFieldError(
+  errors: FieldError[] | null,
+  path: string,
+): string | undefined {
+  return errors?.find((e) => e.path === path)?.message;
+}

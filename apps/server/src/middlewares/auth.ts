@@ -34,21 +34,36 @@ export const requireAuth = (
         hasOrganization: req.session.hasOrganization!,
       },
     };
+    return res.status(403).json(response);
+  }
+  const isCreatingOrganization =
+    req.url.includes("/organization") && req.method === "POST";
+  if (req.session.hasOrganization && isCreatingOrganization) {
+    const response: UserOnboardedResponse = {
+      success: false,
+      message: "You are already a part of an organization",
+      data: {
+        isUserOnboarded: req.session.isUserOnboarded!,
+        hasOrganization: true,
+      },
+    };
 
-    if (
-      req.session.isUserOnboarded &&
-      !req.session.hasOrganization &&
-      !req.url.includes("/organization")
-    ) {
-      const response: UserOnboardedResponse = {
-        success: false,
-        message: "You must be part of an organization to proceed",
-        data: { isUserOnboarded: true, hasOrganization: false },
-      };
+    return res.status(403).json(response);
+  }
 
-      return res.status(403).json(response);
-    }
-
+  if (
+    !req.session.hasOrganization &&
+    !isCreatingOrganization &&
+    !isOnboarding
+  ) {
+    const response: UserOnboardedResponse = {
+      success: false,
+      message: "You must be part of an organization to proceed",
+      data: {
+        isUserOnboarded: req.session.isUserOnboarded!,
+        hasOrganization: false,
+      },
+    };
     return res.status(403).json(response);
   }
 
