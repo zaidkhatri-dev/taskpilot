@@ -5,6 +5,7 @@ import { initDb } from "@repo/db/client";
 import { eq } from "drizzle-orm";
 import { serverConfig } from "@repo/config/server";
 import { teamMemberships } from "@repo/db/memberships";
+import { organizations } from "@repo/db/organizations";
 
 // Connect before using Redis.
 // Requires top-level await support in your module.
@@ -100,4 +101,14 @@ export async function getUserOrganizationStatus(userId: string) {
     .limit(1);
 
   return { hasOrganization: !!row };
+}
+
+export async function getUserOrganizationOwnershipStatus(userId: string) {
+  const [row] = await dbClient
+    .select({ ownerId: organizations.ownerId })
+    .from(organizations)
+    .where(eq(organizations.ownerId, userId))
+    .limit(1);
+
+  return { isOrganizationOwner: !!row };
 }

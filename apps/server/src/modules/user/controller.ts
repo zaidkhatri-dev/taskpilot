@@ -42,9 +42,9 @@ export const onboardingController = async (
 
     req.session.userId = sessionData.userId;
     req.session.email = sessionData.email;
-    req.session.isUserOnboarded = sessionData.isUserOnboarded;
+    req.session.isUserOnboarded = true;
     req.session.hasOrganization = false;
-    req.session.isOrganizationAdmin = false;
+    req.session.isOrganizationOwner = false;
 
     await saveSession(req);
 

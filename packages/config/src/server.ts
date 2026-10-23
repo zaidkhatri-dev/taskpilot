@@ -19,7 +19,7 @@ const serverEnvSchema = z.object({
   CLEANUP_TIMEOUT: z.coerce.number().default(5_000),
 
   SESSION_SECRET: z.string(),
-  SESSION_LIFESPAN: z.coerce.number().default(1000 * 60 * 60 * 7),
+  SESSION_LIFESPAN: z.coerce.number().default(24 * 60 * 60 * 7),
   AUTH_TOKEN_EXPIRY_TIME: z.coerce.number().default(60 * 5),
 
   DATABASE_URL: z.url(),

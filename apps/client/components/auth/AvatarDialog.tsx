@@ -75,7 +75,7 @@ export default function AvatarDialog({
           ))}
         </div>
         <DialogFooter className="sm:justify-end">
-          <Button type="button" onClick={handleConfirm}>
+          <Button type="button" size="sm" onClick={handleConfirm}>
             Okay
           </Button>
         </DialogFooter>

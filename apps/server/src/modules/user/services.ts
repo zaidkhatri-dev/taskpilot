@@ -1,13 +1,11 @@
 import {
   getUserAndTeam,
-  getUserById,
   getUserByUsername,
   updateUser,
   onboardUser,
-  getUserRole,
 } from "./repository.js";
 import { AppError } from "@repo/errors/app-error";
-import type { AvatarIds } from "@repo/contracts/response";
+import type { AvatarIds } from "@repo/validation/user";
 
 export const onboardingService = async (
   userId: string,
@@ -31,7 +29,6 @@ export const onboardingService = async (
   const sessionData = {
     userId: updatedUser.userId,
     email: updatedUser.email,
-    isUserOnboarded: true,
   };
 
   return sessionData;

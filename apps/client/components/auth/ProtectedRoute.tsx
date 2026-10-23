@@ -21,50 +21,68 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     let cancelled = false;
+    let isChecking = false;
 
     async function checkSession() {
-      const session = await getSession();
+      if (cancelled || isChecking) return;
+      isChecking = true;
 
-      if (cancelled) return;
+      try {
+        const session = await getSession();
 
-      if (!session.ok || !session.data) {
-        router.replace("/signin");
-        return;
+        if (!session.ok || !session.data) {
+          router.replace("/signin");
+          return;
+        }
+
+        const isOnboarded = session.data.isUserOnboarded;
+
+        if (requireOnboarding && !isOnboarded) {
+          router.replace("/onboarding");
+          return;
+        }
+
+        const hasOrganization = session.data.hasOrganization;
+        if (!requireOnboarding && isOnboarded) {
+          if (hasOrganization) {
+            router.replace("/workspace");
+          } else {
+            router.replace("/create-organization");
+          }
+
+          return;
+        }
+
+        if (requireOrganization && !hasOrganization) {
+          router.replace("/create-organization");
+          return;
+        }
+
+        if (!requireOrganization && hasOrganization) {
+          router.replace("/workspace");
+          return;
+        }
+
+        if (!cancelled) {
+          setAuthorized(true);
+        }
+      } finally {
+        isChecking = false;
       }
+    }
 
-      const isOnboarded = session.data.isUserOnboarded;
-
-      if (requireOnboarding && !isOnboarded) {
-        router.replace("/onboarding");
-        return;
-      }
-
-      if (!requireOnboarding && isOnboarded) {
-        router.replace("/create-organization");
-        return;
-      }
-
-      const hasOrganization = session.data.hasOrganization;
-
-      if (requireOrganization && !hasOrganization) {
-        router.replace("/create-organization");
-        return;
-      }
-
-      if (!requireOrganization && hasOrganization) {
-        router.replace("/workspace");
-        return;
-      }
-
-      if (!cancelled) {
-        setAuthorized(true);
+    async function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        await checkSession();
       }
     }
 
     checkSession();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       cancelled = true;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [router, requireOnboarding, requireOrganization]);
 

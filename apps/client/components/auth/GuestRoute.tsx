@@ -10,25 +10,31 @@ export default function GuestRoute({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+    let isChecking = false;
 
     async function checkSession() {
-      const session = await getSession();
+      if (cancelled || isChecking) return;
+      isChecking = true;
 
-      if (cancelled) return;
+      try {
+        const session = await getSession();
 
-      if (!session.ok || !session.data) {
-        if (!cancelled) setIsGuest(true);
-        return;
+        if (!session.ok || !session.data) {
+          if (!cancelled) setIsGuest(true);
+          return;
+        }
+
+        router.replace(
+          session.data.isUserOnboarded ? "/workspace" : "/onboarding",
+        );
+      } finally {
+        isChecking = false;
       }
-
-      router.replace(
-        session.data.isUserOnboarded ? "/workspace" : "/onboarding",
-      );
     }
 
-    function handleVisibilityChange() {
+    async function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
-        checkSession();
+        await checkSession();
       }
     }
 

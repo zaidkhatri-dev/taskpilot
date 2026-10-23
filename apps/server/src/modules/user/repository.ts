@@ -4,7 +4,7 @@ import { teams } from "@repo/db/teams";
 import { initDb } from "@repo/db/client";
 import { eq, and, isNull } from "drizzle-orm";
 import { serverConfig } from "@repo/config/server";
-import type { AvatarIds } from "@repo/contracts/response";
+import type { AvatarIds } from "@repo/validation/user";
 
 const dbClient = initDb({
   DATABASE_URL: serverConfig.DATABASE_URL,

@@ -7,6 +7,7 @@ import {
   getUserByEmail,
   createUser,
   getUserOrganizationStatus,
+  getUserOrganizationOwnershipStatus,
 } from "./repository.js";
 import { getEmailQueue } from "@repo/email/queue";
 import { serverConfig } from "@repo/config/server";
@@ -82,6 +83,7 @@ export const verifyMagicLinkService = async (rawToken: string) => {
       email: user.email,
       isUserOnboarded: false,
       hasOrganization: false,
+      isOrganizationOwner: false,
     };
   } else if (
     !fetchedUser.avatarId &&
@@ -94,14 +96,19 @@ export const verifyMagicLinkService = async (rawToken: string) => {
       email: fetchedUser.email,
       isUserOnboarded: false,
       hasOrganization: false,
+      isOrganizationOwner: false,
     };
   } else {
-    const orgStatus = await getUserOrganizationStatus(fetchedUser.userId);
+    const [orgStatus, orgAdminStatus] = await Promise.all([
+      getUserOrganizationStatus(fetchedUser.userId),
+      getUserOrganizationOwnershipStatus(fetchedUser.userId),
+    ]);
     sessionData = {
       userId: fetchedUser.userId,
       email: fetchedUser.email,
       isUserOnboarded: true,
       hasOrganization: orgStatus.hasOrganization,
+      isOrganizationOwner: orgAdminStatus.isOrganizationOwner,
     };
   }
 

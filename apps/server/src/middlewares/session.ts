@@ -10,7 +10,7 @@ initRedis(serverConfig.REDIS_URL);
 let redisStore = new RedisStore({
   client: getRedis(),
   prefix: getSessionKey(""),
-  ttl: serverConfig.SESSION_LIFESPAN / 1000,
+  ttl: serverConfig.SESSION_LIFESPAN,
 });
 
 export const sessionHandler: RequestHandler = session({
@@ -22,7 +22,7 @@ export const sessionHandler: RequestHandler = session({
     secure: serverConfig.NODE_ENV === "production",
     httpOnly: true,
     sameSite: "lax",
-    maxAge: serverConfig.SESSION_LIFESPAN,
+    maxAge: serverConfig.SESSION_LIFESPAN * 1000,
   },
   rolling: true,
 });

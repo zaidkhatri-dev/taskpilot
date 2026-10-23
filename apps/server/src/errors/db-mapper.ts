@@ -23,6 +23,8 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
 
   // team membership (schema-defined uniqueIndex)
   [USER_TEAM_IDX]: "User is already a member of this team.",
+  organizations_owner_id_users_id_key:
+    "The specified user is already an owner of an organization.",
 };
 
 // ─── Foreign Key Constraint Messages (PG error code: 23503) ──────────────────
@@ -31,7 +33,7 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
 
 const FOREIGN_KEY_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
   // organizations → users (onDelete: restrict — blocks deletion of user who is an admin)
-  organizations_admin_id_users_id_fkey: "The specified user does not exist.",
+  organizations_owner_id_users_id_fkey: "The specified user does not exist.",
 
   // teams → organizations (onDelete: cascade — parent missing on insert)
   teams_organization_id_organizations_id_fkey:
@@ -69,8 +71,8 @@ const FOREIGN_KEY_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
 
 const RESTRICT_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
   // organizations → users (onDelete: restrict — blocks deletion of user who is an admin)
-  organizations_admin_id_users_id_fkey:
-    "Cannot delete this user because they are an admin of an organization.",
+  organizations_owner_id_users_id_fkey:
+    "Cannot delete this user because they are an owner of an organization.",
 };
 
 // ─── Check Constraint Messages (PG error code: 23514) ────────────────────────

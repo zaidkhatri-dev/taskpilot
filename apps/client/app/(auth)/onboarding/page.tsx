@@ -6,6 +6,7 @@ import { useActionState, useEffect } from "react";
 import { completeOnboarding } from "@/lib/actions/auth";
 import { useRouter } from "next/navigation";
 import { toast, Toaster } from "@/components/ui/toast";
+import { clientConfig } from "@repo/config/client";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -22,11 +23,13 @@ export default function OnboardingPage() {
 
     if (state.success) {
       toast.add({
-        description: state.message,
+        description: `${state.message}, Redirecting...`,
         type: "success",
       });
 
-      router.replace("/create-organization");
+      setTimeout(() => {
+        router.replace("/create-organization");
+      }, clientConfig.NEXT_PUBLIC_REDIRECT_DELAY);
     } else {
       toast.add({
         description: state.message,

@@ -56,7 +56,7 @@ export const verifyMagicLinkController = async (
     req.session.email = sessionData.email;
     req.session.isUserOnboarded = sessionData.isUserOnboarded;
     req.session.hasOrganization = sessionData.hasOrganization;
-    req.session.isOrganizationAdmin = false;
+    req.session.isOrganizationOwner = sessionData.isOrganizationOwner;
 
     await saveSession(req);
 

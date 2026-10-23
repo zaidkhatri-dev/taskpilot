@@ -26,7 +26,7 @@ export const createOrganizationController = async (
     req.session.email = email;
     req.session.isUserOnboarded = isUserOnboarded;
     req.session.hasOrganization = true;
-    req.session.isOrganizationAdmin = true;
+    req.session.isOrganizationOwner = true;
 
     await saveSession(req);
 

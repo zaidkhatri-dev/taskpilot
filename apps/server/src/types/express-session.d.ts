@@ -6,6 +6,6 @@ declare module "express-session" {
     email: string;
     isUserOnboarded: boolean;
     hasOrganization: boolean;
-    isOrganizationAdmin: boolean;
+    isOrganizationOwner: boolean;
   }
 }

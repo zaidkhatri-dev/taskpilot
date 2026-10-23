@@ -12,7 +12,8 @@ export const organizations = pgTable(
       .primaryKey()
       .default(sql`uuidv7()`),
     name: text("name").notNull(),
-    adminId: uuid("admin_id")
+    ownerId: uuid("owner_id")
+      .unique()
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
     description: text("description"),

@@ -1,14 +1,18 @@
 "use client";
 
-import CreateOrganizationDialog from "@/components/auth/CreateOrganizationDialog";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { useActionState, useEffect } from "react";
+import CreateOrganizationForm from "@/components/auth/CreateOrganizationForm";
+import { useActionState, useEffect, useState } from "react";
 import { createOrganization } from "@/lib/actions/organization";
 import { useRouter } from "next/navigation";
 import { toast, Toaster } from "@/components/ui/toast";
+import { clientConfig } from "@repo/config/client";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "lucide-react";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function CreateOrganizationPage() {
   const router = useRouter();
+  const [showForm, setShowForm] = useState(false);
 
   const [state, formAction, isPending] = useActionState(
     createOrganization,
@@ -22,11 +26,13 @@ export default function CreateOrganizationPage() {
 
     if (state.success) {
       toast.add({
-        description: state.message,
+        description: `${state.message}, Redirecting...`,
         type: "success",
       });
 
-      router.replace("/workspace");
+      setTimeout(() => {
+        router.replace("/workspace");
+      }, clientConfig.NEXT_PUBLIC_REDIRECT_DELAY);
     } else {
       toast.add({
         description: state.message,
@@ -40,23 +46,36 @@ export default function CreateOrganizationPage() {
     <ProtectedRoute requireOnboarding={true} requireOrganization={false}>
       <div className="flex min-h-screen items-center justify-center p-4">
         <div className="flex w-full max-w-md flex-col items-center text-center">
-          <h1 className="text-xl font-semibold">Join an Organization</h1>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            In order to move forward, you need to join an organization. Please
-            check your email for an invitation.
-          </p>
+          {showForm ? (
+            <CreateOrganizationForm
+              formAction={formAction}
+              isPending={isPending}
+              fieldErrors={state?.errors || null}
+              values={state?.values || {}}
+              setShowForm={setShowForm}
+            />
+          ) : (
+            <>
+              <h1 className="text-xl font-semibold">Join an Organization</h1>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                In order to move forward, you need to join an organization.
+                Please check your email for an invitation.
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Haven&apos;t received one? Create your own organization to get
+                started.
+              </p>
+              <Button
+                type="button"
+                size="lg"
+                className="mt-6"
+                onClick={() => setShowForm(true)}
+              >
+                <PlusIcon data-icon="inline-start" /> Create an Organization
+              </Button>
+            </>
+          )}
 
-          <p className="mt-4 text-sm text-muted-foreground">
-            Haven&apos;t received one? Create your own organization to get
-            started.
-          </p>
-
-          <CreateOrganizationDialog
-            formAction={formAction}
-            isPending={isPending}
-            fieldErrors={state?.errors || null}
-            values={state?.values || {}}
-          />
           <Toaster />
         </div>
       </div>

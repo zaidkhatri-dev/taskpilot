@@ -41,7 +41,7 @@ const avatarIds = [
   "avatar_24",
 ] as const;
 
-export type AvatarIds = (typeof avatarIds)[number];
+type AvatarIds = (typeof avatarIds)[number];
 export interface GetMeResponse extends BaseResponse {
   data: {
     user: {
