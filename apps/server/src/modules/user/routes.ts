@@ -1,16 +1,8 @@
 import { inputValidator } from "@/middlewares/input-validator.js";
-import {
-  checkUsernameAvailabilitySchema,
-  onboardingSchema,
-  updateMeSchema,
-} from "@repo/validation/user";
+import { onboardingSchema } from "@repo/validation/user";
 import { Router } from "express";
-import {
-  checkUsernameAvailabilityController,
-  getMeController,
-  onboardingController,
-  updateMeController,
-} from "./controller.js";
+import { onboardingController } from "./controller.js";
+import { requireOnboarding } from "@/middlewares/auth.js";
 
 const router: Router = Router();
 
@@ -20,14 +12,15 @@ router.post(
   onboardingController,
 );
 
-router.post(
-  "/username/check",
-  inputValidator(checkUsernameAvailabilitySchema),
-  checkUsernameAvailabilityController,
-);
+router.use(requireOnboarding);
+// router.post(
+//   "/username/check",
+//   inputValidator(checkUsernameAvailabilitySchema),
+//   checkUsernameAvailabilityController,
+// );
 
-router.get("/me", getMeController);
+// router.get("/me", getMeController);
 
-router.patch("/me", inputValidator(updateMeSchema), updateMeController);
+// router.patch("/me", inputValidator(updateMeSchema), updateMeController);
 
 export default router;

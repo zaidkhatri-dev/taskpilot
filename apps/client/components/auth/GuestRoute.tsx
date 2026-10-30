@@ -24,9 +24,7 @@ export default function GuestRoute({ children }: { children: ReactNode }) {
           return;
         }
 
-        router.replace(
-          session.data.isUserOnboarded ? "/workspace" : "/onboarding",
-        );
+        router.replace(session.data.isOnboarded ? "/workspace" : "/onboarding");
       } finally {
         isChecking = false;
       }

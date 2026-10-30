@@ -6,49 +6,51 @@ import { AppError } from "@repo/errors/app-error";
 import type { NextFunction, Request, Response } from "express";
 import { DatabaseError } from "pg";
 import { ZodError } from "zod";
-import type { DefaultResponse } from "@repo/contracts/response";
+import type { EmptyResponse } from "@repo/contracts/response/common";
 
-export const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-    if (res.headersSent) {
-        return next(err)
-    }
+export const globalErrorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (res.headersSent) {
+    return next(err);
+  }
 
-    let mappedError: ErrorMapper
-    
-    if (err instanceof ZodError) {
-        console.error("[Validation Error]: ", err.issues.map(iss => ({ [iss.path.join(".")] : iss.message})))
-        mappedError = validationErrorMapper(err)
-    }
-    
-    // Drizzle wraps the original pg DatabaseError in `cause` — unwrap it first.
-    else if (err.cause instanceof DatabaseError) {
-        console.error("[Database Error]: ", err.cause.message)
-        mappedError = dbErrorMapper(err.cause)
-    }
+  let mappedError: ErrorMapper;
 
-    else if (err instanceof DatabaseError){
-        console.error("[Database Error]: ", err.message)
-        mappedError = dbErrorMapper(err)
-    }
+  if (err instanceof ZodError) {
+    console.error(
+      "[Validation Error]: ",
+      err.issues.map((iss) => ({ [iss.path.join(".")]: iss.message })),
+    );
+    mappedError = validationErrorMapper(err);
+  }
 
-    else if (err instanceof AppError){
-        console.error("[App Error]: ", err.message)
-        mappedError = appErrorMapper(err)
-    }
+  // Drizzle wraps the original pg DatabaseError in `cause` — unwrap it first.
+  else if (err.cause instanceof DatabaseError) {
+    console.error("[Database Error]: ", err.cause.message);
+    mappedError = dbErrorMapper(err.cause);
+  } else if (err instanceof DatabaseError) {
+    console.error("[Database Error]: ", err.message);
+    mappedError = dbErrorMapper(err);
+  } else if (err instanceof AppError) {
+    console.error("[App Error]: ", err.message);
+    mappedError = appErrorMapper(err);
+  } else {
+    console.error("[Unknown Error]: ", err);
+    mappedError = {
+      message: "Something went wrong",
+      statusCode: 500,
+    };
+  }
 
-    else {
-        console.error("[Unknown Error]: ", err)
-        mappedError = {
-            message: "Something went wrong",
-            statusCode: 500
-        }
-    }
+  const response: EmptyResponse = {
+    success: false,
+    message: mappedError.message,
+    data: null,
+  };
 
-    const response: DefaultResponse = {
-        success: false,
-        message: mappedError.message,
-        data: null
-    }
-
-    res.status(mappedError.statusCode).json(response)
-}
+  res.status(mappedError.statusCode).json(response);
+};

@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX "board_name_workspace_idx" ON "boards" ("name","workspace_id");--> statement-breakpoint
+ALTER TABLE "boards" DROP CONSTRAINT "name_length_check", ADD CONSTRAINT "name_length_check" CHECK (length("name") between 1 and 100);

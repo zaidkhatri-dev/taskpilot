@@ -6,23 +6,15 @@
     "typescript": "^7.0.2"
   },
   "exports": {
-    "./request": {
-      "import": {
-        "types": "./src/request.ts",
-        "default": "./dist/request.js"
-      }
+    "./request/*": {
+      "types": "./src/request/*.ts"
     },
-    "./response": {
-      "import": {
-        "types": "./src/response.ts",
-        "default": "./dist/response.js"
-      }
+    "./response/*": {
+      "types": "./src/response/*.ts"
     },
-    "./other": {
-      "import": {
-        "types": "./src/other.ts",
-        "default": "./dist/other.js"
-      }
+    "./miscellaneous/*": {
+      "types": "./src/miscellaneous/*.ts",
+      "default": "./src/miscellaneous/*.js"
     }
   },
   "scripts": {

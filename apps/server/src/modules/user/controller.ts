@@ -1,17 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import type { GetTypeFromSchema } from "@/types/validation.js";
-import {
-  checkUsernameAvailabilitySchema,
-  onboardingSchema,
-  updateMeSchema,
-} from "@repo/validation/user";
-import {
-  onboardingService,
-  checkUsernameAvailabilityService,
-  getMeService,
-  updateMeService,
-} from "./services.js";
-import { DefaultResponse, GetMeResponse } from "@repo/contracts/response";
+import { onboardingSchema } from "@repo/validation/user";
+import { onboardingService } from "./services.js";
+import type { EmptyResponse } from "@repo/contracts/response/common";
 import { regenerateSession, saveSession } from "@/utils/session.js";
 import { AppError } from "@repo/errors/app-error";
 
@@ -26,7 +17,7 @@ export const onboardingController = async (
 
     const userId = req.session.userId!;
 
-    if (req.session.isUserOnboarded) {
+    if (req.session.isOnboarded) {
       throw new AppError("User is already onboarded", 409);
     }
 
@@ -42,13 +33,11 @@ export const onboardingController = async (
 
     req.session.userId = sessionData.userId;
     req.session.email = sessionData.email;
-    req.session.isUserOnboarded = true;
-    req.session.hasOrganization = false;
-    req.session.isOrganizationOwner = false;
+    req.session.isOnboarded = true;
 
     await saveSession(req);
 
-    const response: DefaultResponse = {
+    const response: EmptyResponse = {
       success: true,
       message: "Onboarding completed successfully",
       data: null,
@@ -60,72 +49,72 @@ export const onboardingController = async (
   }
 };
 
-export const checkUsernameAvailabilityController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { username } = req.body as GetTypeFromSchema<
-      typeof checkUsernameAvailabilitySchema
-    >;
+// export const checkUsernameAvailabilityController = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const { username } = req.body as GetTypeFromSchema<
+//       typeof checkUsernameAvailabilitySchema
+//     >;
 
-    await checkUsernameAvailabilityService(username);
+//     await checkUsernameAvailabilityService(username);
 
-    const response: DefaultResponse = {
-      success: true,
-      message: "Username is available",
-      data: null,
-    };
+//     const response: EmptyResponse = {
+//       success: true,
+//       message: "Username is available",
+//       data: null,
+//     };
 
-    res.status(200).json(response);
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(200).json(response);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
-export const getMeController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.session.userId!;
+// export const getMeController = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const userId = req.session.userId!;
 
-    const data = await getMeService(userId);
+//     const data = await getMeService(userId);
 
-    const response: GetMeResponse = {
-      success: true,
-      message: "User fetched successfully",
-      data,
-    };
+//     const response: GetMeResponse = {
+//       success: true,
+//       message: "User fetched successfully",
+//       data,
+//     };
 
-    res.status(200).json(response);
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(200).json(response);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
-export const updateMeController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.session.userId!;
-    const { username, avatarId, firstName, lastName } =
-      req.body as GetTypeFromSchema<typeof updateMeSchema>;
+// export const updateMeController = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const userId = req.session.userId!;
+//     const { username, avatarId, firstName, lastName } =
+//       req.body as GetTypeFromSchema<typeof updateMeSchema>;
 
-    await updateMeService(userId, username, avatarId, firstName, lastName);
+//     await updateMeService(userId, username, avatarId, firstName, lastName);
 
-    const response: DefaultResponse = {
-      success: true,
-      message: "User updated successfully",
-      data: null,
-    };
+//     const response: EmptyResponse = {
+//       success: true,
+//       message: "User updated successfully",
+//       data: null,
+//     };
 
-    res.status(200).json(response);
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(200).json(response);
+//   } catch (error) {
+//     next(error);
+//   }
+// };

@@ -28,8 +28,6 @@ const avatarIds = [
   "avatar_24",
 ] as const;
 
-export type AvatarIds = (typeof avatarIds)[number];
-
 export const onboardingSchema = z.object({
   avatarId: z.enum(avatarIds),
   firstName: namePartSchema,

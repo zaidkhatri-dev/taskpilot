@@ -7,7 +7,8 @@ import {
   TITLE_LENGTH_CHECK,
   USERNAME_CHARS_CHECK,
   USERNAME_LENGTH_CHECK,
-  USER_TEAM_IDX,
+  USER_WORKSPACE_IDX,
+  BOARD_NAME_WORKSPACE_IDX,
   FIRST_NAME_LENGTH_CHECK,
   LAST_NAME_LENGTH_CHECK,
 } from "@repo/db/constraints";
@@ -21,10 +22,10 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
   users_username_key: "This username is already taken.",
   users_email_key: "An account with this email already exists.",
 
-  // team membership (schema-defined uniqueIndex)
-  [USER_TEAM_IDX]: "User is already a member of this team.",
-  organizations_owner_id_users_id_key:
-    "The specified user is already an owner of an organization.",
+  // workspace membership (schema-defined uniqueIndex)
+  [USER_WORKSPACE_IDX]: "User is already a member of this workspace",
+  [BOARD_NAME_WORKSPACE_IDX]:
+    "A board with this name already exists in this workspace.",
 };
 
 // ─── Foreign Key Constraint Messages (PG error code: 23503) ──────────────────
@@ -32,15 +33,9 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
 // Scenario B: Delete — child records block deletion (onDelete: "restrict")
 
 const FOREIGN_KEY_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
-  // organizations → users (onDelete: restrict — blocks deletion of user who is an admin)
-  organizations_owner_id_users_id_fkey: "The specified user does not exist.",
-
-  // teams → organizations (onDelete: cascade — parent missing on insert)
-  teams_organization_id_organizations_id_fkey:
-    "The specified organization does not exist.",
-
-  // boards → teams (onDelete: cascade — parent missing on insert)
-  boards_team_id_teams_id_fkey: "The specified team does not exist.",
+  // boards → wokspaces (onDelete: cascade — parent missing on insert)
+  boards_workspace_id_workspaces_id_fkey:
+    "The specified workspace does not exist.",
 
   // sections → boards (onDelete: cascade — parent missing on insert)
   sections_board_id_boards_id_fkey: "The specified board does not exist.",
@@ -60,19 +55,12 @@ const FOREIGN_KEY_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
   comments_issue_id_issues_id_fkey: "The specified issue does not exist.",
 
   // membership → users (onDelete: cascade — parent missing on insert)
-  team_memberships_user_id_users_id_fkey:
+  workspace_memberships_user_id_users_id_fkey:
     "The specified user account does not exist.",
 
-  // membership → organizations (onDelete: cascade — parent missing on insert)
-  team_memberships_team_id_teams_id_fkey: "The specified team does not exist.",
-};
-
-// ─── Restrict Constraint Messages (PG error code: 23001) ──────────────────────
-
-const RESTRICT_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
-  // organizations → users (onDelete: restrict — blocks deletion of user who is an admin)
-  organizations_owner_id_users_id_fkey:
-    "Cannot delete this user because they are an owner of an organization.",
+  // membership → workspaces (onDelete: cascade — parent missing on insert)
+  workspace_memberships_workspace_id_teams_id_fkey:
+    "The specified workspace does not exist.",
 };
 
 // ─── Check Constraint Messages (PG error code: 23514) ────────────────────────
@@ -106,12 +94,9 @@ const NOT_NULL_COLUMN_MESSAGES: Readonly<Record<string, string>> = {
   // organizations
   admin_id: "Admin is required.",
 
-  // teams
-  organization_id: "Organization is required.",
-
   // boards
-  team_id: "Team is required.",
-  title: "Title is required.",
+  workspace_id: "Workspace is required.",
+  name: "Name is required.",
   position: "Position is required.",
 
   // issues
@@ -123,8 +108,9 @@ const NOT_NULL_COLUMN_MESSAGES: Readonly<Record<string, string>> = {
   commented_by_id: "Author information is required.",
   issue_id: "Issue reference is required.",
 
-  // team memberships
+  // workspace memberships
   user_id: "User reference is required.",
+
   role: "Member role is required.",
 };
 
@@ -215,7 +201,6 @@ export const dbErrorMapper = (err: DatabaseError): ErrorMapper => {
     // Restrict violation (triggered by onDelete: "restrict")
     case "23001": {
       const message =
-        (err.constraint && RESTRICT_CONSTRAINT_MESSAGES[err.constraint]) ||
         "Cannot delete this resource because it is referenced by other records.";
       return {
         message,

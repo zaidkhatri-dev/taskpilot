@@ -4,14 +4,10 @@ import {
   generateMagicLinkSchema,
   verifyMagicLinkSchema,
 } from "@repo/validation/auth";
-import { onboardingSchema } from "@repo/validation/user";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
-import type {
-  DefaultResponse,
-  UserOnboardedResponse,
-} from "@repo/contracts/response";
-import { handleUnauthorizedAccess } from "../utils/error";
+import type { EmptyResponse } from "@repo/contracts/response/common";
+import type { SessionResponse } from "@repo/contracts/response/auth";
 import { handleNetworkError } from "../utils/network";
 import { forwardCookieFromServerToBrowser, getCookie } from "../utils/cookie";
 import type { FormActionState } from "@/types/form";
@@ -42,7 +38,7 @@ export async function generateLink(
       },
     );
 
-    const data: DefaultResponse = await response.json();
+    const data: EmptyResponse = await response.json();
 
     return {
       ...data,
@@ -80,7 +76,7 @@ export async function verifyLink(token: string) {
 
     console.log(response.headers.getSetCookie());
 
-    const data: UserOnboardedResponse = await response.json();
+    const data: SessionResponse = await response.json();
 
     if (response.ok) {
       await forwardCookieFromServerToBrowser(response);
@@ -96,56 +92,7 @@ export async function verifyLink(token: string) {
   }
 }
 
-export async function completeOnboarding(
-  prevState: FormActionState | null,
-  formData: FormData,
-): Promise<FormActionState> {
-  const objFormData = cleanFormData(formData);
-
-  const result = validateAction(objFormData, onboardingSchema);
-
-  if (!result.success) {
-    return result;
-  }
-
-  try {
-    const response = await fetch(
-      `${clientConfig.NEXT_PUBLIC_API_URL}/user/onboarding`,
-      {
-        method: "POST",
-        body: JSON.stringify(result.data),
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
-        },
-        credentials: "include",
-      },
-    );
-
-    const data: DefaultResponse = await response.json();
-
-    if (response.status === 401) {
-      handleUnauthorizedAccess();
-    }
-
-    if (response.ok) {
-      await forwardCookieFromServerToBrowser(response);
-    }
-
-    return {
-      ...data,
-      errors: null,
-      values: objFormData,
-    };
-  } catch (error) {
-    return handleNetworkError(error, objFormData);
-  }
-}
-
-export async function getSession(): Promise<{
-  ok: boolean;
-  data: UserOnboardedResponse["data"] | null;
-}> {
+export async function getSession() {
   try {
     const response = await fetch(
       `${clientConfig.NEXT_PUBLIC_API_URL}/auth/session`,
@@ -163,7 +110,7 @@ export async function getSession(): Promise<{
       return { ok: false, data: null };
     }
 
-    const result: UserOnboardedResponse = await response.json();
+    const result: SessionResponse = await response.json();
     return { ok: true, data: result.data };
   } catch {
     return { ok: false, data: null };

@@ -6,14 +6,12 @@ import {
   delKey,
   getUserByEmail,
   createUser,
-  getUserOrganizationStatus,
-  getUserOrganizationOwnershipStatus,
 } from "./repository.js";
 import { getEmailQueue } from "@repo/email/queue";
 import { serverConfig } from "@repo/config/server";
 import { getMagicLinkKey } from "@/utils/redis.js";
 import { generateMagicLink, getEmailBody } from "@/utils/auth.js";
-import { EmailJobData } from "@repo/contracts/other";
+import { EmailJobData } from "@repo/contracts/miscellaneous/auth";
 import { MagicLinkPayload } from "@/types/redis.js";
 import { AppError } from "@repo/errors/app-error";
 
@@ -78,12 +76,14 @@ export const verifyMagicLinkService = async (rawToken: string) => {
 
   if (!fetchedUser) {
     let user = await createUser(email);
+
+    if (!user) {
+      throw new AppError("Signup failed. Please try again", 500);
+    }
     sessionData = {
       userId: user.userId,
       email: user.email,
-      isUserOnboarded: false,
-      hasOrganization: false,
-      isOrganizationOwner: false,
+      isOnboarded: false,
     };
   } else if (
     !fetchedUser.avatarId &&
@@ -94,21 +94,13 @@ export const verifyMagicLinkService = async (rawToken: string) => {
     sessionData = {
       userId: fetchedUser.userId,
       email: fetchedUser.email,
-      isUserOnboarded: false,
-      hasOrganization: false,
-      isOrganizationOwner: false,
+      isOnboarded: false,
     };
   } else {
-    const [orgStatus, orgAdminStatus] = await Promise.all([
-      getUserOrganizationStatus(fetchedUser.userId),
-      getUserOrganizationOwnershipStatus(fetchedUser.userId),
-    ]);
     sessionData = {
       userId: fetchedUser.userId,
       email: fetchedUser.email,
-      isUserOnboarded: true,
-      hasOrganization: orgStatus.hasOrganization,
-      isOrganizationOwner: orgAdminStatus.isOrganizationOwner,
+      isOnboarded: true,
     };
   }
 

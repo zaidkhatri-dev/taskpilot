@@ -1,14 +1,16 @@
 import { serverConfig } from "@repo/config/server";
-import { getRedis, initRedis } from "@repo/redis/client";
+import { initRedis } from "@repo/redis/client";
 import { RedisStore } from "connect-redis";
 import { getSessionKey } from "@/utils/redis.js";
 import { RequestHandler } from "express";
 import session from "express-session";
 
-initRedis(serverConfig.REDIS_URL);
+// initRedis is async — await it so the Redis client is connected
+// before we pass it to RedisStore.
+const redisClient = await initRedis(serverConfig.REDIS_URL);
 
-let redisStore = new RedisStore({
-  client: getRedis(),
+const redisStore = new RedisStore({
+  client: redisClient,
   prefix: getSessionKey(""),
   ttl: serverConfig.SESSION_LIFESPAN,
 });

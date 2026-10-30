@@ -1,4 +1,4 @@
-import { check, uniqueIndex, pgTable, pgEnum } from "drizzle-orm/pg-core";
+import { check, pgTable, pgEnum } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";

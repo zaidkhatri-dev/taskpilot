@@ -3,13 +3,13 @@ import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { uuid } from "drizzle-orm/pg-core";
 import { users } from "./users.js";
-import { teams } from "./teams.js";
-import { USER_TEAM_IDX } from "../constraints.js";
+import { workspaces } from "./workspaces.js";
+import { USER_WORKSPACE_IDX } from "../constraints.js";
 
-export const memberRoles = pgEnum("member_role", ["admin", "member"]);
+export const workspaceRoles = pgEnum("workspace_role", ["admin", "member"]);
 
-export const teamMemberships = pgTable(
-  "team_memberships",
+export const workspaceMemberships = pgTable(
+  "workspace_memberships",
   {
     id: uuid("id")
       .primaryKey()
@@ -17,13 +17,15 @@ export const teamMemberships = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    teamId: uuid("team_id")
+    workspaceId: uuid("workspace_id")
       .notNull()
-      .references(() => teams.id, { onDelete: "cascade" }),
-    role: memberRoles("role").notNull().default("member"),
+      .references(() => workspaces.id, { onDelete: "cascade" }),
     accepted: boolean("accepted").notNull().default(false),
+    role: workspaceRoles("role").notNull().default("member"),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [uniqueIndex(USER_TEAM_IDX).on(table.userId, table.teamId)],
+  (table) => [
+    uniqueIndex(USER_WORKSPACE_IDX).on(table.userId, table.workspaceId),
+  ],
 );

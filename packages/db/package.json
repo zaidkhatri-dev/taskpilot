@@ -14,17 +14,13 @@
       "types": "./src/db/users.ts",
       "default": "./src/db/users.ts"
     },
-    "./organizations": {
-      "types": "./src/db/organizations.ts",
-      "default": "./src/db/organizations.ts"
-    },
     "./memberships": {
       "types": "./src/db/memberships.ts",
       "default": "./src/db/memberships.ts"
     },
-    "./teams": {
-      "types": "./src/db/teams.ts",
-      "default": "./src/db/teams.ts"
+    "./workspaces": {
+      "types": "./src/db/workspaces.ts",
+      "default": "./src/db/workspaces.ts"
     },
     "./boards": {
       "types": "./src/db/boards.ts",

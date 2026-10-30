@@ -1,1 +1,0 @@
-ALTER TABLE "membership" RENAME TO "memberships";

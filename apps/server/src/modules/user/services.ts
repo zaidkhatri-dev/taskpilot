@@ -1,16 +1,11 @@
-import {
-  getUserAndTeam,
-  getUserByUsername,
-  updateUser,
-  onboardUser,
-} from "./repository.js";
+import { onboardUser } from "./repository.js";
 import { AppError } from "@repo/errors/app-error";
-import type { AvatarIds } from "@repo/validation/user";
+import type { AvatarId } from "@repo/contracts/miscellaneous/user";
 
 export const onboardingService = async (
   userId: string,
   username: string,
-  avatarId: AvatarIds,
+  avatarId: AvatarId,
   firstName: string,
   lastName: string,
 ) => {
@@ -34,58 +29,58 @@ export const onboardingService = async (
   return sessionData;
 };
 
-export const checkUsernameAvailabilityService = async (username: string) => {
-  const user = await getUserByUsername(username);
+// export const checkUsernameAvailabilityService = async (username: string) => {
+//   const user = await getUserByUsername(username);
 
-  if (user) {
-    throw new AppError("Username is not available", 400);
-  }
+//   if (user) {
+//     throw new AppError("Username is not available", 400);
+//   }
 
-  return true;
-};
+//   return true;
+// };
 
-export const getMeService = async (userId: string) => {
-  const data = await getUserAndTeam(userId);
+// export const getMeService = async (userId: string) => {
+//   const data = await getUserAndTeam(userId);
 
-  if (data.length === 0) {
-    throw new AppError("Failed to get user data. Please sign in again", 400);
-  }
+//   if (data.length === 0) {
+//     throw new AppError("Failed to get user data. Please sign in again", 400);
+//   }
 
-  const first = data[0]!;
+//   const first = data[0]!;
 
-  return {
-    user: {
-      firstName: first.firstname!,
-      lastName: first.lastname!,
-      username: first.username!,
-      email: first.email,
-      avatarId: first.avatarId!,
-    },
-    teams: data.map((row) => ({
-      teamName: row.teamName,
-      joiningStatus: row.joiningStatus,
-    })),
-  };
-};
+//   return {
+//     user: {
+//       firstName: first.firstname!,
+//       lastName: first.lastname!,
+//       username: first.username!,
+//       email: first.email,
+//       avatarId: first.avatarId!,
+//     },
+//     teams: data.map((row) => ({
+//       teamName: row.teamName,
+//       joiningStatus: row.joiningStatus,
+//     })),
+//   };
+// };
 
-export const updateMeService = async (
-  userId: string,
-  username?: string,
-  avatarId?: AvatarIds,
-  firstName?: string,
-  lastName?: string,
-) => {
-  const updatedUser = await updateUser(
-    userId,
-    username,
-    avatarId,
-    firstName,
-    lastName,
-  );
+// export const updateMeService = async (
+//   userId: string,
+//   username?: string,
+//   avatarId?: AvatarId,
+//   firstName?: string,
+//   lastName?: string,
+// ) => {
+//   const updatedUser = await updateUser(
+//     userId,
+//     username,
+//     avatarId,
+//     firstName,
+//     lastName,
+//   );
 
-  if (!updatedUser) {
-    throw new AppError("Failed to update user. Please sign in again", 400);
-  }
+//   if (!updatedUser) {
+//     throw new AppError("Failed to update user. Please sign in again", 400);
+//   }
 
-  return;
-};
+//   return;
+// };

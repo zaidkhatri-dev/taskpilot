@@ -1,10 +1,8 @@
 import { users } from "@repo/db/users";
-import { teamMemberships } from "@repo/db/memberships";
-import { teams } from "@repo/db/teams";
 import { initDb } from "@repo/db/client";
 import { eq, and, isNull } from "drizzle-orm";
 import { serverConfig } from "@repo/config/server";
-import type { AvatarIds } from "@repo/validation/user";
+import type { AvatarId } from "@repo/contracts/miscellaneous/user";
 
 const dbClient = initDb({
   DATABASE_URL: serverConfig.DATABASE_URL,
@@ -28,45 +26,45 @@ export async function getUserById(userId: string) {
   return user;
 }
 
-export async function getUserByUsername(username: string) {
-  const [user] = await dbClient
-    .select({ id: users.id, username: users.username })
-    .from(users)
-    .where(eq(users.username, username));
-  return user;
-}
+// export async function getUserByUsername(username: string) {
+//   const [user] = await dbClient
+//     .select({ id: users.id, username: users.username })
+//     .from(users)
+//     .where(eq(users.username, username));
+//   return user;
+// }
 
-export async function getUserAndTeam(userId: string) {
-  const result = await dbClient
-    .select({
-      username: users.username,
-      firstname: users.firstName,
-      lastname: users.lastName,
-      email: users.email,
-      avatarId: users.avatarId,
-      teamName: teams.name,
-      joiningStatus: teamMemberships.accepted,
-    })
-    .from(users)
-    .innerJoin(teamMemberships, eq(teamMemberships.userId, users.id))
-    .innerJoin(teams, eq(teamMemberships.teamId, teams.id))
-    .where(and(eq(users.id, userId), eq(teamMemberships.role, "member")));
+// export async function getUserAndTeam(userId: string) {
+//   const result = await dbClient
+//     .select({
+//       username: users.username,
+//       firstname: users.firstName,
+//       lastname: users.lastName,
+//       email: users.email,
+//       avatarId: users.avatarId,
+//       teamName: teams.name,
+//       joiningStatus: teamMemberships.accepted,
+//     })
+//     .from(users)
+//     .innerJoin(teamMemberships, eq(teamMemberships.userId, users.id))
+//     .innerJoin(teams, eq(teamMemberships.teamId, teams.id))
+//     .where(and(eq(users.id, userId), eq(teamMemberships.role, "member")));
 
-  return result;
-}
+//   return result;
+// }
 
-export async function getUserRole(userId: string) {
-  const [user] = await dbClient
-    .select({ role: teamMemberships.role })
-    .from(teamMemberships)
-    .where(eq(teamMemberships.userId, userId));
-  return user;
-}
+// export async function getUserRole(userId: string) {
+//   const [user] = await dbClient
+//     .select({ role: teamMemberships.role })
+//     .from(teamMemberships)
+//     .where(eq(teamMemberships.userId, userId));
+//   return user;
+// }
 
 export async function onboardUser(
   userId: string,
   username: string,
-  avatarId: AvatarIds,
+  avatarId: AvatarId,
   firstName: string,
   lastName: string,
 ) {
@@ -96,36 +94,26 @@ export async function onboardUser(
   return user;
 }
 
-export async function updateUser(
-  userId: string,
-  username?: string,
-  avatarId?: AvatarIds,
-  firstName?: string,
-  lastName?: string,
-) {
-  const [user] = await dbClient
-    .update(users)
-    .set({
-      username,
-      avatarId,
-      firstName,
-      lastName,
-      updatedAt: new Date(),
-    })
-    .where(eq(users.id, userId))
-    .returning({
-      id: users.id,
-    });
+// export async function updateUser(
+//   userId: string,
+//   username?: string,
+//   avatarId?: AvatarId,
+//   firstName?: string,
+//   lastName?: string,
+// ) {
+//   const [user] = await dbClient
+//     .update(users)
+//     .set({
+//       username,
+//       avatarId,
+//       firstName,
+//       lastName,
+//       updatedAt: new Date(),
+//     })
+//     .where(eq(users.id, userId))
+//     .returning({
+//       id: users.id,
+//     });
 
-  return user;
-}
-
-export async function getUserOrganizationStatus(userId: string) {
-  const [row] = await dbClient
-    .select({ membershipId: teamMemberships.id })
-    .from(teamMemberships)
-    .where(eq(teamMemberships.userId, userId))
-    .limit(1);
-
-  return { hasOrganization: !!row };
-}
+//   return user;
+// }

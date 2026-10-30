@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { FieldError } from "@/components/ui/field";
-import type { FieldError as FieldErrorType } from "@repo/contracts/response";
+import type { FieldError as FieldErrorType } from "@/types/form";
 
 interface ProfileCardProps {
   formAction: (formData: FormData) => void;

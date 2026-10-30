@@ -1,9 +1,9 @@
-import { pgTable, check } from "drizzle-orm/pg-core";
+import { pgTable, check, uniqueIndex } from "drizzle-orm/pg-core";
 import { timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { text, uuid } from "drizzle-orm/pg-core";
-import { teams } from "./teams.js";
-import { NAME_LENGTH_CHECK } from "../constraints.js";
+import { workspaces } from "./workspaces.js";
+import { NAME_LENGTH_CHECK, BOARD_NAME_WORKSPACE_IDX } from "../constraints.js";
 
 export const boards = pgTable(
   "boards",
@@ -11,15 +11,16 @@ export const boards = pgTable(
     id: uuid("id")
       .primaryKey()
       .default(sql`uuidv7()`),
-    name: text("title").notNull(),
+    name: text("name").notNull(),
     description: text("description"),
-    teamId: uuid("team_id")
+    workspaceId: uuid("workspace_id")
       .notNull()
-      .references(() => teams.id, { onDelete: "cascade" }),
+      .references(() => workspaces.id, { onDelete: "cascade" }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     check(NAME_LENGTH_CHECK, sql`length(${table.name}) between 1 and 100`),
+    uniqueIndex(BOARD_NAME_WORKSPACE_IDX).on(table.name, table.workspaceId),
   ],
 );

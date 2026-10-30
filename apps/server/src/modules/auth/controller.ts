@@ -8,10 +8,8 @@ import {
   generateMagicLinkService,
   verifyMagicLinkService,
 } from "./services.js";
-import {
-  DefaultResponse,
-  UserOnboardedResponse,
-} from "@repo/contracts/response";
+import type { SessionResponse } from "@repo/contracts/response/auth";
+import type { EmptyResponse } from "@repo/contracts/response/common";
 import { regenerateSession, saveSession } from "@/utils/session.js";
 
 export const generateMagicLinkController = async (
@@ -26,7 +24,7 @@ export const generateMagicLinkController = async (
 
     await generateMagicLinkService(email);
 
-    const response: DefaultResponse = {
+    const response: EmptyResponse = {
       success: true,
       message: "If this email exists then a sign in link has been sent on it",
       data: null,
@@ -48,24 +46,21 @@ export const verifyMagicLinkController = async (
       typeof verifyMagicLinkSchema
     >;
 
-    const sessionData = await verifyMagicLinkService(token!);
+    const sessionData = await verifyMagicLinkService(token);
 
     await regenerateSession(req);
 
     req.session.userId = sessionData.userId;
     req.session.email = sessionData.email;
-    req.session.isUserOnboarded = sessionData.isUserOnboarded;
-    req.session.hasOrganization = sessionData.hasOrganization;
-    req.session.isOrganizationOwner = sessionData.isOrganizationOwner;
+    req.session.isOnboarded = sessionData.isOnboarded;
 
     await saveSession(req);
 
-    const response: UserOnboardedResponse = {
+    const response: SessionResponse = {
       success: true,
       message: "Securely Signed In!",
       data: {
-        isUserOnboarded: sessionData.isUserOnboarded,
-        hasOrganization: sessionData.hasOrganization,
+        isOnboarded: sessionData.isOnboarded,
       },
     };
 
@@ -81,14 +76,13 @@ export const sessionController = (
   next: NextFunction,
 ) => {
   try {
-    const { isUserOnboarded, hasOrganization } = req.session;
+    const { isOnboarded } = req.session;
 
-    const response: UserOnboardedResponse = {
+    const response: SessionResponse = {
       success: true,
       message: "Session retrieved successfully",
       data: {
-        isUserOnboarded: isUserOnboarded!,
-        hasOrganization: hasOrganization!,
+        isOnboarded: !!isOnboarded,
       },
     };
     res.status(200).json(response);
