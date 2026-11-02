@@ -18,10 +18,10 @@ export default function WorkspaceError({ error, reset }: ErrorProps) {
   return (
     <div className="flex min-h-screen w-full flex-1 flex-col items-center justify-center p-6 text-center">
       <div className="max-w-md space-y-4">
-        <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
           Something went wrong
         </h2>
-        <p className="text-sm text-muted-foreground">{errorMessage}</p>
+        <p className="text-base text-muted-foreground">{errorMessage}</p>
         <div>
           <Button variant="default" size="lg" onClick={reset}>
             Try again

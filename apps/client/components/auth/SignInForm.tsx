@@ -63,7 +63,7 @@ export default function SignInForm() {
             </div>
           </Field>
           <Field>
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" className="w-full" disabled={isPending}>
               {isPending && <Spinner data-icon="inline-start" />}
               {isPending
                 ? "Sending email"

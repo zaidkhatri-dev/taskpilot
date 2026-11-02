@@ -65,8 +65,8 @@ export default function VerifyContent() {
       {VerificationState === "verifying" && (
         <div className="flex flex-col items-center gap-2">
           <Spinner className="size-15" />
-          <p className="text-sm font-medium">Signing you in...</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xl font-medium">Signing you in...</p>
+          <p className="text-base text-muted-foreground">
             Please wait while we complete your sign in.
           </p>
         </div>
@@ -74,8 +74,8 @@ export default function VerifyContent() {
       {VerificationState === "verified" && (
         <div className="flex flex-col items-center gap-2">
           <CheckCircleIcon className="size-15 text-primary" />
-          <p className="text-sm font-medium">You&apos;re signed in!</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xl font-medium">You&apos;re signed in!</p>
+          <p className="text-base text-muted-foreground">
             Your sign-in was successful. Redirecting you now…
           </p>
         </div>
@@ -83,12 +83,12 @@ export default function VerifyContent() {
       {VerificationState === "failed" && (
         <div className="flex flex-col items-center gap-2">
           <XCircleIcon className="size-15 text-destructive" />
-          <p className="text-sm font-medium text-destructive">{errorMessage}</p>
-          <p className="text-sm font-medium text-destructive mb-3">
+          <p className="text-xl font-medium text-destructive">{errorMessage}</p>
+          <p className="text-base font-medium text-destructive mb-3">
             Request a new sign in link to continue
           </p>
           <Link href="/signin">
-            <Button variant="outline">Request New Link</Button>
+            <Button variant="outline" size="lg">Request New Link</Button>
           </Link>
         </div>
       )}

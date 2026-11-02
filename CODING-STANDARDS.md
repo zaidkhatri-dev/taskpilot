@@ -1,4 +1,5 @@
 General
+
 - Follow the DRY (Don't Repeat Yourself) principle.
 - types that are used by server and client are defined in @repo/contracts
 - types that are only used by apps are defined in there types folder
@@ -30,6 +31,13 @@ Client
 - components are defined in a seperate folder named components.
 - Every action and util function which are of the same module are written in same file.
 - Components of same module are grouped together in a folder.
+- Form submit buttons should be primary, size = default and have full width of the form
+- Action buttons can be primary or secondary, size = large and should have appropriate width (not full screen)
+- Font size hierarchy -
+  pages with only message (like error page) -> heading - xl, paragraph (supporting text) - default.
+  pages with data -> heading - lg, other data (like text, input labels, button text, etc) - default. If hierarchy, then start from default and move to sm (as needed).
+  Do not change font sizes for components defined in @components/ui, they have fixed font sizes.
+- pages with only message should always be centered.
 
 Server
 
