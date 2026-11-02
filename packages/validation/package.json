@@ -2,13 +2,9 @@
   "name": "@repo/validation",
   "type": "module",
   "exports": {
-    "./auth": {
-      "types": "./src/auth.ts",
-      "default": "./dist/auth.js"
-    },
-    "./user": {
-      "types": "./src/user.ts",
-      "default": "./dist/user.js"
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./dist/*.js"
     }
   },
   "scripts": {

@@ -11,6 +11,7 @@ import {
 } from "./controller.js";
 import { emailRateLimiter } from "@/middlewares/email-rate-limiter.js";
 import { requireGuest, requireAuth } from "@/middlewares/auth.js";
+import { regenerateSession, saveSession } from "@/utils/session.js";
 
 const router: Router = Router();
 

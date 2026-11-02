@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { getSession } from "@/lib/actions/auth";
 import Image from "next/image";
+import { useSession } from "@/hooks/queries/useSession";
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -15,59 +15,35 @@ export default function ProtectedRoute({
   requireOnboarding,
 }: ProtectedRouteProps) {
   const router = useRouter();
-  const [authorized, setAuthorized] = useState(false);
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
-    let cancelled = false;
-    let isChecking = false;
+    if (isPending) return;
 
-    async function checkSession() {
-      if (cancelled || isChecking) return;
-      isChecking = true;
-
-      try {
-        const session = await getSession();
-
-        if (!session.ok || !session.data) {
-          router.replace("/signin");
-          return;
-        }
-
-        const isOnboarded = session.data.isOnboarded;
-
-        if (requireOnboarding && !isOnboarded) {
-          router.replace("/onboarding");
-          return;
-        }
-
-        if (!requireOnboarding && isOnboarded) {
-          router.replace("/workspace");
-        }
-
-        if (!cancelled) {
-          setAuthorized(true);
-        }
-      } finally {
-        isChecking = false;
-      }
+    // No valid session → redirect to sign in
+    if (!session) {
+      router.replace("/signin");
+      return;
     }
 
-    async function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
-        await checkSession();
-      }
+    if (requireOnboarding && !session.isOnboarded) {
+      router.replace("/onboarding");
+      return;
     }
 
-    checkSession();
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    if (!requireOnboarding && session.isOnboarded) {
+      router.replace("/workspace");
+    }
+  }, [isPending, session, requireOnboarding, router]);
 
-    return () => {
-      cancelled = true;
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [router, requireOnboarding]);
+  // Show loading spinner while the session query is in-flight or a redirect is pending
+  const isAuthorized =
+    !isPending &&
+    session !== null &&
+    session !== undefined &&
+    (requireOnboarding ? session.isOnboarded : !session.isOnboarded);
 
-  if (!authorized) {
+  if (!isAuthorized) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
         <Image

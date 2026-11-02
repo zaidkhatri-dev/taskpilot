@@ -8,13 +8,11 @@ import cors from "cors";
 import { serverConfig } from "@repo/config/server";
 import authRoutes from "@modules/auth/routes.js";
 import userRoutes from "@modules/user/routes.js";
+import boardRoutes from "@modules/board/routes.js";
+import workspaceRoutes from "@modules/workspace/routes.js";
 import { requireAuth, requireOnboarding } from "@middlewares/auth.js";
 
 const app: Express = express();
-
-app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
@@ -24,6 +22,10 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   }),
 );
+
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(checkIsServerShuttingDown);
 
@@ -45,6 +47,8 @@ app.use(requireAuth);
 app.use(`${API_PREFIX}/users`, userRoutes);
 
 app.use(requireOnboarding);
+app.use(`${API_PREFIX}/workspaces`, workspaceRoutes);
+app.use(`${API_PREFIX}/boards`, boardRoutes);
 
 app.use(globalErrorHandler);
 

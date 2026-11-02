@@ -1,50 +1,25 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { getSession } from "@/lib/actions/auth";
 import Image from "next/image";
+import { useSession } from "@/hooks/queries/useSession";
+
 export default function GuestRoute({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const [isGuest, setIsGuest] = useState(false);
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
-    let cancelled = false;
-    let isChecking = false;
+    if (isPending) return;
 
-    async function checkSession() {
-      if (cancelled || isChecking) return;
-      isChecking = true;
-
-      try {
-        const session = await getSession();
-
-        if (!session.ok || !session.data) {
-          if (!cancelled) setIsGuest(true);
-          return;
-        }
-
-        router.replace(session.data.isOnboarded ? "/workspace" : "/onboarding");
-      } finally {
-        isChecking = false;
-      }
+    // If session exists, authenticated users shouldn't be on guest routes
+    if (session) {
+      router.replace(session.isOnboarded ? "/workspace" : "/onboarding");
     }
+  }, [isPending, session, router]);
 
-    async function handleVisibilityChange() {
-      if (document.visibilityState === "visible") {
-        await checkSession();
-      }
-    }
-
-    checkSession();
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      cancelled = true;
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [router]);
+  // While loading session or when a user is logged in (about to redirect), show loader
+  const isGuest = !isPending && !session;
 
   if (!isGuest) {
     return (

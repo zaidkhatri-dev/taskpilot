@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -9,33 +11,28 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { useEffect, useState } from "react";
-import type { FieldError as FieldErrorType } from "@/types/form";
+import { useActionState, useEffect, useState } from "react";
 import { getFieldError } from "@/lib/utils/form";
+import { generateLink } from "@/lib/actions/auth";
+import { toast } from "@/components/ui/toast";
 
-interface SignInFormProps {
-  formAction: (formData: FormData) => void;
-  isPending: boolean;
-  fieldErrors: FieldErrorType[] | null;
-  values: Record<string, unknown>;
-  isSuccess?: boolean;
-}
-
-export default function SignInForm({
-  formAction,
-  isPending,
-  fieldErrors,
-  values,
-  isSuccess,
-}: SignInFormProps) {
+export default function SignInForm() {
+  const [state, formAction, isPending] = useActionState(generateLink, null);
   const [emailCount, setEmailCount] = useState(0);
-  const emailError = getFieldError(fieldErrors, "email");
+
+  const emailError = getFieldError(state?.errors ?? null, "email");
 
   useEffect(() => {
-    if (isSuccess) {
+    if (!state) return;
+    if (state.errors?.length) return;
+
+    if (state.success) {
       setEmailCount((prev) => prev + 1);
+      toast.add({ description: state.message, type: "success" });
+    } else {
+      toast.add({ description: state.message, type: "error", priority: "high" });
     }
-  }, [isSuccess]);
+  }, [state]);
 
   return (
     <form noValidate className="w-full max-w-xs" action={formAction}>
@@ -50,7 +47,7 @@ export default function SignInForm({
               type="email"
               name="email"
               required
-              defaultValue={values?.email ? String(values.email) : ""}
+              defaultValue={state?.values?.email ? String(state.values.email) : ""}
               aria-invalid={!!emailError}
               aria-describedby={emailError ? "email-error" : "email-desc"}
             />
@@ -59,7 +56,8 @@ export default function SignInForm({
                 <FieldError id="email-error">{emailError}</FieldError>
               ) : (
                 <FieldDescription id="email-desc">
-                  We'll send an email with a one-time secure link to sign in.
+                  We&apos;ll send an email with a one-time secure link to sign
+                  in.
                 </FieldDescription>
               )}
             </div>

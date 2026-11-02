@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -10,25 +12,57 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import type { FormProps } from "@/types/form";
-import { useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import AvatarDialog from "@/components/auth/AvatarDialog";
 import { getFieldError } from "@/lib/utils/form";
+import { completeOnboarding } from "@/lib/actions/user";
+import { toast } from "@/components/ui/toast";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/hooks/queries/keys";
 
-export default function OnboardingForm({
-  formAction,
-  isPending,
-  fieldErrors,
-  values,
-}: FormProps) {
-  const [selected, setSelected] = useState<string>(
-    values?.avatar ? String(values.avatar) : "avatar_01",
+export default function OnboardingForm() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const hasActedRef = useRef(false);
+  const [state, formAction, isPending] = useActionState(
+    completeOnboarding,
+    null,
   );
 
-  const avatarIdError = getFieldError(fieldErrors, "avatarId");
-  const firstNameError = getFieldError(fieldErrors, "firstName");
-  const lastNameError = getFieldError(fieldErrors, "lastName");
-  const usernameError = getFieldError(fieldErrors, "username");
+  const [selected, setSelected] = useState<string>(
+    state?.values?.avatar ? String(state.values.avatar) : "avatar_01",
+  );
+
+  const avatarIdError = getFieldError(state?.errors ?? null, "avatarId");
+  const firstNameError = getFieldError(state?.errors ?? null, "firstName");
+  const lastNameError = getFieldError(state?.errors ?? null, "lastName");
+  const usernameError = getFieldError(state?.errors ?? null, "username");
+
+  useEffect(() => {
+    if (!state) return;
+    if (state.errors?.length) return;
+    // Guard against re-firing on remount with the same state object
+    if (hasActedRef.current) return;
+    hasActedRef.current = true;
+
+    if (state.success) {
+      toast.add({
+        description: state.message,
+        type: "success",
+      });
+      // Invalidate the cached session so ProtectedRoute immediately sees
+      // isOnboarded: true instead of redirecting back to /onboarding
+      queryClient.invalidateQueries({ queryKey: queryKeys.session });
+      router.replace("/workspace");
+    } else {
+      toast.add({
+        description: state.message,
+        type: "error",
+        priority: "high",
+      });
+    }
+  }, [state, router, queryClient]);
 
   return (
     <form noValidate className="w-full max-w-sm" action={formAction}>
@@ -79,7 +113,9 @@ export default function OnboardingForm({
                 id="firstName"
                 required
                 autoComplete="given-name"
-                defaultValue={values?.firstName ? String(values.firstName) : ""}
+                defaultValue={
+                  state?.values?.firstName ? String(state.values.firstName) : ""
+                }
                 aria-invalid={!!firstNameError}
                 aria-describedby={
                   firstNameError ? "firstName-error" : "firstName-desc"
@@ -104,7 +140,9 @@ export default function OnboardingForm({
                 id="lastName"
                 required
                 autoComplete="family-name"
-                defaultValue={values?.lastName ? String(values.lastName) : ""}
+                defaultValue={
+                  state?.values?.lastName ? String(state.values.lastName) : ""
+                }
                 aria-invalid={!!lastNameError}
                 aria-describedby={
                   lastNameError ? "lastName-error" : "lastName-desc"
@@ -130,7 +168,9 @@ export default function OnboardingForm({
               id="username"
               required
               autoComplete="off"
-              defaultValue={values?.username ? String(values.username) : ""}
+              defaultValue={
+                state?.values?.username ? String(state.values.username) : ""
+              }
               aria-invalid={!!usernameError}
               aria-describedby={
                 usernameError ? "username-error" : "username-desc"
@@ -148,7 +188,7 @@ export default function OnboardingForm({
           </Field>
           <Button type="submit" disabled={isPending}>
             {isPending && <Spinner data-icon="inline-start" />}
-            {isPending ? "Submitting..." : "Complete onboarding"}
+            {isPending ? "Submitting..." : "Onboard me"}
           </Button>
         </FieldGroup>
       </FieldSet>

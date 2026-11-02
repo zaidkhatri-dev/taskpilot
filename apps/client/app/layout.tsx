@@ -1,7 +1,8 @@
-import type { Metadata, Viewport } from "next";
-import { Inter, Geist } from "next/font/google";
+import type { Metadata } from "next";
+import { Geist } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toast";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -67,7 +68,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`h-full ${geist.variable} dark`}>
-      <body className={`min-h-full`}>{children}</body>
+      <body className={`min-h-full`}>
+        <QueryProvider>
+          {children}
+          <Toaster />
+        </QueryProvider>
+      </body>
     </html>
   );
 }

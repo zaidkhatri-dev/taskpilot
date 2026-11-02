@@ -1,4 +1,4 @@
-import { onboardUser } from "./repository.js";
+import { getUserById, onboardUser } from "./repository.js";
 import { AppError } from "@repo/errors/app-error";
 import type { AvatarId } from "@repo/contracts/miscellaneous/user";
 
@@ -29,6 +29,22 @@ export const onboardingService = async (
   return sessionData;
 };
 
+export const getMeService = async (userId: string) => {
+  const user = await getUserById(userId);
+
+  if (!user) {
+    throw new AppError("Failed to get user data. Please sign in again", 400);
+  }
+
+  return {
+    firstName: user.firstName!,
+    lastName: user.lastName!,
+    username: user.username!,
+    email: user.email,
+    avatarId: user.avatarId!,
+  };
+};
+
 // export const checkUsernameAvailabilityService = async (username: string) => {
 //   const user = await getUserByUsername(username);
 
@@ -37,30 +53,6 @@ export const onboardingService = async (
 //   }
 
 //   return true;
-// };
-
-// export const getMeService = async (userId: string) => {
-//   const data = await getUserAndTeam(userId);
-
-//   if (data.length === 0) {
-//     throw new AppError("Failed to get user data. Please sign in again", 400);
-//   }
-
-//   const first = data[0]!;
-
-//   return {
-//     user: {
-//       firstName: first.firstname!,
-//       lastName: first.lastname!,
-//       username: first.username!,
-//       email: first.email,
-//       avatarId: first.avatarId!,
-//     },
-//     teams: data.map((row) => ({
-//       teamName: row.teamName,
-//       joiningStatus: row.joiningStatus,
-//     })),
-//   };
 // };
 
 // export const updateMeService = async (

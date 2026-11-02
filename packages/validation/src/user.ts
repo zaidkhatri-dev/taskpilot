@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { namePartSchema, userNameSchema } from "./shared.js";
+import { nameSchema50, userNameSchema } from "./shared.js";
 
 const avatarIds = [
   "avatar_01",
@@ -30,15 +30,15 @@ const avatarIds = [
 
 export const onboardingSchema = z.object({
   avatarId: z.enum(avatarIds),
-  firstName: namePartSchema,
-  lastName: namePartSchema,
+  firstName: nameSchema50,
+  lastName: nameSchema50,
   username: userNameSchema,
 });
 
 export const updateMeSchema = z.object({
   avatarId: z.enum(avatarIds).optional(),
-  firstName: namePartSchema.optional(),
-  lastName: namePartSchema.optional(),
+  firstName: nameSchema50.optional(),
+  lastName: nameSchema50.optional(),
   username: userNameSchema.optional(),
 });
 

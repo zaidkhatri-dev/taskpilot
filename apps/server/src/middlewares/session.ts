@@ -16,6 +16,7 @@ const redisStore = new RedisStore({
 });
 
 export const sessionHandler: RequestHandler = session({
+  name: "connect.sid",
   store: redisStore,
   secret: serverConfig.SESSION_SECRET,
   resave: false,

@@ -18,7 +18,12 @@ export async function forwardCookieFromServerToBrowser(res: Response) {
     if (separatorIndex < 1) continue;
 
     const name = nameValue.slice(0, separatorIndex).trim();
-    const value = nameValue.slice(separatorIndex + 1).trim();
+    // The Set-Cookie header value is URL-encoded by express-session (e.g. "s%3A...").
+    // Next.js's cookieStore.set() encodes the value again before writing it to the
+    // browser, which causes double-encoding ("s%253A...").
+    // Decoding once here gives Next.js the plain value to encode exactly once.
+    const rawValue = nameValue.slice(separatorIndex + 1).trim();
+    const value = decodeURIComponent(rawValue);
 
     const getAttribute = (attribute: string) =>
       attributes
@@ -52,7 +57,7 @@ export async function forwardCookieFromServerToBrowser(res: Response) {
   }
 }
 
-export async function getCookie(cookieName: string) {
+export async function getCookieForServerActions(cookieName: string) {
   const cookieStore = await cookies();
   return cookieStore.get(cookieName);
 }

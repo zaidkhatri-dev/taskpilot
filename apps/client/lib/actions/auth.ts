@@ -9,7 +9,10 @@ import { clientConfig } from "@repo/config/client";
 import type { EmptyResponse } from "@repo/contracts/response/common";
 import type { SessionResponse } from "@repo/contracts/response/auth";
 import { handleNetworkError } from "../utils/network";
-import { forwardCookieFromServerToBrowser, getCookie } from "../utils/cookie";
+import {
+  forwardCookieFromServerToBrowser,
+  getCookieForServerActions,
+} from "../utils/cookie";
 import type { FormActionState } from "@/types/form";
 
 export async function generateLink(
@@ -32,7 +35,7 @@ export async function generateLink(
         body: JSON.stringify(result.data),
         headers: {
           "Content-Type": "application/json",
-          Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
         },
         credentials: "include",
       },
@@ -68,7 +71,7 @@ export async function verifyLink(token: string) {
         body: JSON.stringify(result.data),
         headers: {
           "Content-Type": "application/json",
-          Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
         },
         credentials: "include",
       },
@@ -89,30 +92,5 @@ export async function verifyLink(token: string) {
     };
   } catch (error) {
     return handleNetworkError(error);
-  }
-}
-
-export async function getSession() {
-  try {
-    const response = await fetch(
-      `${clientConfig.NEXT_PUBLIC_API_URL}/auth/session`,
-      {
-        method: "GET",
-        headers: {
-          Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
-        },
-        credentials: "include",
-        cache: "no-store",
-      },
-    );
-
-    if (!response.ok) {
-      return { ok: false, data: null };
-    }
-
-    const result: SessionResponse = await response.json();
-    return { ok: true, data: result.data };
-  } catch {
-    return { ok: false, data: null };
   }
 }
