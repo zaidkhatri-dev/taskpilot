@@ -1,7 +1,7 @@
 import { initDb } from "@repo/db/client";
 import { serverConfig } from "@repo/config/server";
 import { boards } from "@repo/db/boards";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 const dbClient = initDb({
   DATABASE_URL: serverConfig.DATABASE_URL,
@@ -11,7 +11,7 @@ const dbClient = initDb({
   DB_SSL: serverConfig.DB_SSL,
 });
 
-export const getWorkspaceBoards = async (workspaceId: string) => {
+export const getBoards = async (workspaceId: string) => {
   const result = await dbClient
     .select({
       id: boards.id,
@@ -24,3 +24,23 @@ export const getWorkspaceBoards = async (workspaceId: string) => {
 
   return result;
 };
+
+export const createBoard = async (workspaceId: string, name: string, description?: string) => {
+  const [result] = await dbClient
+    .insert(boards)
+    .values({
+      workspaceId,
+      name,
+      description,
+    })
+    .returning({
+      id: boards.id,
+      name: boards.name,
+      description: boards.description,
+    });
+
+  return result;
+};
+
+
+

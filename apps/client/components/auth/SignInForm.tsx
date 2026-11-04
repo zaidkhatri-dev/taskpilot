@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { getFieldError } from "@/lib/utils/form";
 import { generateLink } from "@/lib/actions/auth";
 import { toast } from "@/components/ui/toast";
@@ -22,9 +22,15 @@ export default function SignInForm() {
 
   const emailError = getFieldError(state?.errors ?? null, "email");
 
+  const handledSubmissionIdRef = useRef<number | undefined>(
+    state?.submissionId,
+  );
+
   useEffect(() => {
     if (!state) return;
     if (state.errors?.length) return;
+    if (state.submissionId === handledSubmissionIdRef.current) return;
+    handledSubmissionIdRef.current = state.submissionId;
 
     if (state.success) {
       setEmailCount((prev) => prev + 1);
@@ -32,7 +38,8 @@ export default function SignInForm() {
     } else {
       toast.add({ description: state.message, type: "error", priority: "high" });
     }
-  }, [state]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.submissionId]);
 
   return (
     <form noValidate className="w-full max-w-xs" action={formAction}>

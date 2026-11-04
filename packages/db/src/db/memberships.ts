@@ -6,7 +6,7 @@ import { users } from "./users.js";
 import { workspaces } from "./workspaces.js";
 import { USER_WORKSPACE_IDX } from "../constraints.js";
 
-export const workspaceRoles = pgEnum("workspace_role", ["admin", "member"]);
+export const WorkspaceMembershipRoles = pgEnum("workspace_role", ["admin", "member"]);
 
 export const workspaceMemberships = pgTable(
   "workspace_memberships",
@@ -21,7 +21,7 @@ export const workspaceMemberships = pgTable(
       .notNull()
       .references(() => workspaces.id, { onDelete: "cascade" }),
     accepted: boolean("accepted").notNull().default(false),
-    role: workspaceRoles("role").notNull().default("member"),
+    role: WorkspaceMembershipRoles("role").notNull().default("member"),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },

@@ -12,7 +12,9 @@ router.get("/", getMyWorkspacesController);
 
 router.post(
   "/",
-  inputValidator(createWorkspaceSchema),
+  inputValidator({
+    body: createWorkspaceSchema,
+  }),
   createWorkspaceController,
 );
 

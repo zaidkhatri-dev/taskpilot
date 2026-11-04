@@ -38,6 +38,7 @@ Client
   pages with data -> heading - lg, other data (like text, input labels, button text, etc) - default. If hierarchy, then start from default and move to sm (as needed).
   Do not change font sizes for components defined in @components/ui, they have fixed font sizes.
 - pages with only message should always be centered.
+- button text should be only two words - verb noun. Use icons when noun is an entity
 
 Server
 

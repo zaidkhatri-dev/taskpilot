@@ -5,8 +5,7 @@ import { useParams } from "next/navigation";
 import { useWorkspaceBoards } from "@/hooks/queries/useWorkspaceBoards";
 import { BoardCard } from "@/components/workspace/BoardCard";
 import { BoardCardSkeleton } from "@/components/board/BoardCardSkeleton";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
+import { CreateBoardForm } from "@/components/board/CreateBoardForm";
 
 export default function WorkspacePage() {
   const { id } = useParams<{ id: string }>();
@@ -44,13 +43,11 @@ export default function WorkspacePage() {
           </div>
         ) : (
           <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed p-12 text-center">
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-4">
               <h3 className="text-lg font-semibold text-foreground">
                 No boards yet
               </h3>
-              <p className="text-sm text-muted-foreground">
-                Create a new board from the sidebar to get started.
-              </p>
+              <CreateBoardForm workspaceId={id} />
             </div>
           </div>
         )}

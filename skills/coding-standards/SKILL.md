@@ -77,3 +77,13 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Use object destructuring to extract values from props.
 - **React Imports & Hooks**:
   - Use object destructuring to use functions and hooks from React.
+- **Buttons & UI Rules**:
+  - Form submit buttons should be primary, size = default and have full width of the form.
+  - Action buttons can be primary or secondary, size = large and should have appropriate width (not full screen).
+  - Button text should be only two words - verb noun. Use icons when noun is an entity.
+- **Typography & Layout Hierarchy**:
+  - Font size hierarchy:
+    - Pages with only message (like error page): heading - `xl`, paragraph (supporting text) - `default`.
+    - Pages with data: heading - `lg`, other data (like text, input labels, button text, etc) - `default`. If hierarchy, start from `default` and move to `sm` (as needed).
+    - Do not change font sizes for components defined in `@components/ui`, they have fixed font sizes.
+  - Pages with only message should always be centered.

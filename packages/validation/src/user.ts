@@ -29,14 +29,14 @@ const avatarIds = [
 ] as const;
 
 export const onboardingSchema = z.object({
-  avatarId: z.enum(avatarIds),
+  avatarId: z.enum(avatarIds, "Invalid avatar format"),
   firstName: nameSchema50,
   lastName: nameSchema50,
   username: userNameSchema,
 });
 
 export const updateMeSchema = z.object({
-  avatarId: z.enum(avatarIds).optional(),
+  avatarId: z.enum(avatarIds, "Invalid avatar format").optional(),
   firstName: nameSchema50.optional(),
   lastName: nameSchema50.optional(),
   username: userNameSchema.optional(),

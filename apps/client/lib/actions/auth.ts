@@ -47,6 +47,7 @@ export async function generateLink(
       ...data,
       errors: null,
       values: objFormData,
+      submissionId: Date.now(),
     };
   } catch (error) {
     return handleNetworkError(error, objFormData);

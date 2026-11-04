@@ -6,5 +6,7 @@ export const generateMagicLinkSchema = z.object({
 });
 
 export const verifyMagicLinkSchema = z.object({
-  token: z.string().length(64, "The provided URL is invalid"),
+  token: z
+    .string("Invalid token format")
+    .length(64, "The provided URL is invalid"),
 });

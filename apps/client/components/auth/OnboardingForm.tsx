@@ -24,7 +24,6 @@ import { queryKeys } from "@/hooks/queries/keys";
 export default function OnboardingForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const hasActedRef = useRef(false);
   const [state, formAction, isPending] = useActionState(
     completeOnboarding,
     null,
@@ -39,12 +38,15 @@ export default function OnboardingForm() {
   const lastNameError = getFieldError(state?.errors ?? null, "lastName");
   const usernameError = getFieldError(state?.errors ?? null, "username");
 
+  const handledSubmissionIdRef = useRef<number | undefined>(
+    state?.submissionId,
+  );
+
   useEffect(() => {
     if (!state) return;
     if (state.errors?.length) return;
-    // Guard against re-firing on remount with the same state object
-    if (hasActedRef.current) return;
-    hasActedRef.current = true;
+    if (state.submissionId === handledSubmissionIdRef.current) return;
+    handledSubmissionIdRef.current = state.submissionId;
 
     if (state.success) {
       toast.add({
@@ -62,7 +64,8 @@ export default function OnboardingForm() {
         priority: "high",
       });
     }
-  }, [state, router, queryClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.submissionId]);
 
   return (
     <form noValidate className="w-full max-w-sm" action={formAction}>
@@ -188,7 +191,7 @@ export default function OnboardingForm() {
           </Field>
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending && <Spinner data-icon="inline-start" />}
-            {isPending ? "Submitting..." : "Onboard me"}
+            {isPending ? "Creating Account..." : "Create Account"}
           </Button>
         </FieldGroup>
       </FieldSet>

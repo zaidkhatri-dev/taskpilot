@@ -11,13 +11,14 @@ import {
 } from "./controller.js";
 import { emailRateLimiter } from "@/middlewares/email-rate-limiter.js";
 import { requireGuest, requireAuth } from "@/middlewares/auth.js";
-import { regenerateSession, saveSession } from "@/utils/session.js";
 
 const router: Router = Router();
 
 router.post(
   "/link/generate",
-  inputValidator(generateMagicLinkSchema),
+  inputValidator({
+    body: generateMagicLinkSchema,
+  }),
   requireGuest,
   emailRateLimiter,
   generateMagicLinkController,
@@ -25,7 +26,9 @@ router.post(
 
 router.post(
   "/link/verify",
-  inputValidator(verifyMagicLinkSchema),
+  inputValidator({
+    body: verifyMagicLinkSchema,
+  }),
   verifyMagicLinkController,
 );
 

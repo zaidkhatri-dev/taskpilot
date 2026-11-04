@@ -17,6 +17,7 @@ export const getMyWorkspaces = async (userId: string) => {
     .select({
       id: workspaces.id,
       name: workspaces.name,
+      role: workspaceMemberships.role,
     })
     .from(workspaces)
     .innerJoin(
@@ -45,14 +46,12 @@ export const createWorkspace = async (userId: string, name: string) => {
       return null;
     }
 
-    await tx
-      .insert(workspaceMemberships)
-      .values({
-        userId,
-        workspaceId: workspace.id,
-        role: "admin",
-        accepted: true,
-      });
+    await tx.insert(workspaceMemberships).values({
+      userId,
+      workspaceId: workspace.id,
+      role: "admin",
+      accepted: true,
+    });
 
     return workspace;
   });

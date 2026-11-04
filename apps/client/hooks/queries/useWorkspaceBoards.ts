@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getWorkspaceBoards } from "@/lib/services/board";
+import { getBoards } from "@/lib/services/board";
 import { queryKeys } from "@/hooks/queries/keys";
 
 export function useWorkspaceBoards(workspaceId: string) {
@@ -10,7 +10,7 @@ export function useWorkspaceBoards(workspaceId: string) {
     queryKey: queryKeys.boards.all(workspaceId),
 
     queryFn: async () => {
-      const result = await getWorkspaceBoards(workspaceId);
+      const result = await getBoards(workspaceId);
 
       if (!result.success || !result.data) {
         throw new Error(result.message);

@@ -8,7 +8,9 @@ const router: Router = Router();
 
 router.post(
   "/onboarding",
-  inputValidator(onboardingSchema),
+  inputValidator({
+    body: onboardingSchema,
+  }),
   onboardingController,
 );
 

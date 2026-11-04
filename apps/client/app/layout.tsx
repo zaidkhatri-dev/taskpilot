@@ -71,7 +71,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className={`min-h-full`}>
         <QueryProvider>
           {children}
-          <Toaster />
+          <Toaster timeout={2000} />
         </QueryProvider>
       </body>
     </html>

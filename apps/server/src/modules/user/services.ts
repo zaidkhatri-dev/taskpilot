@@ -18,7 +18,7 @@ export const onboardingService = async (
   );
 
   if (!updatedUser) {
-    throw new AppError("You are already onboarded", 400);
+    throw new AppError("You already have an account", 400);
   }
 
   const sessionData = {

@@ -1,6 +1,16 @@
 import { z } from "zod";
-import { uuidSchema } from "./shared.js";
+import { nameSchema100, uuidSchema } from "./shared.js";
 
-export const getWorkspaceBoardsSchema = z.object({
+export const getBoardsSchema = z.object({
+  id: uuidSchema,
+});
+
+export const createBoardSchema = z.object({
   workspaceId: uuidSchema,
+  name: nameSchema100,
+  description: z
+    .string("Invalid description format")
+    .trim()
+    .transform((v) => v || undefined)
+    .optional(),
 });

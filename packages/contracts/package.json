@@ -14,7 +14,7 @@
     },
     "./miscellaneous/*": {
       "types": "./src/miscellaneous/*.ts",
-      "default": "./src/miscellaneous/*.js"
+      "default": "./dist/miscellaneous/*.js"
     }
   },
   "scripts": {

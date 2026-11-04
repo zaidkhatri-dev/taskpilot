@@ -6,4 +6,5 @@ export interface BoardItem {
   description: string | null;
 }
 
-export type GetWorkspaceBoardsResponse = ApiResponse<BoardItem[]>;
+export type GetBoardsResponse = ApiResponse<BoardItem[]>;
+export type CreateBoardResponse = ApiResponse<BoardItem>;

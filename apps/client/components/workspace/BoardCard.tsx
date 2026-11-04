@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "cn";
+import { formatName } from "@/lib/utils/formatting";
 
 export interface BoardCardProps {
   board?: BoardItem;
@@ -22,13 +23,13 @@ export const BoardCard = ({
   description: propDescription,
   className,
 }: BoardCardProps) => {
-  const name = board?.name ?? propName ?? "";
+  const name = formatName(board?.name ?? propName ?? "");
   const description = board?.description ?? propDescription ?? null;
 
   return (
     <Card
       className={cn(
-        "overflow-hidden transition-all duration-200 hover:shadow-lg",
+        "h-full overflow-hidden transition-all duration-200 hover:shadow-lg",
         className,
       )}
     >
@@ -39,15 +40,12 @@ export const BoardCard = ({
       />
       <CardHeader>
         <CardTitle className="truncate">{name}</CardTitle>
-        {description ? (
-          <CardDescription className="line-clamp-2">
-            {description}
-          </CardDescription>
-        ) : null}
+        <CardDescription className="line-clamp-2 min-h-10">
+          {description ?? "\u00A0"}
+        </CardDescription>
       </CardHeader>
     </Card>
   );
 };
 
 export default BoardCard;
-

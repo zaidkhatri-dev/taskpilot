@@ -1,4 +1,8 @@
+import { Permission, PERMISSIONS } from "@repo/contracts/miscellaneous/auth";
+import { getUserWorkspaceMembershipFromIds } from "@/modules/membership/repository.js";
+import { WorkspaceMembershipRoles } from "@/types/membership.js";
 import { serverConfig } from "@repo/config/server";
+import { AppError } from "@repo/errors/app-error";
 
 export const generateMagicLink = (token: string) => {
   return `${serverConfig.EMAIL_VERIFICATION_BASE_URL}?token=${token}`;
@@ -79,4 +83,21 @@ export const getEmailBody = (email: string, link: string) => {
 </body>
 </html>
   `;
+};
+
+const checkPermission = (permission: Permission, userRole: WorkspaceMembershipRoles) => {
+  return PERMISSIONS[permission]?.includes(userRole) ?? false;
+}
+
+export const assertWorkspacePermission = async (
+  userId: string,
+  workspaceId: string,
+  permission: Permission,
+) => {
+  const membership = await getUserWorkspaceMembershipFromIds(workspaceId, userId);
+  if (!membership) throw new AppError("Workspace not found", 404);
+  if (!checkPermission(permission, membership.role)) {
+    throw new AppError("You don't have permission to perform this action", 403);
+  }
+  return membership;
 };

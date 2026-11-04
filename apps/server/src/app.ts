@@ -48,7 +48,7 @@ app.use(`${API_PREFIX}/users`, userRoutes);
 
 app.use(requireOnboarding);
 app.use(`${API_PREFIX}/workspaces`, workspaceRoutes);
-app.use(`${API_PREFIX}/boards`, boardRoutes);
+app.use(`${API_PREFIX}/workspaces/:id/boards`, boardRoutes);
 
 app.use(globalErrorHandler);
 

@@ -1,14 +1,25 @@
 import { Router } from "express";
-import { getWorkspaceBoardsController } from "./controller.js";
+import { getBoardsController, createBoardController } from "./controller.js";
 import { inputValidator } from "@/middlewares/input-validator.js";
-import { getWorkspaceBoardsSchema } from "@repo/validation/board";
+import { createBoardSchema, getBoardsSchema } from "@repo/validation/board";
 
-const router: Router = Router();
+const router: Router = Router({ mergeParams: true });
 
 router.get(
   "/",
-  inputValidator(getWorkspaceBoardsSchema),
-  getWorkspaceBoardsController,
+  inputValidator({
+    params: getBoardsSchema,
+  }),
+  getBoardsController,
+);
+
+router.post(
+  "/",
+  inputValidator({
+    body: createBoardSchema.omit({ workspaceId: true }),
+    params: getBoardsSchema,
+  }),
+  createBoardController,
 );
 
 export default router;

@@ -19,7 +19,7 @@ export const onboardingController = async (
     const userId = req.session.userId!;
 
     if (req.session.isOnboarded) {
-      throw new AppError("User is already onboarded", 409);
+      throw new AppError("You already have an account", 409);
     }
 
     const sessionData = await onboardingService(
@@ -40,7 +40,7 @@ export const onboardingController = async (
 
     const response: EmptyResponse = {
       success: true,
-      message: "Onboarding completed successfully",
+      message: "Your account has been created successfully",
       data: null,
     };
 

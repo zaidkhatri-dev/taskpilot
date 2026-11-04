@@ -14,7 +14,7 @@ export function validateAction(
 
     return {
       success: false,
-      message: errors[0]?.message || "The provided input is invalid",
+      message: "Validation failed",
       errors,
       data: null,
       values: formData,

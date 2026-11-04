@@ -9,6 +9,7 @@ export interface FormActionState {
   errors: FieldError[] | null;
   values: Record<string, unknown> | null;
   data: Record<string, unknown> | null;
+  submissionId?: number;
 }
 
 export interface FormProps {

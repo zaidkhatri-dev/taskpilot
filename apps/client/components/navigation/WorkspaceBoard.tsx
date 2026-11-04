@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useWorkspaceBoards } from "@/hooks/queries/useWorkspaceBoards";
+import { CreateBoardForm } from "@/components/board/CreateBoardForm";
+import { formatName } from "@/lib/utils/formatting";
 
 interface WorkspaceBoardsProps {
   workspaceId: string;
@@ -39,10 +41,15 @@ export function WorkspaceBoards({ workspaceId }: WorkspaceBoardsProps) {
     <SidebarGroup>
       <SidebarGroupLabel>Boards</SidebarGroupLabel>
 
-      <SidebarGroupAction title="New Board">
-        <Plus />
-        <span className="sr-only">New Board</span>
-      </SidebarGroupAction>
+      <CreateBoardForm
+        workspaceId={workspaceId}
+        trigger={
+          <SidebarGroupAction title="New Board">
+            <Plus />
+            <span className="sr-only">New Board</span>
+          </SidebarGroupAction>
+        }
+      />
 
       <SidebarGroupContent>
         <SidebarMenu>
@@ -62,9 +69,9 @@ export function WorkspaceBoards({ workspaceId }: WorkspaceBoardsProps) {
                     />
                   }
                   isActive={params.boardId === board.id}
-                  tooltip={board.name}
+                  tooltip={formatName(board.name)}
                 >
-                  <span className="truncate">{board.name}</span>
+                  <span className="truncate">{formatName(board.name)}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))

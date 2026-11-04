@@ -80,6 +80,7 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
 - **Buttons & UI Rules**:
   - Form submit buttons should be primary, size = default and have full width of the form.
   - Action buttons can be primary or secondary, size = large and should have appropriate width (not full screen).
+  - Button text should be only two words - verb noun. Use icons when noun is an entity.
 - **Typography & Layout Hierarchy**:
   - Font size hierarchy:
     - Pages with only message (like error page): heading - `xl`, paragraph (supporting text) - `default`.
