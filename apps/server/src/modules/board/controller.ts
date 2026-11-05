@@ -3,9 +3,10 @@ import {
   GetBoardsResponse,
   CreateBoardResponse,
 } from "@repo/contracts/response/board";
-import { getBoardsSchema, createBoardSchema } from "@repo/validation/board";
+import { createBoardSchema } from "@repo/validation/board";
 import { getBoardsService, createBoardService } from "./services.js";
 import { GetTypeFromSchema } from "@/types/validation.js";
+import { idSchema } from "@repo/validation/shared";
 
 export const getBoardsController = async (
   req: Request,
@@ -13,7 +14,7 @@ export const getBoardsController = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params as GetTypeFromSchema<typeof getBoardsSchema>;
+    const { id } = req.params as GetTypeFromSchema<typeof idSchema>;
     const userId = req.session.userId!;
 
     const data = await getBoardsService(id, userId);
@@ -39,7 +40,7 @@ export const createBoardController = async (
     const { name, description } = req.body as GetTypeFromSchema<
       typeof createBoardSchema
     >;
-    const { id } = req.params as GetTypeFromSchema<typeof getBoardsSchema>;
+    const { id } = req.params as GetTypeFromSchema<typeof idSchema>;
     const userId = req.session.userId!;
 
     const data = await createBoardService(

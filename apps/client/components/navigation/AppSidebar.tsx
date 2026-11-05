@@ -3,14 +3,16 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { WorkspaceBoards } from "./WorkspaceBoard";
 import LogoutButton from "../auth/LogoutButton";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export function AppSidebar({ workspaceId }: { workspaceId: string }) {
+  
+  
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -24,7 +26,6 @@ export function AppSidebar({ workspaceId }: { workspaceId: string }) {
       <SidebarFooter>
         <LogoutButton />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

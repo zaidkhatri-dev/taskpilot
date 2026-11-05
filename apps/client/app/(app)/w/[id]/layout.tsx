@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/AppSidebar";
 import { UpdateLastWorkspace } from "@/components/workspace/UpdateLastWorkspace";
 import { validateParams } from "@/lib/utils/params";
@@ -23,6 +23,7 @@ export default async function WorkspaceIdLayout({
       <AppSidebar workspaceId={id} />
 
       <main className="flex min-h-screen w-full flex-1 flex-col">
+        <SidebarTrigger />
         {children}
       </main>
     </SidebarProvider>

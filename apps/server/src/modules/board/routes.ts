@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { getBoardsController, createBoardController } from "./controller.js";
 import { inputValidator } from "@/middlewares/input-validator.js";
-import { createBoardSchema, getBoardsSchema } from "@repo/validation/board";
+import { createBoardSchema } from "@repo/validation/board";
+import { idSchema } from "@repo/validation/shared";
 
 const router: Router = Router({ mergeParams: true });
 
 router.get(
   "/",
   inputValidator({
-    params: getBoardsSchema,
+    params: idSchema,
   }),
   getBoardsController,
 );
@@ -17,7 +18,7 @@ router.post(
   "/",
   inputValidator({
     body: createBoardSchema.omit({ workspaceId: true }),
-    params: getBoardsSchema,
+    params: idSchema,
   }),
   createBoardController,
 );

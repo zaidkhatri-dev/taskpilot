@@ -35,6 +35,18 @@ export const getMyWorkspaces = async (userId: string) => {
   return result;
 };
 
+export const getWorkspaceById = async (workspaceId: string) => {
+  const [workspace] = await dbClient
+    .select({
+      id: workspaces.id,
+      name: workspaces.name,
+    })
+    .from(workspaces)
+    .where(eq(workspaces.id, workspaceId));
+
+  return workspace;
+};
+
 export const createWorkspace = async (userId: string, name: string) => {
   const workspace = await dbClient.transaction(async (tx) => {
     const [workspace] = await tx
@@ -55,6 +67,16 @@ export const createWorkspace = async (userId: string, name: string) => {
 
     return workspace;
   });
+
+  return workspace;
+};
+
+export const updateWorkspace = async (workspaceId: string, name: string) => {
+  const [workspace] = await dbClient
+    .update(workspaces)
+    .set({ name })
+    .where(eq(workspaces.id, workspaceId))
+    .returning({ id: workspaces.id, name: workspaces.name });
 
   return workspace;
 };

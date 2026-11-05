@@ -1,9 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { createWorkspaceService, getMyWorkspacesService } from "./services.js";
+import { createWorkspaceService, getMyWorkspacesService, updateWorkspaceService } from "./services.js";
 import type {
   GetMyWorkspacesResponse,
   CreateWorkspaceResponse,
+  UpdateWorkspaceResponse,
 } from "@repo/contracts/response/workspace";
+import { GetTypeFromSchema } from "@/types/validation.js";
+import { updateWorkspaceSchema, createWorkspaceSchema } from "@repo/validation/workspace";
+import { idSchema } from "@repo/validation/shared";
 
 export const getMyWorkspacesController = async (
   req: Request,
@@ -34,7 +38,7 @@ export const createWorkspaceController = async (
 ) => {
   try {
     const userId = req.session.userId!;
-    const { name } = req.body;
+    const { name } = req.body as GetTypeFromSchema<typeof createWorkspaceSchema>;
 
     const data = await createWorkspaceService(userId, name);
 
@@ -49,3 +53,28 @@ export const createWorkspaceController = async (
     next(error);
   }
 };
+
+export const updateWorkspaceController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: workspaceId } = req.params as GetTypeFromSchema<typeof idSchema>;
+    const { name } = req.body as GetTypeFromSchema<typeof updateWorkspaceSchema>;
+    const userId = req.session.userId!;
+
+    const data = await updateWorkspaceService(userId, workspaceId, name);
+
+    const response: UpdateWorkspaceResponse = {
+      success: true,
+      message: "Workspace updated successfully",
+      data,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+

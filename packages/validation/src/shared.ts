@@ -30,4 +30,6 @@ export const nameSchema100 = z
   .min(1, "Name must be at least 1 character long")
   .max(100, "Name must be at most 100 characters long");
 
-export const uuidSchema = z.uuid("Invalid ID format");
+export const idSchema = z.object({
+  id: z.uuid("Invalid ID format"),
+});

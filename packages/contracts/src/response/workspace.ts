@@ -8,3 +8,4 @@ export interface WorkspaceItem {
 export type GetMyWorkspacesResponse = ApiResponse<WorkspaceItem[]>;
 
 export type CreateWorkspaceResponse = ApiResponse<WorkspaceItem>;
+export type UpdateWorkspaceResponse = ApiResponse<WorkspaceItem>;

@@ -1,7 +1,6 @@
-import { z } from "zod";
-import { uuidSchema } from "@repo/validation/shared";
+import { idSchema } from "@repo/validation/shared";
 
 export function validateParams(params: string) {
-  const result = uuidSchema.safeParse(params);
+  const result = idSchema.safeParse({ id: params });
   return result.success;
 }
