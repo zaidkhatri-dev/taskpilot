@@ -1,9 +1,10 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { logout } from "@/lib/services/auth";
 import { getSession } from "@/lib/services/auth";
-import { queryKeys } from "@/hooks/queries/keys";
+import { queryKeys } from "@/hooks/keys";
+import { useRouter } from "next/navigation";
 
 export function useSession() {
   return useQuery({
@@ -26,3 +27,16 @@ export function useSession() {
     staleTime: 30_000, // 30 s — avoid hammering the endpoint on every render
   });
 }
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      queryClient.clear();
+      router.replace("/signin");
+    },
+  });
+};

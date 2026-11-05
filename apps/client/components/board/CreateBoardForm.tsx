@@ -25,7 +25,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { createBoard } from "@/lib/actions/board";
 import { toast } from "@/components/ui/toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/hooks/queries/keys";
+import { queryKeys } from "@/hooks/keys";
 
 interface CreateBoardFormProps {
   workspaceId: string;

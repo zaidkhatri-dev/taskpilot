@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { getMyWorkspaces } from "@/lib/services/workspace";
-import { queryKeys } from "@/hooks/queries/keys";
+import { queryKeys } from "@/hooks/keys";
 
 export function useWorkspaces() {
   return useQuery({

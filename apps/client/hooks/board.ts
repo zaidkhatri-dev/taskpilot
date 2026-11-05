@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { getBoards } from "@/lib/services/board";
-import { queryKeys } from "@/hooks/queries/keys";
+import { queryKeys } from "@/hooks/keys";
 
 export function useWorkspaceBoards(workspaceId: string) {
   return useQuery({

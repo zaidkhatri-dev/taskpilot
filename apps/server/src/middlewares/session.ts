@@ -15,6 +15,13 @@ const redisStore = new RedisStore({
   ttl: serverConfig.SESSION_LIFESPAN,
 });
 
+export const sessionCookieOptions = {
+  secure: serverConfig.NODE_ENV === "production",
+  httpOnly: true,
+  sameSite: "lax",
+  path: "/",
+} as const;
+
 export const sessionHandler: RequestHandler = session({
   name: "connect.sid",
   store: redisStore,
@@ -22,9 +29,7 @@ export const sessionHandler: RequestHandler = session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: serverConfig.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "lax",
+    ...sessionCookieOptions,
     maxAge: serverConfig.SESSION_LIFESPAN * 1000,
   },
   rolling: true,

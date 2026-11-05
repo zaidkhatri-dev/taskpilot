@@ -24,7 +24,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { createWorkspace } from "@/lib/actions/workspace";
 import { toast } from "@/components/ui/toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/hooks/queries/keys";
+import { queryKeys } from "@/hooks/keys";
 import { useRouter } from "next/navigation";
 
 interface CreateWorkspaceFormProps {

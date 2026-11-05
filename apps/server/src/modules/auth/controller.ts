@@ -11,6 +11,7 @@ import {
 import type { SessionResponse } from "@repo/contracts/response/auth";
 import type { EmptyResponse } from "@repo/contracts/response/common";
 import { regenerateSession, saveSession } from "@/utils/session.js";
+import { sessionCookieOptions } from "@/middlewares/session.js";
 
 export const generateMagicLinkController = async (
   req: Request,
@@ -89,4 +90,25 @@ export const sessionController = (
   } catch (error) {
     next(error);
   }
+};
+
+export const logoutController = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  req.session.destroy((err) => {
+    if (err) return next(err);
+
+    res.clearCookie("connect.sid", {
+      ...sessionCookieOptions,
+    });
+
+    const response: EmptyResponse = {
+      success: true,
+      message: "You have been logged out successfully",
+      data: null,
+    };
+    res.status(200).json(response);
+  });
 };

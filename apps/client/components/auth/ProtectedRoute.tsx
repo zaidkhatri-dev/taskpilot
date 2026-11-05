@@ -3,7 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useSession } from "@/hooks/queries/useSession";
+import { useSession } from "@/hooks/auth";
 
 type ProtectedRouteProps = {
   children: ReactNode;

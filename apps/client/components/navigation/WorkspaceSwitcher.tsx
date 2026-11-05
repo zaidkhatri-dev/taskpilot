@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { CreateWorkspaceForm } from "@/components/workspace/CreateWorkspaceForm";
-import { useWorkspaces } from "@/hooks/queries/useWorkspaces";
+import { useWorkspaces } from "@/hooks/workspace";
 import { formatName } from "@/lib/utils/formatting";
 
 interface WorkspaceSwitcherProps {

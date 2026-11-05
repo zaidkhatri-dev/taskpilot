@@ -19,7 +19,7 @@ import { completeOnboarding } from "@/lib/actions/user";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/hooks/queries/keys";
+import { queryKeys } from "@/hooks/keys";
 
 export default function OnboardingForm() {
   const router = useRouter();

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useWorkspaceBoards } from "@/hooks/queries/useWorkspaceBoards";
+import { useWorkspaceBoards } from "@/hooks/board";
 import { BoardCard } from "@/components/workspace/BoardCard";
 import { BoardCardSkeleton } from "@/components/board/BoardCardSkeleton";
 import { CreateBoardForm } from "@/components/board/CreateBoardForm";
