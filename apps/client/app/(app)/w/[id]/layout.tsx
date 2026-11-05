@@ -13,7 +13,7 @@ export default async function WorkspaceIdLayout({
 }) {
   const { id } = await params;
   if (!validateParams(id)) {
-    redirect("/workspace");
+    redirect("/w");
   }
 
   return (

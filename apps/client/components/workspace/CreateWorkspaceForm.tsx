@@ -74,7 +74,7 @@ export function CreateWorkspaceForm({
       queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.all,
       });
-      router.replace(`/workspace/${state.data?.id}`);
+      router.replace(`/w/${state.data?.id}`);
     } else {
       toast.add({
         description: state.message,

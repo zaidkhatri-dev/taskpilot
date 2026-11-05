@@ -65,7 +65,7 @@ export function WorkspaceBoards({ workspaceId }: WorkspaceBoardsProps) {
                 <SidebarMenuButton
                   render={
                     <Link
-                      href={`/workspace/${workspaceId}/board/${board.id}`}
+                      href={`/w/${workspaceId}/b/${board.id}`}
                     />
                   }
                   isActive={params.boardId === board.id}

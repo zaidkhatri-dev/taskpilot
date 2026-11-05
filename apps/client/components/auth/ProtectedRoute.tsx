@@ -32,7 +32,7 @@ export default function ProtectedRoute({
     }
 
     if (!requireOnboarding && session.isOnboarded) {
-      router.replace("/workspace");
+      router.replace("/w");
     }
   }, [isPending, session, requireOnboarding, router]);
 

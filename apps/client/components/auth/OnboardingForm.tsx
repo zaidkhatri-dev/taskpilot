@@ -56,7 +56,7 @@ export default function OnboardingForm() {
       // Invalidate the cached session so ProtectedRoute immediately sees
       // isOnboarded: true instead of redirecting back to /onboarding
       queryClient.invalidateQueries({ queryKey: queryKeys.session });
-      router.replace("/workspace");
+      router.replace("/w");
     } else {
       toast.add({
         description: state.message,

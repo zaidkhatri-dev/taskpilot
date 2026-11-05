@@ -40,7 +40,7 @@ export default function VerifyContent() {
 
           const isOnboarded = result.data?.isOnboarded;
 
-          router.replace(isOnboarded ? "/workspace" : "/onboarding");
+          router.replace(isOnboarded ? "/w" : "/onboarding");
         } else {
           setVerificationState("failed");
           setErrorMessage(result.message);

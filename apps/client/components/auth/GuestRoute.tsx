@@ -14,7 +14,7 @@ export default function GuestRoute({ children }: { children: ReactNode }) {
 
     // If session exists, authenticated users shouldn't be on guest routes
     if (session) {
-      router.replace(session.isOnboarded ? "/workspace" : "/onboarding");
+      router.replace(session.isOnboarded ? "/w" : "/onboarding");
     }
   }, [isPending, session, router]);
 

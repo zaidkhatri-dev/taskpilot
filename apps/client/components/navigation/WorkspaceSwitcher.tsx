@@ -100,7 +100,7 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
                     <DropdownMenuItem
                       key={workspace.id}
                       className="gap-2"
-                      onClick={() => router.push(`/workspace/${workspace.id}`)}
+                      onClick={() => router.push(`/w/${workspace.id}`)}
                     >
                       <WorkspaceAvatar name={name} />
 

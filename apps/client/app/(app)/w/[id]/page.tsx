@@ -34,7 +34,7 @@ export default function WorkspacePage() {
             {boards.map((board) => (
               <Link
                 key={board.id}
-                href={`/workspace/${id}/board/${board.id}`}
+                href={`/w/${id}/b/${board.id}`}
                 className="block rounded-4xl transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <BoardCard board={board} />

@@ -27,5 +27,5 @@ export default async function WorkspacePage() {
     return <NoWorkspace />;
   }
 
-  redirect(`/workspace/${workspace.id}`);
+  redirect(`/w/${workspace.id}`);
 }
