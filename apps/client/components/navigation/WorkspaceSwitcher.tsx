@@ -56,7 +56,7 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
     workspaces.find((workspace) => workspace.id === workspaceId) ?? null;
 
   if (!activeWorkspace) {
-    throw new Error("Active workspace not found.");
+    throw new Error("Workspace not found.");
   }
 
   const activeName = formatName(activeWorkspace.name);

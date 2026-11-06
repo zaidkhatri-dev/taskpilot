@@ -55,7 +55,7 @@ export const createWorkspace = async (userId: string, name: string) => {
       .returning({ id: workspaces.id, name: workspaces.name });
 
     if (!workspace) {
-      return null;
+      throw new Error("Workspace insert returned no row");
     }
 
     await tx.insert(workspaceMemberships).values({

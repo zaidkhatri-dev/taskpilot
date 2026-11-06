@@ -7,5 +7,5 @@ export const createWorkspaceSchema = z.object({
 
 export const updateWorkspaceSchema = z.object({
   workspaceId: idSchema.shape.id,
-  name: nameSchema100.optional(),
+  name: nameSchema100,
 });

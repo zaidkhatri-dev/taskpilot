@@ -18,7 +18,7 @@ export const onboardingService = async (
   );
 
   if (!updatedUser) {
-    throw new AppError("You already have an account", 400);
+    throw new AppError("Account creation failed", 400);
   }
 
   const sessionData = {
@@ -32,17 +32,7 @@ export const onboardingService = async (
 export const getMeService = async (userId: string) => {
   const user = await getUserById(userId);
 
-  if (!user) {
-    throw new AppError("Failed to get user data. Please sign in again", 400);
-  }
-
-  return {
-    firstName: user.firstName!,
-    lastName: user.lastName!,
-    username: user.username!,
-    email: user.email,
-    avatarId: user.avatarId!,
-  };
+  return user;
 };
 
 // export const checkUsernameAvailabilityService = async (username: string) => {

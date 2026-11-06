@@ -13,6 +13,5 @@ export const createBoardService = async (workspaceId: string, userId: string, na
   await assertWorkspacePermission(userId, workspaceId, "board:create");
    
   const board = await createBoard(workspaceId, name, description);
-  if (!board) throw new Error("Failed to create board. Please try again later.");
   return board;
 };

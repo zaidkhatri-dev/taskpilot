@@ -38,6 +38,10 @@ export const createBoard = async (workspaceId: string, name: string, description
       name: boards.name,
       description: boards.description,
     });
+    
+    if (!result) {
+      throw new Error("Board insert returned no row");
+    }
 
   return result;
 };
