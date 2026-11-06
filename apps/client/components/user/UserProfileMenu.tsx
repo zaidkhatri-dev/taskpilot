@@ -92,7 +92,9 @@ export const UserProfileMenu = () => {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="gap-2"
-                render={<Link href="" className="cursor-default" />}
+                render={
+                  <Link href="/settings/profile" className="cursor-default" />
+                }
               >
                 <User />
                 Profile
