@@ -12,4 +12,10 @@ export const queryKeys = {
 
     detail: (boardId: string) => ["boards", boardId] as const,
   },
+
+  users: {
+    all: ["users"] as const,
+    detail: (userId: string) => ["users", userId] as const,
+    me: ["users", "me"] as const,
+  },
 };

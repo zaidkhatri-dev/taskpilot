@@ -10,7 +10,7 @@ import {
 
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { WorkspaceBoards } from "./WorkspaceBoard";
-import LogoutButton from "../auth/LogoutButton";
+import { UserProfileMenu } from "@/components/user/UserProfileMenu";
 
 interface AppSidebarProps {
   workspaceId: string;
@@ -52,7 +52,7 @@ export const AppSidebar = ({ workspaceId }: AppSidebarProps) => {
       </SidebarContent>
 
       <SidebarFooter className="group-data-[collapsible=icon]:hidden">
-        <LogoutButton />
+        <UserProfileMenu />
       </SidebarFooter>
     </Sidebar>
   );

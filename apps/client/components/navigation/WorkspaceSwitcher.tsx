@@ -66,7 +66,14 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
-            <DropdownMenuTrigger render={<SidebarMenuButton size="lg" className="h-11 py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar" />}>
+            <DropdownMenuTrigger
+              render={
+                <SidebarMenuButton
+                  size="lg"
+                  className="h-11 py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar"
+                />
+              }
+            >
               <WorkspaceAvatar name={activeName} />
 
               <span className="min-w-0 flex-1 truncate text-left text-sm font-medium">
