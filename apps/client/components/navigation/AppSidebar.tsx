@@ -1,10 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
@@ -51,7 +55,23 @@ export const AppSidebar = ({ workspaceId }: AppSidebarProps) => {
         <WorkspaceBoards workspaceId={workspaceId} />
       </SidebarContent>
 
-      <SidebarFooter className="group-data-[collapsible=icon]:hidden">
+      <SidebarFooter className="gap-3 group-data-[collapsible=icon]:hidden">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              render={
+                <Link
+                  href={`/w/${workspaceId}/settings`}
+                  className="cursor-default"
+                />
+              }
+              tooltip="Settings"
+            >
+              <Settings />
+              <span>Settings</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <UserProfileMenu />
       </SidebarFooter>
     </Sidebar>
