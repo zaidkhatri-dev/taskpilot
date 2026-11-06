@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Plus } from "lucide-react";
+import { KanbanIcon, Plus } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -66,11 +66,13 @@ export function WorkspaceBoards({ workspaceId }: WorkspaceBoardsProps) {
                   render={
                     <Link
                       href={`/w/${workspaceId}/b/${board.id}`}
+                      className="cursor-default"
                     />
                   }
                   isActive={params.boardId === board.id}
                   tooltip={formatName(board.name)}
                 >
+                  <KanbanIcon />
                   <span className="truncate">{formatName(board.name)}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

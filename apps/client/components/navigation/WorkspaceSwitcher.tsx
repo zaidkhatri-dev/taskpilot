@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, EllipsisIcon, Plus } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -66,19 +66,18 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
-            <DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}>
+            <DropdownMenuTrigger render={<SidebarMenuButton size="lg" className="h-11 py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar" />}>
               <WorkspaceAvatar name={activeName} />
 
               <span className="min-w-0 flex-1 truncate text-left text-sm font-medium">
                 {activeName}
               </span>
-
-              <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
+              <EllipsisIcon />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
               align="start"
-              className="w-(--anchor-width) min-w-60"
+              className="w-(--anchor-width) min-w-60 bg-sidebar p-1.5 border border-sidebar-border shadow-lg"
             >
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="text-xs text-muted-foreground">

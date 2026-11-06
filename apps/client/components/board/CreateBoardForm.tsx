@@ -30,11 +30,13 @@ import { queryKeys } from "@/hooks/keys";
 interface CreateBoardFormProps {
   workspaceId: string;
   trigger?: React.ReactElement;
+  triggerIsNativeButton?: boolean;
 }
 
 export const CreateBoardForm = ({
   workspaceId,
   trigger,
+  triggerIsNativeButton = true,
 }: CreateBoardFormProps) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -81,6 +83,7 @@ export const CreateBoardForm = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
+        nativeButton={triggerIsNativeButton}
         render={
           trigger ?? (
             <Button size="lg">

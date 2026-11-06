@@ -87,8 +87,10 @@ export default function VerifyContent() {
           <p className="text-base font-medium text-destructive mb-3">
             Request a new sign in link to continue
           </p>
-          <Link href="/signin">
-            <Button variant="outline" size="lg">Request New Link</Button>
+          <Link href="/signin" className="cursor-default">
+            <Button variant="outline" size="lg">
+              Request New Link
+            </Button>
           </Link>
         </div>
       )}

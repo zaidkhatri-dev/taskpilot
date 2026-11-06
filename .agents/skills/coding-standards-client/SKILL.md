@@ -1,13 +1,21 @@
 ---
-name: coding-standards
+name: coding-standards-client
 description: >-
   Coding standards, architectural guidelines, naming conventions, and best practices
-  for developing across the TaskPilot monorepo (server, client, packages).
+  for developing the frontend web client application (apps/client). Use this skill
+  when working on React/Next.js client code, UI components, client hooks, forms, actions, or client state.
 ---
 
-# TaskPilot Coding Standards
+# TaskPilot Client Coding Standards (`apps/client`)
 
-Follow these guidelines and rules when creating, modifying, or refactoring code in the TaskPilot repository.
+Follow these guidelines and rules when creating, modifying, or refactoring code in the client application (`apps/client`).
+
+---
+
+## 0. Context & Efficiency Guideline
+
+- **Context Window & Tool Efficiency**:
+  - Do not make any unnecessary tool call or use any file which is not relevant in the context window.
 
 ---
 
@@ -19,9 +27,7 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Types that are used by both `server` and `client` are defined in `@repo/contracts`.
   - Types that are only used by apps are defined in their respective `types/` folder.
 - **Domain & Module Separation**:
-  - Every package separates files module-wise (e.g., code related to a module `user` is in a separate file `user.ts`).
-  - These files are then grouped in a folder domain-wise (e.g., `@repo/contracts` groups `user.ts` in a `response/` folder).
-  - Package files and internal structures must also be organized domain-wise.
+  - Every package separates files module-wise (e.g., code related to a module `user` is in a separate file `user.ts`). These files are then grouped in a folder domain-wise (e.g., `@repo/contracts` groups `user.ts` in a `response/` folder).
 - **Packages & Code Sharing**:
   - If code is used in multiple apps, it should be in a separate package.
   - Packages export types and functions that are used by apps.
@@ -44,26 +50,7 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
 
 ---
 
-## 2. Server Standards (`apps/server`)
-
-- **Layered Endpoint Architecture**:
-  - Always break down an API endpoint into controller, services, and repository.
-  - Only routes, services, controllers, and repositories are defined in a module folder (`src/modules/<module>/`). Code supporting these files are in a separate file with name same as module in their respective domain folder.
-- **Type Annotations**:
-  - Always add type annotation to final response in controllers (Define these interfaces in `@repo/config`).
-- **Validation Middleware**:
-  - Always use validation middleware for all routes (unless it doesn't have any request body, query or params). Define schemas for such routes in `@repo/validation`.
-- **Repositories & Database Operations**:
-  - Always define generic db functions in repositories and use them in that particular module.
-- **Function Naming Conventions**:
-  - Repository functions: `actionResource` (e.g., `updateUser`).
-  - Service and Controller functions: `actionResourceService` / `actionResourceController` (e.g., `updateUserService`, `updateUserController`).
-- **Module Autonomy**:
-  - A module should be self-contained and should not depend on other modules.
-
----
-
-## 3. Client Standards (`apps/client`)
+## 2. Client-Specific Standards
 
 - **Folder & Structure Conventions**:
   - `hooks` and `lib` are defined in separate folders named `hooks` and `lib` respectively.
@@ -77,13 +64,19 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Use object destructuring to extract values from props.
 - **React Imports & Hooks**:
   - Use object destructuring to use functions and hooks from React.
+  - Use `useActionState` for forms (`POST`/`PATCH`/`PUT`), `useQuery` for fetching data (`GET`), and `useMutation` for rest of it (`DELETE`).
 - **Buttons & UI Rules**:
-  - Form submit buttons should be primary, size = default and have full width of the form.
-  - Action buttons can be primary or secondary, size = large and should have appropriate width (not full screen).
-  - Button text should be only two words - verb noun. Use icons when noun is an entity.
+  - Form submit buttons should be primary, size = default, and have full width of the form.
+  - Action buttons can be primary or secondary, size = large, and should have appropriate width (not full screen).
+  - Button text should be only two words — verb noun. Use icons when noun is an entity.
+  - Every Next.js link (`next/link`) should have `cursor-default` Tailwind class on it.
 - **Typography & Layout Hierarchy**:
   - Font size hierarchy:
     - Pages with only message (like error page): heading - `xl`, paragraph (supporting text) - `default`.
-    - Pages with data: heading - `lg`, other data (like text, input labels, button text, etc) - `default`. If hierarchy, start from `default` and move to `sm` (as needed).
+    - Pages with data: heading - `lg`, other data (like text, input labels, button text, etc) - `default`. If hierarchy, then start from `default` and move to `sm` (as needed).
     - Do not change font sizes for components defined in `@components/ui`, they have fixed font sizes.
   - Pages with only message should always be centered.
+- **Dialogs & Modals (`apps/client/components/ui/dialog.tsx`)**:
+  - Do not use a header description (`DialogDescription`).
+  - The dialog title should follow the format: `<Action> a/your <new/current> <entity>` (e.g., "Create a new board", "Update your current workspace").
+

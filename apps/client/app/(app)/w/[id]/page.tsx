@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Plus } from "lucide-react";
 import { useWorkspaceBoards } from "@/hooks/board";
 import { BoardCard } from "@/components/workspace/BoardCard";
 import { BoardCardSkeleton } from "@/components/board/BoardCardSkeleton";
 import { CreateBoardForm } from "@/components/board/CreateBoardForm";
+import { Card } from "@/components/ui/card";
 
 export default function WorkspacePage() {
   const { id } = useParams<{ id: string }>();
@@ -35,11 +37,26 @@ export default function WorkspacePage() {
               <Link
                 key={board.id}
                 href={`/w/${id}/b/${board.id}`}
-                className="block rounded-4xl transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="cursor-default block rounded-4xl transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <BoardCard board={board} />
               </Link>
             ))}
+
+            <CreateBoardForm
+              workspaceId={id}
+              triggerIsNativeButton={false}
+              trigger={
+                <Card className="flex h-full min-h-60 cursor-default flex-col items-center justify-center gap-3 border-2 border-dashed border-muted-foreground/25 bg-transparent p-6 shadow-none ring-0 transition-all duration-200 hover:-translate-y-1 hover:border-muted-foreground/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <div className="flex size-9 items-center justify-center rounded-full bg-background shadow-xs">
+                    <Plus className="size-4 text-muted-foreground" />
+                  </div>
+                  <span className="font-heading text-base font-medium text-foreground">
+                    Add Board
+                  </span>
+                </Card>
+              }
+            />
           </div>
         ) : (
           <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed p-12 text-center">

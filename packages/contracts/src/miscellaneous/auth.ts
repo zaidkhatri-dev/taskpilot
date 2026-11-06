@@ -5,12 +5,13 @@ export interface EmailJobData {
   html: string;
 }
 
-export const PERMISSIONS: Readonly<Record<string, WorkspaceMembershipRoles[]>> = {
-  'board:create': ['admin'],
-  'board:view':   ['admin', 'member'],
-  'board:delete': ['admin'],
-}
+export const PERMISSIONS: Readonly<Record<string, WorkspaceMembershipRoles[]>> =
+  {
+    "board:create": ["admin"],
+    "board:view": ["admin", "member"],
+    "board:delete": ["admin"],
+    "workspace:update": ["admin"],
+  };
 
 export type Permission = keyof typeof PERMISSIONS;
 export type WorkspaceMembershipRoles = "admin" | "member";
-

@@ -23,7 +23,9 @@ export default async function WorkspaceIdLayout({
       <AppSidebar workspaceId={id} />
 
       <main className="flex min-h-screen w-full flex-1 flex-col">
-        <SidebarTrigger />
+        <header className="flex h-12 items-center border-b px-4 md:hidden">
+          <SidebarTrigger />
+        </header>
         {children}
       </main>
     </SidebarProvider>
