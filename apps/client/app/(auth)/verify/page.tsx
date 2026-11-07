@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import VerifyContent from "@/components/auth/VerifyContent";
 import Image from "next/image";
 
-export default function Verify() {
+export default function VerifyPage() {
   return (
     <Suspense
       fallback={

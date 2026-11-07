@@ -2,7 +2,7 @@ import SignInForm from "@/components/auth/SignInForm";
 import GuestRoute from "@/components/auth/GuestRoute";
 import Image from "next/image";
 
-export default function Signin() {
+export default function SigninPage() {
   return (
     <GuestRoute>
       <div className="flex min-h-screen items-center justify-center p-4">

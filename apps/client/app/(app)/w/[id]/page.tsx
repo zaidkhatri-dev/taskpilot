@@ -9,7 +9,7 @@ import { BoardCardSkeleton } from "@/components/board/BoardCardSkeleton";
 import { CreateBoardForm } from "@/components/board/CreateBoardForm";
 import { Card } from "@/components/ui/card";
 
-export default function WorkspacePage() {
+export default function WorkspaceIdPage() {
   const { id } = useParams<{ id: string }>();
 
   const { data: boards, isPending, isError, error } = useWorkspaceBoards(id);
