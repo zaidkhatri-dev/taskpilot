@@ -1,6 +1,7 @@
-import { getUserById, onboardUser } from "./repository.js";
+import { getUserById, onboardUser, updateUser } from "./repository.js";
 import { AppError } from "@repo/errors/app-error";
 import type { AvatarId } from "@repo/contracts/miscellaneous/user";
+import { isUnchanged } from "@/utils/miscellaneous.js";
 
 export const onboardingService = async (
   userId: string,
@@ -18,7 +19,7 @@ export const onboardingService = async (
   );
 
   if (!updatedUser) {
-    throw new AppError("Account creation failed", 400);
+    throw new AppError("Failed to create your account", 400);
   }
 
   const sessionData = {
@@ -45,24 +46,41 @@ export const getMeService = async (userId: string) => {
 //   return true;
 // };
 
-// export const updateMeService = async (
-//   userId: string,
-//   username?: string,
-//   avatarId?: AvatarId,
-//   firstName?: string,
-//   lastName?: string,
-// ) => {
-//   const updatedUser = await updateUser(
-//     userId,
-//     username,
-//     avatarId,
-//     firstName,
-//     lastName,
-//   );
+export const updateMeService = async (
+  userId: string,
+  username?: string,
+  avatarId?: AvatarId,
+  firstName?: string,
+  lastName?: string,
+) => {
+  const user = await getUserById(userId);
 
-//   if (!updatedUser) {
-//     throw new AppError("Failed to update user. Please sign in again", 400);
-//   }
+  if (!user) {
+    throw new AppError("Your account was not found", 404);
+  }
 
-//   return;
-// };
+  const input = {
+    username,
+    avatarId,
+    firstName,
+    lastName,
+  };
+
+  if (isUnchanged(input, user)) {
+    return user;
+  }
+  
+  const updatedUser = await updateUser(
+    user.id,
+    username,
+    avatarId,
+    firstName,
+    lastName,
+  );
+
+  if (!updatedUser) {
+    throw new AppError("Failed to update your account", 400);
+  }
+
+  return updatedUser;
+};

@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import type { GetTypeFromSchema } from "@/types/validation.js";
-import { onboardingSchema } from "@repo/validation/user";
-import { getMeService, onboardingService } from "./services.js";
+import { onboardingSchema, updateMeSchema } from "@repo/validation/user";
+import { getMeService, onboardingService, updateMeService } from "./services.js";
 import type { EmptyResponse } from "@repo/contracts/response/common";
-import type { GetMeResponse } from "@repo/contracts/response/user";
+import type { GetMeResponse, UpdateMeResponse } from "@repo/contracts/response/user";
 import { regenerateSession, saveSession } from "@/utils/session.js";
 import { AppError } from "@repo/errors/app-error";
 
@@ -63,7 +63,7 @@ export const getMeController = async (
     const response: GetMeResponse = {
       success: true,
       message: "User fetched successfully",
-      data,
+      data: data ?? null,
     };
 
     res.status(200).json(response);
@@ -96,26 +96,26 @@ export const getMeController = async (
 //   }
 // };
 
-// export const updateMeController = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   try {
-//     const userId = req.session.userId!;
-//     const { username, avatarId, firstName, lastName } =
-//       req.body as GetTypeFromSchema<typeof updateMeSchema>;
+export const updateMeController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.session.userId!;
+    const { username, avatarId, firstName, lastName } =
+      req.body as GetTypeFromSchema<typeof updateMeSchema>;
 
-//     await updateMeService(userId, username, avatarId, firstName, lastName);
+    const updatedUser = await updateMeService(userId, username, avatarId, firstName, lastName);
 
-//     const response: EmptyResponse = {
-//       success: true,
-//       message: "User updated successfully",
-//       data: null,
-//     };
+    const response: UpdateMeResponse = {
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser,
+    };
 
-//     res.status(200).json(response);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};

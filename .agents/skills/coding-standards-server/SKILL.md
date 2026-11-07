@@ -63,7 +63,9 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Always define generic db functions in repositories and use them in that particular module.
   - In create repository functions, throw `Error('[Entity] insert returned no row')` to satisfy TypeScript when a row is expected.
 - **Services & Business Logic**:
-  - In service functions for update operations, an `if` branch is required after the update db call which checks the condition in the `where` clause and throws an application error if that condition fails.
+  - In service functions for update operations:
+    - Before updating, compare provided input fields against the existing record using `isUnchanged` from `@/utils/miscellaneous.js`; if unchanged, return the existing record early without issuing unnecessary DB update queries.
+    - An `if` branch is required after the update DB call which checks the condition in the `where` clause and throws an application error if that condition fails.
 - **Function Naming Conventions**:
   - Repository functions: `actionResource` (e.g., `updateUser`).
   - Service and Controller functions: `actionResourceService` / `actionResourceController` (e.g., `updateUserService`, `updateUserController`).

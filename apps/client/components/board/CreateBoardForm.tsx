@@ -26,6 +26,7 @@ import { createBoard } from "@/lib/actions/board";
 import { toast } from "@/components/ui/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/hooks/keys";
+import { useWorkspacePermission } from "@/hooks/workspace";
 
 interface CreateBoardFormProps {
   workspaceId: string;
@@ -38,6 +39,7 @@ export const CreateBoardForm = ({
   trigger,
   triggerIsNativeButton = true,
 }: CreateBoardFormProps) => {
+  const canCreateBoard = useWorkspacePermission(workspaceId, "board:create");
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(createBoard, null);
@@ -79,6 +81,10 @@ export const CreateBoardForm = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.submissionId]);
+
+  if (!canCreateBoard) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

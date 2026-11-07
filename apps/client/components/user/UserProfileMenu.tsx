@@ -59,6 +59,7 @@ export const UserProfileMenu = () => {
             render={
               <SidebarMenuButton
                 size="lg"
+                tooltip={fullName}
                 className="h-auto py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar"
               />
             }

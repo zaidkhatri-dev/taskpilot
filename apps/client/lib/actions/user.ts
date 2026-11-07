@@ -60,76 +60,52 @@ export async function completeOnboarding(
   }
 }
 
-// export async function getMe(): Promise<{
-//   ok: boolean;
-//   data: GetMeResponse["data"] | null;
-// }> {
-//   try {
-//     const response = await fetch(
-//       `${clientConfig.NEXT_PUBLIC_API_URL}/users/me`,
-//       {
-//         method: "GET",
-//         headers: {
-//           Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
-//         },
-//         credentials: "include",
-//         cache: "no-store",
-//       },
-//     );
+export async function updateMe(
+  prevState: FormActionState | null,
+  formData: FormData,
+): Promise<FormActionState> {
+  const objFormData = cleanFormData(formData);
 
-//     if (!response.ok) {
-//       return { ok: false, data: null };
-//     }
+  const result = validateAction(objFormData, updateMeSchema);
 
-//     const result: GetMeResponse = await response.json();
-//     return { ok: true, data: result.data };
-//   } catch {
-//     return { ok: false, data: null };
-//   }
-// }
+  if (!result.success) {
+    return result;
+  }
 
-// export async function updateMe(
-//   prevState: FormActionState | null,
-//   formData: FormData,
-// ): Promise<FormActionState> {
-//   const objFormData = cleanFormData(formData);
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/users/me`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(result.data),
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+      },
+    );
 
-//   const result = validateAction(objFormData, updateMeSchema);
+    const data: EmptyResponse = await response.json();
 
-//   if (!result.success) {
-//     return result;
-//   }
+    if (response.status === 401) {
+      handleUnauthorizedAccess();
+    }
 
-//   try {
-//     const response = await fetch(
-//       `${clientConfig.NEXT_PUBLIC_API_URL}/users/me`,
-//       {
-//         method: "PATCH",
-//         body: JSON.stringify(result.data),
-//         headers: {
-//           "Content-Type": "application/json",
-//           Cookie: `connect.sid=${(await getCookie("connect.sid"))?.value || ""}`,
-//         },
-//         credentials: "include",
-//       },
-//     );
+    if (response.ok) {
+      await forwardCookieFromServerToBrowser(response);
+    }
 
-//     const data: EmptyResponse = await response.json();
+    return {
+      ...data,
+      errors: null,
+      values: objFormData,
+      submissionId: Date.now(),
+    };
+  } catch (error) {
+    return handleNetworkError(error, objFormData);
+  }
+}
 
-//     if (response.status === 401) {
-//       handleUnauthorizedAccess();
-//     }
+export const updateUser = updateMe;
 
-//     if (response.ok) {
-//       await forwardCookieFromServerToBrowser(response);
-//     }
-
-//     return {
-//       ...data,
-//       errors: null,
-//       values: objFormData,
-//     };
-//   } catch (error) {
-//     return handleNetworkError(error, objFormData);
-//   }
-// }

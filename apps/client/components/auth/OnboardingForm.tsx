@@ -70,14 +70,14 @@ export default function OnboardingForm() {
   return (
     <form noValidate className="w-full max-w-sm" action={formAction}>
       <FieldSet>
-        <Avatar className="mx-auto size-20">
+        <Avatar className="mx-auto size-24">
           <AvatarImage
             src={
               selected ? `/avatars/${selected}.svg` : "/avatars/avatar_01.svg"
             }
             alt={selected || "avatar_01"}
-            width={175}
-            height={175}
+            width={96}
+            height={96}
             loading="eager"
           />
         </Avatar>

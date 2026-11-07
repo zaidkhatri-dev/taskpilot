@@ -69,6 +69,9 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
 - **React Imports & Hooks**:
   - Use object destructuring to use functions and hooks from React.
   - Use `useActionState` for forms (`POST`/`PATCH`/`PUT`), `useQuery` for fetching data (`GET`), and `useMutation` for rest of it (`DELETE`).
+- **Forms & Updates Handling**:
+  - For update forms, track dirty state by comparing current form values against initial values using `isUnchanged` from `@/lib/utils/miscellaneous`.
+  - Disable the save/submit button when the form is clean (`isUnchanged`) or pending (`isPending`) to prevent submitting no-op updates.
 - **Buttons & UI Rules**:
   - Form submit buttons should be primary, size = default, and have full width of the form.
   - Action buttons can be primary or secondary, size = large, and should have appropriate width (not full screen).
@@ -78,6 +81,7 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Font size hierarchy:
     - Pages with only message (like error page): heading - `xl`, paragraph (supporting text) - `default`.
     - Pages with data: heading - `lg`, other data (like text, input labels, button text, etc) - `default`. If hierarchy, then start from `default` and move to `sm` (as needed).
+    - Settings pages: heading - `2xl` (e.g. `text-2xl font-semibold tracking-tight text-foreground`), with page layout padding `pt-16 pb-20 px-6` and heading bottom margin `mb-8`.
     - Do not change font sizes for components defined in `@components/ui`, they have fixed font sizes.
   - Pages with only message should always be centered.
 - **Dialogs & Modals (`apps/client/components/ui/dialog.tsx`)**:

@@ -78,7 +78,7 @@ export const verifyMagicLinkService = async (rawToken: string) => {
     let user = await createUser(email);
 
     if (!user) {
-      throw new AppError("Signup failed. Please try again", 500);
+      throw new AppError("Signup failed", 500);
     }
     sessionData = {
       userId: user.userId,

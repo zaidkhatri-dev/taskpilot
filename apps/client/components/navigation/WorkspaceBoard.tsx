@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useWorkspaceBoards } from "@/hooks/board";
+import { useWorkspacePermission } from "@/hooks/workspace";
 import { CreateBoardForm } from "@/components/board/CreateBoardForm";
 import { formatName } from "@/lib/utils/formatting";
 
@@ -23,8 +24,9 @@ interface WorkspaceBoardsProps {
   workspaceId: string;
 }
 
-export function WorkspaceBoards({ workspaceId }: WorkspaceBoardsProps) {
+export const WorkspaceBoards = ({ workspaceId }: WorkspaceBoardsProps) => {
   const params = useParams<{ boardId?: string }>();
+  const canCreateBoard = useWorkspacePermission(workspaceId, "board:create");
 
   const {
     data: boards,
@@ -41,15 +43,17 @@ export function WorkspaceBoards({ workspaceId }: WorkspaceBoardsProps) {
     <SidebarGroup>
       <SidebarGroupLabel>Boards</SidebarGroupLabel>
 
-      <CreateBoardForm
-        workspaceId={workspaceId}
-        trigger={
-          <SidebarGroupAction title="New Board">
-            <Plus />
-            <span className="sr-only">New Board</span>
-          </SidebarGroupAction>
-        }
-      />
+      {canCreateBoard && (
+        <CreateBoardForm
+          workspaceId={workspaceId}
+          trigger={
+            <SidebarGroupAction title="New Board">
+              <Plus />
+              <span className="sr-only">New Board</span>
+            </SidebarGroupAction>
+          }
+        />
+      )}
 
       <SidebarGroupContent>
         <SidebarMenu>
@@ -88,4 +92,4 @@ export function WorkspaceBoards({ workspaceId }: WorkspaceBoardsProps) {
       </SidebarGroupContent>
     </SidebarGroup>
   );
-}
+};

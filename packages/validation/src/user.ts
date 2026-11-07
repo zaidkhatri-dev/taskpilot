@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { nameSchema50, userNameSchema } from "./shared.js";
+import { nameSchema50, userNameSchema, emptyToUndefined } from "./shared.js";
 
 const avatarIds = [
   "avatar_01",
@@ -36,10 +36,13 @@ export const onboardingSchema = z.object({
 });
 
 export const updateMeSchema = z.object({
-  avatarId: z.enum(avatarIds, "Invalid avatar format").optional(),
-  firstName: nameSchema50.optional(),
-  lastName: nameSchema50.optional(),
-  username: userNameSchema.optional(),
+  avatarId: z.preprocess(
+    emptyToUndefined,
+    z.enum(avatarIds, "Invalid avatar format").optional(),
+  ),
+  firstName: z.preprocess(emptyToUndefined, nameSchema50.optional()),
+  lastName: z.preprocess(emptyToUndefined, nameSchema50.optional()),
+  username: z.preprocess(emptyToUndefined, userNameSchema.optional()),
 });
 
 export const checkUsernameAvailabilitySchema = z.object({

@@ -15,6 +15,7 @@ const dbClient = initDb({
 export async function getUserById(userId: string) {
   const [user] = await dbClient
     .select({
+      id: users.id,
       firstName: users.firstName,
       lastName: users.lastName,
       email: users.email,
@@ -94,26 +95,31 @@ export async function onboardUser(
   return user;
 }
 
-// export async function updateUser(
-//   userId: string,
-//   username?: string,
-//   avatarId?: AvatarId,
-//   firstName?: string,
-//   lastName?: string,
-// ) {
-//   const [user] = await dbClient
-//     .update(users)
-//     .set({
-//       username,
-//       avatarId,
-//       firstName,
-//       lastName,
-//       updatedAt: new Date(),
-//     })
-//     .where(eq(users.id, userId))
-//     .returning({
-//       id: users.id,
-//     });
+export async function updateUser(
+  userId: string,
+  username?: string,
+  avatarId?: AvatarId,
+  firstName?: string,
+  lastName?: string,
+) {
+  const [user] = await dbClient
+    .update(users)
+    .set({
+      username,
+      avatarId,
+      firstName,
+      lastName,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+    .returning({
+      id: users.id,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      username: users.username,
+      email: users.email,
+      avatarId: users.avatarId,
+    });
 
-//   return user;
-// }
+  return user;
+}

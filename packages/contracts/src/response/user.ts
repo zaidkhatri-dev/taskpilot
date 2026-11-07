@@ -1,7 +1,8 @@
-import type { ApiResponse } from "./common.js";
+import type { ApiResponse, EmptyResponse } from "./common.js";
 import type { AvatarId } from "../miscellaneous/user.js";
 
 export interface UserProfile {
+  id: string;
   firstName: string | null;
   lastName: string | null;
   username: string | null;
@@ -9,4 +10,6 @@ export interface UserProfile {
   avatarId: AvatarId | null;
 }
 
-export type GetMeResponse = ApiResponse<UserProfile> | ApiResponse<undefined>;
+export type GetMeResponse = ApiResponse<UserProfile> | EmptyResponse
+
+export type UpdateMeResponse = ApiResponse<UserProfile> | EmptyResponse

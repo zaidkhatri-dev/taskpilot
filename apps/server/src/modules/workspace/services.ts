@@ -7,6 +7,18 @@ export const getMyWorkspacesService = async (userId: string) => {
   return workspaces;
 };
 
+export const getWorkspaceService = async (userId: string, workspaceId: string) => {
+  await assertWorkspacePermission(userId, workspaceId, "workspace:read");
+  
+  const workspace = await getWorkspaceById(workspaceId);
+  
+  if (!workspace) {
+    throw new AppError("Workspace not found", 404);
+  }
+  
+  return workspace;
+};
+
 export const createWorkspaceService = async (userId: string, name: string) => {
   const workspace = await createWorkspace(userId, name);
   return workspace;

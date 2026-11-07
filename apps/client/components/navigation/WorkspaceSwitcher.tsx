@@ -70,6 +70,7 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
               render={
                 <SidebarMenuButton
                   size="lg"
+                  tooltip={activeName}
                   className="h-11 py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar"
                 />
               }
