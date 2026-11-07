@@ -11,6 +11,8 @@ export const PERMISSIONS: Readonly<Record<string, WorkspaceMembershipRoles[]>> =
     "board:view": ["admin", "member"],
     "board:delete": ["admin"],
     "workspace:update": ["admin"],
+    "workspace:leave": ["member"],
+    "members:view": ["admin", "member"],
   };
 
 export type Permission = keyof typeof PERMISSIONS;

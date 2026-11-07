@@ -2,6 +2,7 @@ import { getUserById, onboardUser, updateUser } from "./repository.js";
 import { AppError } from "@repo/errors/app-error";
 import type { AvatarId } from "@repo/contracts/miscellaneous/user";
 import { isUnchanged } from "@/utils/miscellaneous.js";
+import { getWorkspaceInvitations } from "../membership/repository.js";
 
 export const onboardingService = async (
   userId: string,
@@ -69,7 +70,7 @@ export const updateMeService = async (
   if (isUnchanged(input, user)) {
     return user;
   }
-  
+
   const updatedUser = await updateUser(
     user.id,
     username,
@@ -83,4 +84,9 @@ export const updateMeService = async (
   }
 
   return updatedUser;
+};
+
+export const getWorkspaceInvitationsService = async (userId: string) => {
+  const invitations = await getWorkspaceInvitations(userId);
+  return invitations;
 };

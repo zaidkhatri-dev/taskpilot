@@ -12,11 +12,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useWorkspaces } from "@/hooks/workspace";
 import { formatName } from "@/lib/utils/formatting";
 import { LeaveWorkspaceDialog } from "@/components/workspace/LeaveWorkspaceDialog";
+import { MembersListSidebar } from "@/components/workspace/MembersListSidebar";
 
 const RoutePage = () => {
   const { data: workspaces, isPending, isError, error } = useWorkspaces();
 
-  if (isError) {
+  if (isError && !workspaces) {
     throw error;
   }
 
@@ -33,7 +34,7 @@ const RoutePage = () => {
               <TableRow>
                 <TableHead>Workspace</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-px text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -46,8 +47,11 @@ const RoutePage = () => {
                     <TableCell>
                       <Skeleton className="h-5 w-16" />
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="ml-auto h-8 w-16" />
+                    <TableCell className="w-px text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <Skeleton className="h-8 w-32" />
+                        <Skeleton className="h-8 w-16" />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -60,11 +64,17 @@ const RoutePage = () => {
                     <TableCell className="capitalize">
                       {workspace.role ?? "-"}
                     </TableCell>
-                    <TableCell className="text-right">
-                      <LeaveWorkspaceDialog
-                        workspaceId={workspace.id}
-                        workspaceName={formatName(workspace.name)}
-                      />
+                    <TableCell className="w-px text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <MembersListSidebar
+                          workspaceId={workspace.id}
+                          workspaceName={formatName(workspace.name)}
+                        />
+                        <LeaveWorkspaceDialog
+                          workspaceId={workspace.id}
+                          workspaceName={formatName(workspace.name)}
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

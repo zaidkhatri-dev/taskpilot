@@ -1,4 +1,4 @@
-export function handleNetworkError(
+export function handleServerNetworkError(
   error: unknown,
   values?: Record<string, unknown>,
 ) {

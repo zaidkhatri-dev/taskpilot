@@ -6,7 +6,7 @@ import { clientConfig } from "@repo/config/client";
 import type { CreateBoardResponse } from "@repo/contracts/response/board";
 import type { FormActionState } from "@/types/form";
 import { handleUnauthorizedAccess } from "../utils/error";
-import { handleNetworkError } from "../utils/network";
+import { handleServerNetworkError } from "../utils/network";
 import { getCookieForServerActions } from "../utils/cookie";
 
 export const createBoard = async (
@@ -56,6 +56,6 @@ export const createBoard = async (
       submissionId: Date.now(),
     };
   } catch (error) {
-    return handleNetworkError(error, objFormData);
+    return handleServerNetworkError(error, objFormData);
   }
 };

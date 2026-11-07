@@ -12,7 +12,7 @@ export function useWorkspaceBoards(workspaceId: string) {
     queryFn: async () => {
       const result = await getBoards(workspaceId);
 
-      if (!result.success || !result.data) {
+      if (!result.success) {
         throw new Error(result.message);
       }
 

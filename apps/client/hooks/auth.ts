@@ -5,6 +5,7 @@ import { logout } from "@/lib/services/auth";
 import { getSession } from "@/lib/services/auth";
 import { queryKeys } from "@/hooks/keys";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/toast";
 
 export function useSession() {
   return useQuery({
@@ -37,6 +38,12 @@ export const useLogout = () => {
     onSuccess: () => {
       queryClient.clear();
       router.replace("/signin");
+    },
+    onError: (error) => {
+      toast.add({
+        description: error.message || "Logout failed",
+        type: "error",
+      });
     },
   });
 };

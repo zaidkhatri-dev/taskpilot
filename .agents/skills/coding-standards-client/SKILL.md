@@ -69,6 +69,9 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
 - **React Imports & Hooks**:
   - Use object destructuring to use functions and hooks from React.
   - Use `useActionState` for forms (`POST`/`PATCH`/`PUT`), `useQuery` for fetching data (`GET`), and `useMutation` for rest of it (`DELETE`).
+  - For `useActionState`: render toast where `useActionState` is used.
+  - For `useMutation`: render toast in the hook where `useMutation` is used.
+  - For `useQuery`: throw error in the hook, and also throw error where that hook is used (which is using `useQuery`).
 - **Forms & Updates Handling**:
   - For update forms, track dirty state by comparing current form values against initial values using `isUnchanged` from `@/lib/utils/miscellaneous`.
   - Disable the save/submit button when the form is clean (`isUnchanged`) or pending (`isPending`) to prevent submitting no-op updates.
@@ -87,4 +90,3 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
 - **Dialogs & Modals (`apps/client/components/ui/dialog.tsx`)**:
   - Do not use a header description (`DialogDescription`).
   - The dialog title should follow the format: `<Action> a/your <new/current> <entity>` (e.g., "Create a new board", "Update your current workspace").
-

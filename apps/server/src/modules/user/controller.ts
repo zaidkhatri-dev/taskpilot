@@ -1,9 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import type { GetTypeFromSchema } from "@/types/validation.js";
 import { onboardingSchema, updateMeSchema } from "@repo/validation/user";
-import { getMeService, onboardingService, updateMeService } from "./services.js";
+import {
+  getMeService,
+  getWorkspaceInvitationsService,
+  onboardingService,
+  updateMeService,
+} from "./services.js";
 import type { EmptyResponse } from "@repo/contracts/response/common";
-import type { GetMeResponse, UpdateMeResponse } from "@repo/contracts/response/user";
+import type {
+  GetMeResponse,
+  GetWorkspaceInvitationsResponse,
+  UpdateMeResponse,
+} from "@repo/contracts/response/user";
 import { regenerateSession, saveSession } from "@/utils/session.js";
 import { AppError } from "@repo/errors/app-error";
 
@@ -106,12 +115,40 @@ export const updateMeController = async (
     const { username, avatarId, firstName, lastName } =
       req.body as GetTypeFromSchema<typeof updateMeSchema>;
 
-    const updatedUser = await updateMeService(userId, username, avatarId, firstName, lastName);
+    const updatedUser = await updateMeService(
+      userId,
+      username,
+      avatarId,
+      firstName,
+      lastName,
+    );
 
     const response: UpdateMeResponse = {
       success: true,
       message: "User updated successfully",
       data: updatedUser,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getWorkspaceInvitationsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.session.userId!;
+
+    const data = await getWorkspaceInvitationsService(userId);
+
+    const response: GetWorkspaceInvitationsResponse = {
+      success: true,
+      message: "Workspace invitations fetched successfully",
+      data,
     };
 
     res.status(200).json(response);

@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { useMe } from "@/hooks/user";
 import { useLogout } from "@/hooks/auth";
 import { formatName } from "@/lib/utils/formatting";
@@ -31,15 +31,23 @@ export const UserProfileMenu = () => {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size="lg" disabled>
-            <SidebarMenuSkeleton showIcon />
+          <SidebarMenuButton
+            size="lg"
+            disabled
+            className="h-auto py-1.5 border border-sidebar-border bg-sidebar"
+          >
+            <Skeleton className="size-8 shrink-0 rounded-full" />
+            <div className="grid flex-1 gap-1.5 group-data-[collapsible=icon]:hidden">
+              <Skeleton className="h-3.5 w-24" />
+              <Skeleton className="h-3 w-32" />
+            </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     );
   }
 
-  if (isError) {
+  if (isError && !user) {
     throw error;
   }
 

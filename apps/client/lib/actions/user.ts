@@ -7,7 +7,7 @@ import type { EmptyResponse } from "@repo/contracts/response/common";
 import type { GetMeResponse } from "@repo/contracts/response/user";
 import type { FormActionState } from "@/types/form";
 import { handleUnauthorizedAccess } from "../utils/error";
-import { handleNetworkError } from "../utils/network";
+import { handleServerNetworkError } from "../utils/network";
 import {
   forwardCookieFromServerToBrowser,
   getCookieForServerActions,
@@ -56,7 +56,7 @@ export async function completeOnboarding(
       submissionId: Date.now(),
     };
   } catch (error) {
-    return handleNetworkError(error, objFormData);
+    return handleServerNetworkError(error, objFormData);
   }
 }
 
@@ -103,9 +103,8 @@ export async function updateMe(
       submissionId: Date.now(),
     };
   } catch (error) {
-    return handleNetworkError(error, objFormData);
+    return handleServerNetworkError(error, objFormData);
   }
 }
 
 export const updateUser = updateMe;
-

@@ -15,7 +15,7 @@ export default function NoWorkspace() {
       </p>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Link href="/w" className="cursor-default">
+        <Link href="/settings/invitations" className="cursor-default">
           <Button size="lg">
             <Mail data-icon="inline-start" />
             Check Invitations

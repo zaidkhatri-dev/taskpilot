@@ -2,7 +2,6 @@
 
 import { clientConfig } from "@repo/config/client";
 import type { GetBoardsResponse } from "@repo/contracts/response/board";
-import { handleNetworkError } from "../utils/network";
 
 export async function getBoards(workspaceId: string) {
   try {
@@ -18,6 +17,6 @@ export async function getBoards(workspaceId: string) {
     const result: GetBoardsResponse = await response.json();
     return result;
   } catch (error) {
-    return handleNetworkError(error);
+    throw new Error("Network error, please try again later.");
   }
 }

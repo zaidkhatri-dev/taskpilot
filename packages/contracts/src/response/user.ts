@@ -10,6 +10,15 @@ export interface UserProfile {
   avatarId: AvatarId | null;
 }
 
-export type GetMeResponse = ApiResponse<UserProfile> | EmptyResponse
+export interface WorkspaceInvitation {
+  id: string;
+  name: string;
+}
 
-export type UpdateMeResponse = ApiResponse<UserProfile> | EmptyResponse
+export type GetMeResponse = ApiResponse<UserProfile> | EmptyResponse;
+
+export type UpdateMeResponse = ApiResponse<UserProfile> | EmptyResponse;
+
+export type GetWorkspaceInvitationsResponse = ApiResponse<
+  WorkspaceInvitation[]
+>;

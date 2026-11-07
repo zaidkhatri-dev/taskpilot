@@ -8,7 +8,7 @@ import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
 import type { EmptyResponse } from "@repo/contracts/response/common";
 import type { SessionResponse } from "@repo/contracts/response/auth";
-import { handleNetworkError } from "../utils/network";
+import { handleServerNetworkError } from "../utils/network";
 import {
   forwardCookieFromServerToBrowser,
   getCookieForServerActions,
@@ -50,7 +50,7 @@ export async function generateLink(
       submissionId: Date.now(),
     };
   } catch (error) {
-    return handleNetworkError(error, objFormData);
+    return handleServerNetworkError(error, objFormData);
   }
 }
 
@@ -92,6 +92,6 @@ export async function verifyLink(token: string) {
       values: null,
     };
   } catch (error) {
-    return handleNetworkError(error);
+    return handleServerNetworkError(error);
   }
 }

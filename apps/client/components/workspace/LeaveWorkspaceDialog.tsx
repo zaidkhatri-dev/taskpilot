@@ -11,65 +11,49 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useLeaveWorkspace, useWorkspacePermission } from "@/hooks/workspace";
 
 interface LeaveWorkspaceDialogProps {
   workspaceId: string;
   workspaceName?: string;
-  onLeave?: (workspaceId: string) => void | Promise<void>;
 }
 
 export const LeaveWorkspaceDialog = ({
   workspaceId,
-  workspaceName,
-  onLeave,
+  workspaceName = "this workspace",
 }: LeaveWorkspaceDialogProps) => {
   const [open, setOpen] = useState(false);
-  const [isLeaving, setIsLeaving] = useState(false);
-
-  const handleConfirm = async () => {
-    if (onLeave) {
-      setIsLeaving(true);
-      try {
-        await onLeave(workspaceId);
-      } finally {
-        setIsLeaving(false);
-        setOpen(false);
-      }
-    } else {
-      setOpen(false);
-    }
-  };
+  const canLeave = useWorkspacePermission(workspaceId, "workspace:leave");
+  const { mutate: leave, isPending } = useLeaveWorkspace();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="destructive" size="sm">
+          <Button variant="destructive" size="sm" disabled={!canLeave}>
             Leave
           </Button>
         }
       />
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Leave your workspace</DialogTitle>
+          <DialogTitle>Leave workspace</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
           Are you sure you want to leave{" "}
-          {workspaceName ? (
-            <span className="font-medium text-foreground">{workspaceName}</span>
-          ) : (
-            "this workspace"
-          )}
-          ? You will lose access to all its boards and tasks.
+          <span className="font-medium text-foreground">{workspaceName}</span>?
+          You will lose access to all its boards and tasks.
         </p>
         <DialogFooter>
           <DialogClose render={<Button variant="outline">Cancel</Button>} />
           <Button
             variant="destructive"
-            onClick={handleConfirm}
-            disabled={isLeaving}
+            disabled={isPending}
+            onClick={() =>
+              leave(workspaceId, { onSuccess: () => setOpen(false) })
+            }
           >
-            {isLeaving ? "Leaving..." : "Leave Workspace"}
+            {isPending ? "Leaving..." : "Leave Workspace"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -78,4 +62,3 @@ export const LeaveWorkspaceDialog = ({
 };
 
 export default LeaveWorkspaceDialog;
-

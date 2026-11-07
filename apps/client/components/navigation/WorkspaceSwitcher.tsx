@@ -48,12 +48,12 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
     );
   }
 
-  if (isError) {
+  if (isError && !workspaces) {
     throw error;
   }
 
   const activeWorkspace =
-    workspaces.find((workspace) => workspace.id === workspaceId) ?? null;
+    workspaces?.find((workspace) => workspace.id === workspaceId) ?? null;
 
   if (!activeWorkspace) {
     throw new Error("Workspace not found.");
@@ -71,16 +71,16 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
                 <SidebarMenuButton
                   size="lg"
                   tooltip={activeName}
-                  className="h-11 py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar"
+                  className="h-11 py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0!"
                 />
               }
             >
               <WorkspaceAvatar name={activeName} />
 
-              <span className="min-w-0 flex-1 truncate text-left text-sm font-medium">
+              <span className="min-w-0 flex-1 truncate text-left text-sm font-medium group-data-[collapsible=icon]:hidden">
                 {activeName}
               </span>
-              <EllipsisIcon />
+              <EllipsisIcon className="group-data-[collapsible=icon]:hidden" />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
@@ -92,7 +92,7 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
                   Workspaces
                 </DropdownMenuLabel>
 
-                {workspaces.map((workspace) => {
+                {workspaces?.map((workspace) => {
                   const name = formatName(workspace.name);
                   const isActive = workspace.id === workspaceId;
 
@@ -119,7 +119,7 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
                 })}
               </DropdownMenuGroup>
 
-              {workspaces.length > 0 && <DropdownMenuSeparator />}
+              {workspaces && workspaces.length > 0 && <DropdownMenuSeparator />}
 
               <DropdownMenuItem
                 className="gap-2"

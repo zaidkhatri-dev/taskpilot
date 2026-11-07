@@ -3,7 +3,6 @@
 import { clientConfig } from "@repo/config/client";
 import type { SessionResponse } from "@repo/contracts/response/auth";
 import type { EmptyResponse } from "@repo/contracts/response/common";
-import { handleNetworkError } from "../utils/network";
 
 export const getSession = async () => {
   try {
@@ -19,7 +18,7 @@ export const getSession = async () => {
     const result: SessionResponse = await response.json();
     return result;
   } catch (error) {
-    return handleNetworkError(error);
+    throw new Error("Network error, please try again later.");
   }
 };
 
@@ -36,6 +35,6 @@ export const logout = async (): Promise<EmptyResponse> => {
     const result: EmptyResponse = await response.json();
     return result;
   } catch (error) {
-    return handleNetworkError(error);
+    throw new Error("Network error, please try again later.");
   }
 };

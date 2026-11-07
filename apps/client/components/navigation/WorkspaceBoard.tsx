@@ -12,13 +12,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { useWorkspaceBoards } from "@/hooks/board";
 import { useWorkspacePermission } from "@/hooks/workspace";
 import { CreateBoardForm } from "@/components/board/CreateBoardForm";
 import { formatName } from "@/lib/utils/formatting";
+
+const SKELETON_WIDTHS = ["w-3/5", "w-4/5", "w-2/3"];
 
 interface WorkspaceBoardsProps {
   workspaceId: string;
@@ -35,7 +36,7 @@ export const WorkspaceBoards = ({ workspaceId }: WorkspaceBoardsProps) => {
     error,
   } = useWorkspaceBoards(workspaceId);
 
-  if (isError) {
+  if (isError && !boards) {
     throw error;
   }
 
@@ -58,12 +59,15 @@ export const WorkspaceBoards = ({ workspaceId }: WorkspaceBoardsProps) => {
       <SidebarGroupContent>
         <SidebarMenu>
           {isPending ? (
-            Array.from({ length: 3 }).map((_, index) => (
+            SKELETON_WIDTHS.map((width, index) => (
               <SidebarMenuItem key={index}>
-                <SidebarMenuSkeleton showIcon />
+                <div className="flex h-8 items-center gap-2 px-2">
+                  <Skeleton className="size-4 shrink-0 rounded-md" />
+                  <Skeleton className={`h-4 ${width}`} />
+                </div>
               </SidebarMenuItem>
             ))
-          ) : boards.length > 0 ? (
+          ) : boards && boards.length > 0 ? (
             boards.map((board) => (
               <SidebarMenuItem key={board.id}>
                 <SidebarMenuButton

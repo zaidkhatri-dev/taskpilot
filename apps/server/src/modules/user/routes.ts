@@ -1,7 +1,12 @@
 import { inputValidator } from "@/middlewares/input-validator.js";
 import { onboardingSchema, updateMeSchema } from "@repo/validation/user";
 import { Router } from "express";
-import { getMeController, onboardingController, updateMeController } from "./controller.js";
+import {
+  getMeController,
+  onboardingController,
+  updateMeController,
+  getWorkspaceInvitationsController,
+} from "./controller.js";
 import { requireOnboarding } from "@/middlewares/auth.js";
 
 const router: Router = Router();
@@ -24,6 +29,12 @@ router.get("/me", getMeController);
 //   checkUsernameAvailabilityController,
 // );
 
-router.patch("/me", inputValidator({ body: updateMeSchema }), updateMeController);
+router.patch(
+  "/me",
+  inputValidator({ body: updateMeSchema }),
+  updateMeController,
+);
+
+router.get("/me/invitations", getWorkspaceInvitationsController);
 
 export default router;

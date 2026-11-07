@@ -85,17 +85,24 @@ export const getEmailBody = (email: string, link: string) => {
   `;
 };
 
-const checkPermission = (permission: Permission, userRole: WorkspaceMembershipRoles) => {
+const checkPermission = (
+  permission: Permission,
+  userRole: WorkspaceMembershipRoles,
+) => {
   return PERMISSIONS[permission]?.includes(userRole) ?? false;
-}
+};
 
 export const assertWorkspacePermission = async (
   userId: string,
   workspaceId: string,
   permission: Permission,
 ) => {
-  const membership = await getUserWorkspaceMembershipFromIds(workspaceId, userId);
-  if (!membership) throw new AppError("Workspace not found", 404);
+  const membership = await getUserWorkspaceMembershipFromIds(
+    workspaceId,
+    userId,
+  );
+  if (!membership)
+    throw new AppError("You are not a member or admin of this workspace", 403);
   if (!checkPermission(permission, membership.role)) {
     throw new AppError("You don't have permission to perform this action", 403);
   }

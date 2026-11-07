@@ -9,7 +9,7 @@ import type {
 } from "@repo/contracts/response/workspace";
 import type { FormActionState } from "@/types/form";
 import { handleUnauthorizedAccess } from "../utils/error";
-import { handleNetworkError } from "../utils/network";
+import { handleServerNetworkError } from "../utils/network";
 import { getCookieForServerActions } from "../utils/cookie";
 
 export async function getMyWorkspacesServer() {
@@ -29,7 +29,7 @@ export async function getMyWorkspacesServer() {
     const result: GetMyWorkspacesResponse = await response.json();
     return result;
   } catch (error) {
-    return handleNetworkError(error);
+    return handleServerNetworkError(error);
   }
 }
 
@@ -77,6 +77,6 @@ export async function createWorkspace(
       submissionId: Date.now(),
     };
   } catch (error) {
-    return handleNetworkError(error, objFormData);
+    return handleServerNetworkError(error, objFormData);
   }
 }

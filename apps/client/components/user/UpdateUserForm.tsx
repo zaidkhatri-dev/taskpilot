@@ -26,7 +26,7 @@ import { isUnchanged } from "@/lib/utils/miscellaneous";
 
 export const UpdateUserForm = () => {
   const queryClient = useQueryClient();
-  const { data: user, isPending: isUserPending } = useMe();
+  const { data: user, isPending: isUserPending, isError, error } = useMe();
 
   const [state, formAction, isPending] = useActionState(updateUser, null);
 
@@ -75,6 +75,8 @@ export const UpdateUserForm = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.submissionId]);
+
+  if (isError && !user) throw error;
 
   if (isUserPending) {
     return (

@@ -16,7 +16,7 @@ export default function RoutePage() {
 
   const { data: boards, isPending, isError, error } = useWorkspaceBoards(id);
 
-  if (isError) throw error;
+  if (isError && !boards) throw error;
 
   return (
     <div className="flex flex-1 flex-col">
