@@ -62,6 +62,10 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Define interface for props in that particular component file.
   - Break down big components into smaller components, each in their own file under a common module folder.
   - Use object destructuring to extract values from props.
+  - **Export Default Function Naming for Routing Files**:
+    - `error.tsx` = `RouteError`
+    - `page.tsx` = `RoutePage`
+    - `layout.tsx` = `RouteLayout`
 - **React Imports & Hooks**:
   - Use object destructuring to use functions and hooks from React.
   - Use `useActionState` for forms (`POST`/`PATCH`/`PUT`), `useQuery` for fetching data (`GET`), and `useMutation` for rest of it (`DELETE`).

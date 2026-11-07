@@ -61,6 +61,9 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Always use validation middleware for all routes (unless it doesn't have any request body, query or params). Define schemas for such routes in `@repo/validation`.
 - **Repositories & Database Operations**:
   - Always define generic db functions in repositories and use them in that particular module.
+  - In create repository functions, throw `Error('[Entity] insert returned no row')` to satisfy TypeScript when a row is expected.
+- **Services & Business Logic**:
+  - In service functions for update operations, an `if` branch is required after the update db call which checks the condition in the `where` clause and throws an application error if that condition fails.
 - **Function Naming Conventions**:
   - Repository functions: `actionResource` (e.g., `updateUser`).
   - Service and Controller functions: `actionResourceService` / `actionResourceController` (e.g., `updateUserService`, `updateUserController`).
