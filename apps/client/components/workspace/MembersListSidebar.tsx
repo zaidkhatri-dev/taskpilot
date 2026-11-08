@@ -53,25 +53,17 @@ export const MembersListSidebar = ({
   workspaceName,
 }: MembersListSidebarProps) => {
   const [open, setOpen] = useState(false);
-  const {
-    data: members,
-    isPending,
-    isError,
-    error,
-  } = useWorkspaceMembers(workspaceId, { enabled: open });
+  const { data, isPending, isError, error } = useWorkspaceMembers(workspaceId, {
+    enabled: open,
+  });
 
-  if (isError && !members) {
+  if (isError && !data) {
     throw error;
   }
 
-  const admins =
-    members?.filter(
-      (member) => member.role === "admin" || member.role === "owner",
-    ) ?? [];
-  const regularMembers =
-    members?.filter(
-      (member) => member.role !== "admin" && member.role !== "owner",
-    ) ?? [];
+  const owners = data?.filter((owner) => owner.role === "owner") ?? [];
+  const admins = data?.filter((admin) => admin.role === "admin") ?? [];
+  const members = data?.filter((member) => member.role === "member") ?? [];
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -93,7 +85,7 @@ export const MembersListSidebar = ({
         <div className="flex-1 overflow-y-auto px-6">
           {isPending ? (
             <div className="flex flex-col gap-3 py-4">
-              {Array.from({ length: 4 }).map((_, index) => (
+              {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <Skeleton className="size-8 shrink-0 rounded-full" />
                   <div className="grid flex-1 gap-1.5">
@@ -103,12 +95,25 @@ export const MembersListSidebar = ({
                 </div>
               ))}
             </div>
-          ) : members && members.length > 0 ? (
+          ) : data && data.length > 0 ? (
             <div className="flex flex-col gap-6 py-4">
+              {owners.length > 0 && (
+                <div className="flex flex-col gap-3">
+                  <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                    Owner
+                  </span>
+                  <div className="flex flex-col gap-3">
+                    {owners.map((member) => (
+                      <MemberItem key={member.email} member={member} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {admins.length > 0 && (
                 <div className="flex flex-col gap-3">
                   <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    Admin
+                    Admins
                   </span>
                   <div className="flex flex-col gap-3">
                     {admins.map((member) => (
@@ -118,13 +123,13 @@ export const MembersListSidebar = ({
                 </div>
               )}
 
-              {regularMembers.length > 0 && (
+              {members.length > 0 && (
                 <div className="flex flex-col gap-3">
                   <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                     Members
                   </span>
                   <div className="flex flex-col gap-3">
-                    {regularMembers.map((member) => (
+                    {members.map((member) => (
                       <MemberItem key={member.email} member={member} />
                     ))}
                   </div>
