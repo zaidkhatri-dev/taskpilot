@@ -1,159 +1,169 @@
-# Turborepo starter
+# TaskPilot
 
-This Turborepo starter is maintained by the Turborepo core team.
+TaskPilot is a modern, full-stack collaborative project and task management monorepo application built with TypeScript, Next.js, Express, BullMQ, Drizzle ORM, and PostgreSQL.
 
-## Using this example
+---
 
-Run the following command:
+## 🏗️ Architecture & Project Structure
 
-```sh
-npx create-turbo@latest
+The project is structured as a Turborepo monorepo powered by Bun workspace package management:
+
+```
+taskpilot/
+├── apps/
+│   ├── client/          # Next.js 16 (App Router), React 19, Tailwind CSS v4, Base UI, TanStack Query
+│   ├── server/          # Express 5 REST API + WebSocket server, OpenTelemetry tracing, session auth
+│   └── worker/          # BullMQ background worker for asynchronous job processing (emails via Resend)
+└── packages/
+    ├── config/          # Environment configuration schemas & runtime validations using Zod
+    ├── contracts/       # Shared TypeScript request/response contracts and data transfer definitions
+    ├── db/              # Drizzle ORM schemas, database connection pool, and relational constraints
+    ├── email/           # Email templates, sender integrations, and BullMQ queue definitions
+    ├── errors/          # Standardized application error classes and error handling utilities
+    ├── eslint-config/   # Shared ESLint configuration rules
+    ├── redis/           # Redis client configurations and connection utilities
+    ├── typescript-config/# Shared tsconfig configurations
+    └── validation/      # Shared Zod validation schemas across client and server
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## ⚡ Tech Stack
 
-### Apps and Packages
+- **Runtime & Package Manager**: [Bun](https://bun.sh/)
+- **Monorepo Build System**: [Turborepo](https://turbo.build/)
+- **Frontend (`apps/client`)**:
+  - [Next.js 16](https://nextjs.org/) (App Router)
+  - [React 19](https://react.dev/)
+  - [Tailwind CSS v4](https://tailwindcss.com/)
+  - [@base-ui/react](https://base-ui.com/) & [shadcn/ui](https://ui.shadcn.com/)
+  - [@tanstack/react-query](https://tanstack.com/query)
+  - [Lucide React](https://lucide.dev/)
+- **Backend (`apps/server`)**:
+  - [Express 5](https://expressjs.com/)
+  - [PostgreSQL](https://www.postgresql.org/) with [Drizzle ORM](https://orm.drizzle.team/)
+  - [Redis](https://redis.io/) (via `connect-redis` for sessions and caching)
+  - [WebSocket (`ws`)](https://github.com/websockets/ws) for real-time capabilities
+  - [OpenTelemetry](https://opentelemetry.io/) for observability & tracing
+  - [ImageKit](https://imagekit.io/) for media uploads
+- **Worker (`apps/worker`)**:
+  - [BullMQ](https://docs.bullmq.io/) for reliable background message/job processing
+  - [Resend](https://resend.com/) for transactional email delivery
+- **Shared Packages**:
+  - [Zod 4](https://zod.dev/) for type safety and runtime schema validation
+  - Shared TypeScript configurations and strict contracts
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## 🚀 Getting Started
 
-### Utilities
+### Prerequisites
 
-This Turborepo has some additional tools already setup for you:
+- [Bun](https://bun.sh/) (v1.3.14 or later)
+- [Node.js](https://nodejs.org/) (>= 24)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Redis](https://redis.io/)
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Installation
+
+Clone the repository and install dependencies using Bun:
+
+```sh
+git clone <repository-url>
+cd taskpilot
+bun install
+```
+
+### Environment Configuration
+
+Configure environment variables across the respective workspaces:
+
+#### 1. Server (`apps/server/.env`)
+```env
+PORT=8000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:3000
+EMAIL_VERIFICATION_BASE_URL=http://localhost:3000/verify
+SESSION_SECRET=your_super_secret_session_key
+DATABASE_URL=postgresql://postgres:password@localhost:5432/taskpilot
+REDIS_URL=redis://localhost:6379
+SENDER_EMAIL=no-reply@taskpilot.app
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
+```
+
+#### 2. Client (`apps/client/.env`)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_REDIRECT_DELAY=1500
+```
+
+#### 3. Worker (`apps/worker/.env`)
+```env
+REDIS_URL=redis://localhost:6379
+RESEND_API_KEY=re_your_resend_api_key
+EMAIL_RATE_LIMIT_PER_MINUTE=50
+EMAIL_WORKER_CONCURRENCY=5
+```
+
+---
+
+## 🛠️ Development & Scripts
+
+### Development
+
+Run all applications concurrently with Turborepo:
+
+```sh
+bun run dev
+```
+
+Run a specific workspace:
+
+```sh
+# Run client only (http://localhost:3000)
+bun run dev --filter=client
+
+# Run server only (http://localhost:8000)
+bun run dev --filter=server
+
+# Run worker only
+bun run dev --filter=worker
+```
 
 ### Build
 
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Build all packages and applications:
 
 ```sh
-cd my-turborepo
-turbo build
+bun run build
 ```
 
-Without global `turbo`, use your package manager:
+Build a specific workspace:
 
 ```sh
-cd my-turborepo
-npx turbo build
-bun exec turbo build
-bun exec turbo build
+bun run build --filter=client
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+### Type Checking & Linting
 
 ```sh
-turbo build --filter=docs
+# Run type checks across all workspaces
+bun run check-types
+
+# Run linter
+bun run lint
+
+# Format code
+bun run format
 ```
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
-```
+## 📐 Architecture & Coding Guidelines
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+The project follows strict modularity and domain separation conventions:
+- **Dependency Boundaries**: Packages (`packages/*`) export types and functions for apps; packages must not import from other packages.
+- **Contracts First**: Shared interfaces, request/response models, and types live in `@repo/contracts`.
+- **Validation**: Shared validation schemas live in `@repo/validation`.
+- **Server Architecture**: Layered architecture in `apps/server` (Routes → Controllers → Services → Repositories) scoped domain-wise (`auth`, `workspace`, `board`, `membership`, `user`).
+- **Client Architecture**: Next.js App Router with Server Actions (`useActionState`), TanStack Query (`useQuery` / `useMutation`), and modular components.
