@@ -58,6 +58,7 @@ export const getWorkspaceMembers = async (workspaceId: string) => {
       firstName: users.firstName,
       lastName: users.lastName,
       avatarId: users.avatarId,
+      role: workspaceMemberships.role,
     })
     .from(workspaceMemberships)
     .innerJoin(users, eq(workspaceMemberships.userId, users.id))

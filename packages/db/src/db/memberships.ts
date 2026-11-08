@@ -4,9 +4,9 @@ import { sql } from "drizzle-orm";
 import { uuid } from "drizzle-orm/pg-core";
 import { users } from "./users.js";
 import { workspaces } from "./workspaces.js";
-import { USER_WORKSPACE_IDX } from "../constraints.js";
+import { USER_WORKSPACE_IDX, WORKSPACE_OWNER_IDX } from "../constraints.js";
 
-export const WorkspaceMembershipRoles = pgEnum("workspace_role", ["admin", "member"]);
+export const WorkspaceMembershipRoles = pgEnum("workspace_role", ["admin", "member", "owner"]);
 
 export const workspaceMemberships = pgTable(
   "workspace_memberships",
@@ -27,5 +27,6 @@ export const workspaceMemberships = pgTable(
   },
   (table) => [
     uniqueIndex(USER_WORKSPACE_IDX).on(table.userId, table.workspaceId),
+    uniqueIndex(WORKSPACE_OWNER_IDX).on(table.workspaceId, table.role).where(sql`${table.role} = 'owner'`),
   ],
 );

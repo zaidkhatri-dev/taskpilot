@@ -61,7 +61,7 @@ export const createWorkspace = async (userId: string, name: string) => {
     await tx.insert(workspaceMemberships).values({
       userId,
       workspaceId: workspace.id,
-      role: "admin",
+      role: "owner",
       accepted: true,
     });
 

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "workspace_owner_idx" ON "workspace_memberships" ("workspace_id","role") WHERE "role" = 'owner';

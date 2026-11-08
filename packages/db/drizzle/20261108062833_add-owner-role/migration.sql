@@ -1,0 +1,1 @@
+ALTER TYPE "workspace_role" ADD VALUE 'owner';

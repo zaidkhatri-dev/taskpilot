@@ -1,4 +1,5 @@
 export const USER_WORKSPACE_IDX = "user_workspace_idx";
+export const WORKSPACE_OWNER_IDX = "workspace_owner_idx";
 export const BOARD_NAME_WORKSPACE_IDX = "board_name_workspace_idx";
 
 export const EMAIL_FORMAT_CHECK = "email_format_check";

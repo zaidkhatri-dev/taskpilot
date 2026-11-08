@@ -1,6 +1,5 @@
-import { Permission, PERMISSIONS } from "@repo/contracts/miscellaneous/auth";
+import { Permission, PERMISSIONS, WorkspaceMembershipRoles } from "@repo/contracts/miscellaneous/auth";
 import { getUserWorkspaceMembershipFromIds } from "@/modules/membership/repository.js";
-import { WorkspaceMembershipRoles } from "@/types/membership.js";
 import { serverConfig } from "@repo/config/server";
 import { AppError } from "@repo/errors/app-error";
 
@@ -102,7 +101,7 @@ export const assertWorkspacePermission = async (
     userId,
   );
   if (!membership)
-    throw new AppError("You are not a member or admin of this workspace", 403);
+    throw new AppError("You are not a member of this workspace", 403);
   if (!checkPermission(permission, membership.role)) {
     throw new AppError("You don't have permission to perform this action", 403);
   }

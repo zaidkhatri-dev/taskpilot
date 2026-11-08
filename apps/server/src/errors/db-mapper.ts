@@ -11,6 +11,7 @@ import {
   BOARD_NAME_WORKSPACE_IDX,
   FIRST_NAME_LENGTH_CHECK,
   LAST_NAME_LENGTH_CHECK,
+  WORKSPACE_OWNER_IDX,
 } from "@repo/db/constraints";
 
 // ─── Unique Constraint Messages (PG error code: 23505) ───────────────────────
@@ -24,6 +25,7 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
 
   // workspace membership (schema-defined uniqueIndex)
   [USER_WORKSPACE_IDX]: "User is already a member of this workspace",
+  [WORKSPACE_OWNER_IDX]: "This workspace already has an owner",
   [BOARD_NAME_WORKSPACE_IDX]:
     "A board with this name already exists in this workspace.",
 };
@@ -48,7 +50,7 @@ const FOREIGN_KEY_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
     "The specified user to assign does not exist.",
 
   // comments → users (onDelete: cascade — parent missing on insert)
-  comments_commented_by_users_id_fkey:
+  comments_commented_by_id_users_id_fkey:
     "The user who commented could not be found.",
 
   // comments → issues (onDelete: cascade — parent missing on insert)
@@ -59,7 +61,7 @@ const FOREIGN_KEY_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
     "The specified user account does not exist.",
 
   // membership → workspaces (onDelete: cascade — parent missing on insert)
-  workspace_memberships_workspace_id_teams_id_fkey:
+  workspace_memberships_workspace_id_workspaces_id_fkey:
     "The specified workspace does not exist.",
 };
 
@@ -91,13 +93,16 @@ const NOT_NULL_COLUMN_MESSAGES: Readonly<Record<string, string>> = {
   // users
   email: "Email address is required.",
 
-  // organizations
-  admin_id: "Admin is required.",
-
   // boards
   workspace_id: "Workspace is required.",
   name: "Name is required.",
+
+  // sections
+  board_id: "Board is required.",
   position: "Position is required.",
+
+  // sections & issues (shared column name)
+  title: "Title is required.",
 
   // issues
   section_id: "Section is required.",

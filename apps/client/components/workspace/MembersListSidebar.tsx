@@ -64,7 +64,14 @@ export const MembersListSidebar = ({
     throw error;
   }
 
-  const [admin, ...regularMembers] = members ?? [];
+  const admins =
+    members?.filter(
+      (member) => member.role === "admin" || member.role === "owner",
+    ) ?? [];
+  const regularMembers =
+    members?.filter(
+      (member) => member.role !== "admin" && member.role !== "owner",
+    ) ?? [];
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -98,12 +105,16 @@ export const MembersListSidebar = ({
             </div>
           ) : members && members.length > 0 ? (
             <div className="flex flex-col gap-6 py-4">
-              {admin && (
+              {admins.length > 0 && (
                 <div className="flex flex-col gap-3">
                   <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                     Admin
                   </span>
-                  <MemberItem member={admin} />
+                  <div className="flex flex-col gap-3">
+                    {admins.map((member) => (
+                      <MemberItem key={member.email} member={member} />
+                    ))}
+                  </div>
                 </div>
               )}
 
