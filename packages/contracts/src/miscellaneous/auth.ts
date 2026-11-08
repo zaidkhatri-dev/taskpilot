@@ -12,6 +12,7 @@ export const PERMISSIONS: Readonly<Record<string, WorkspaceMembershipRoles[]>> =
     "board:delete": ["admin", "owner"],
     "workspace:update": ["admin", "owner"],
     "workspace:leave": ["member", "admin"],
+    "workspace:delete": ["owner"],
     "members:view": ["admin", "member", "owner"],
   };
 

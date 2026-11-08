@@ -78,3 +78,21 @@ export const acceptWorkspaceInvitation = async (workspaceId: string) => {
     throw new Error("Network error, please try again later.");
   }
 };
+
+export const deleteWorkspace = async (workspaceId: string) => {
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        cache: "no-store",
+      },
+    );
+
+    const result: EmptyResponse = await response.json();
+    return result;
+  } catch (error) {
+    throw new Error("Network error, please try again later.");
+  }
+};

@@ -6,6 +6,7 @@ import {
   leaveWorkspaceController,
   getWorkspaceMembersController,
   acceptWorkspaceInvitationController,
+  deleteWorkspaceController,
 } from "./controller.js";
 import { inputValidator } from "@/middlewares/input-validator.js";
 import {
@@ -51,6 +52,12 @@ router.post(
   "/:id/accept",
   inputValidator({ params: idSchema }),
   acceptWorkspaceInvitationController,
+);
+
+router.delete(
+  "/:id",
+  inputValidator({ params: idSchema }),
+  deleteWorkspaceController,
 );
 
 export default router;

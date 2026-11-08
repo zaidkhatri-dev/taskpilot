@@ -80,7 +80,7 @@ export const updateMeService = async (
   );
 
   if (!updatedUser) {
-    throw new AppError("Failed to update your account", 400);
+    throw new AppError("Failed to update your profile", 400);
   }
 
   return updatedUser;

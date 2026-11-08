@@ -80,3 +80,7 @@ export const updateWorkspace = async (workspaceId: string, name: string) => {
 
   return workspace;
 };
+
+export const deleteWorkspace = async (workspaceId: string) => {
+  await dbClient.delete(workspaces).where(eq(workspaces.id, workspaceId));
+};

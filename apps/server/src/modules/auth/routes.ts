@@ -11,7 +11,7 @@ import {
   logoutController,
 } from "./controller.js";
 import { emailRateLimiter } from "@/middlewares/email-rate-limiter.js";
-import { requireGuest, requireAuth } from "@/middlewares/auth.js";
+import { requireGuest, requireAuth, requireOnboarding } from "@/middlewares/auth.js";
 
 const router: Router = Router();
 
@@ -33,8 +33,10 @@ router.post(
   verifyMagicLinkController,
 );
 
-router.get("/session", requireAuth, sessionController);
+router.use(requireAuth);
 
-router.post("/logout", requireAuth, logoutController);
+router.get("/session", sessionController);
+
+router.post("/logout", requireOnboarding, logoutController);
 
 export default router;

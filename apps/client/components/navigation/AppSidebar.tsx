@@ -17,6 +17,7 @@ import { WorkspaceBoards } from "./WorkspaceBoard";
 import { UserProfileMenu } from "@/components/user/UserProfileMenu";
 import { LogoNameTrigger } from "./LogoNameTrigger";
 import { useWorkspacePermission } from "@/hooks/workspace";
+import { usePathname } from "next/navigation";
 
 interface AppSidebarProps {
   workspaceId: string;
@@ -27,6 +28,8 @@ export const AppSidebar = ({ workspaceId }: AppSidebarProps) => {
     workspaceId,
     "workspace:update",
   );
+
+  const pathname = usePathname();
 
   return (
     <Sidebar collapsible="icon">
@@ -45,6 +48,7 @@ export const AppSidebar = ({ workspaceId }: AppSidebarProps) => {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
+                isActive={pathname === `/w/${workspaceId}/settings`}
                 render={
                   <Link
                     href={`/w/${workspaceId}/settings`}

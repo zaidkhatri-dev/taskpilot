@@ -7,6 +7,7 @@ import {
   leaveWorkspace,
   getWorkspaceMembers,
   acceptWorkspaceInvitation,
+  deleteWorkspace,
 } from "@/lib/services/workspace";
 import { queryKeys } from "@/hooks/keys";
 import { checkPermission } from "@/lib/utils/auth";
@@ -15,6 +16,7 @@ import type {
   WorkspaceMembershipRoles,
 } from "@repo/contracts/miscellaneous/auth";
 import { toast } from "@/components/ui/toast";
+import { useRouter } from "next/navigation";
 
 export const useWorkspaces = () => {
   return useQuery({
@@ -82,9 +84,14 @@ export const useLeaveWorkspace = () => {
       return result;
     },
     onSuccess: (result, workspaceId) => {
-      queryClient.invalidateQueries({
+      queryClient.removeQueries({
         queryKey: queryKeys.boards.all(workspaceId),
       });
+
+      queryClient.removeQueries({
+        queryKey: queryKeys.workspaces.members(workspaceId),
+      });
+
       queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.all,
       });
@@ -104,6 +111,7 @@ export const useLeaveWorkspace = () => {
 
 export const useAcceptWorkspaceInvitation = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: async (workspaceId: string) => {
@@ -126,10 +134,51 @@ export const useAcceptWorkspaceInvitation = () => {
         description: result.message || "Invitation accepted successfully",
         type: "success",
       });
+
+      router.replace("/w");
     },
     onError: (error) => {
       toast.add({
         description: error.message || "Failed to accept workspace invitation",
+        type: "error",
+      });
+    },
+  });
+};
+
+export const useDeleteWorkspace = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (workspaceId: string) => {
+      const result = await deleteWorkspace(workspaceId);
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      return result;
+    },
+    onSuccess: (result, workspaceId) => {
+      queryClient.removeQueries({
+        queryKey: queryKeys.boards.all(workspaceId),
+      });
+
+      queryClient.removeQueries({
+        queryKey: queryKeys.workspaces.members(workspaceId),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.all,
+      });
+      toast.add({
+        description: result.message || "Workspace deleted successfully",
+        type: "success",
+      });
+    },
+    onError: (error) => {
+      toast.add({
+        description: error.message || "Failed to delete workspace",
         type: "error",
       });
     },

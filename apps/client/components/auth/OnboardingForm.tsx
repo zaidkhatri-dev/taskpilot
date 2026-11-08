@@ -53,9 +53,10 @@ export default function OnboardingForm() {
         description: state.message,
         type: "success",
       });
-      // Invalidate the cached session so ProtectedRoute immediately sees
-      // isOnboarded: true instead of redirecting back to /onboarding
+      // Invalidate session so ProtectedRoute immediately sees isOnboarded: true,
+      // and users.me so profile data reflects the newly set name/avatar.
       queryClient.invalidateQueries({ queryKey: queryKeys.session });
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.me });
       router.replace("/w");
     } else {
       toast.add({

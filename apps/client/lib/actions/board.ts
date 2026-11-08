@@ -5,7 +5,6 @@ import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
 import type { CreateBoardResponse } from "@repo/contracts/response/board";
 import type { FormActionState } from "@/types/form";
-import { handleUnauthorizedAccess } from "../utils/error";
 import { handleServerNetworkError } from "../utils/network";
 import { getCookieForServerActions } from "../utils/cookie";
 
@@ -36,10 +35,6 @@ export const createBoard = async (
     );
 
     const data: CreateBoardResponse = await response.json();
-
-    if (response.status === 401) {
-      handleUnauthorizedAccess();
-    }
 
     return {
       success: data.success,

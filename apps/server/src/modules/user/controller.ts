@@ -125,7 +125,7 @@ export const updateMeController = async (
 
     const response: UpdateMeResponse = {
       success: true,
-      message: "User updated successfully",
+      message: "Your profile has been updated successfully",
       data: updatedUser,
     };
 

@@ -1,4 +1,4 @@
----
+﻿---
 name: coding-standards-client
 description: >-
   Coding standards, architectural guidelines, naming conventions, and best practices
@@ -72,6 +72,21 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - For `useActionState`: render toast where `useActionState` is used.
   - For `useMutation`: render toast in the hook where `useMutation` is used.
   - For `useQuery`: throw error in the hook, and also throw error where that hook is used (which is using `useQuery`).
+- **Query Cache Invalidation & Removal (`queryClient.invalidateQueries` / `queryClient.removeQueries`)**:
+  - **Where to call it**:
+    - For `useActionState` forms: call `invalidateQueries` inside the `useEffect` that watches `state?.submissionId`, immediately after the success toast - in the same component where `useActionState` is used.
+    - For `useMutation` hooks: call `invalidateQueries` / `removeQueries` inside the `onSuccess` callback - in the same hook file where `useMutation` is defined.
+    - **Hook Rules in Mutations**: Custom hooks and React/Next.js hooks (e.g. `useRouter()`) must be called at the top level of the custom hook function - never inside mutation callbacks like `onSuccess` or `onError`.
+  - **What to invalidate vs remove**:
+    - **Create** a resource -> invalidate the `all` list key for that resource (e.g., `queryKeys.boards.all(workspaceId)` after creating a board).
+    - **Update** a resource -> invalidate both the `all` list key and the `detail` key (if one exists) for that resource (e.g., `queryKeys.workspaces.all` and `queryKeys.workspaces.detail(workspaceId)` after updating a workspace).
+    - **Delete / Leave** a resource:
+      - Remove cached queries for data the user no longer has access to using `queryClient.removeQueries` (e.g., `queryKeys.boards.all(workspaceId)`, `queryKeys.workspaces.members(workspaceId)`).
+      - Invalidate parent/list queries using `queryClient.invalidateQueries` (e.g., `queryKeys.workspaces.all`).
+      - **Do not invalidate unrelated queries**: Do not invalidate `queryKeys.session` on workspace deletion/leave, as user session/authentication state is unaffected.
+    - **Actions that modify the current user's data** (profile update, onboarding) -> always invalidate `queryKeys.users.me`. If the action also affects the session (e.g., sets `isOnboarded`), also invalidate `queryKeys.session`.
+    - **Accepting an invitation** -> invalidate `queryKeys.workspaces.all` (new workspace is now accessible) and `queryKeys.users.invitations` (accepted invitation should disappear).
+  - **Keys reference**: All query keys live in `@/hooks/keys.ts`. Only add a new key there when a new `useQuery` hook is introduced; remove keys that are no longer referenced by any hook.
 - **Forms & Updates Handling**:
   - For update forms, track dirty state by comparing current form values against initial values using `isUnchanged` from `@/lib/utils/miscellaneous`.
   - Disable the save/submit button when the form is clean (`isUnchanged`) or pending (`isPending`) to prevent submitting no-op updates.

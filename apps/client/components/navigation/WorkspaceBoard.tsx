@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { KanbanIcon, Plus } from "lucide-react";
 
 import {
@@ -26,7 +26,7 @@ interface WorkspaceBoardsProps {
 }
 
 export const WorkspaceBoards = ({ workspaceId }: WorkspaceBoardsProps) => {
-  const params = useParams<{ boardId?: string }>();
+  const pathname = usePathname();
   const canCreateBoard = useWorkspacePermission(workspaceId, "board:create");
 
   const {
@@ -68,23 +68,27 @@ export const WorkspaceBoards = ({ workspaceId }: WorkspaceBoardsProps) => {
               </SidebarMenuItem>
             ))
           ) : boards && boards.length > 0 ? (
-            boards.map((board) => (
-              <SidebarMenuItem key={board.id}>
-                <SidebarMenuButton
-                  render={
-                    <Link
-                      href={`/w/${workspaceId}/b/${board.id}`}
-                      className="cursor-default"
-                    />
-                  }
-                  isActive={params.boardId === board.id}
-                  tooltip={formatName(board.name)}
-                >
-                  <KanbanIcon />
-                  <span className="truncate">{formatName(board.name)}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))
+            boards.map((board) => {
+              const boardUrl = `/w/${workspaceId}/b/${board.id}`;
+
+              return (
+                <SidebarMenuItem key={board.id}>
+                  <SidebarMenuButton
+                    render={
+                      <Link href={boardUrl} className="cursor-default" />
+                    }
+                    isActive={
+                      pathname === boardUrl ||
+                      pathname.startsWith(`${boardUrl}/`)
+                    }
+                    tooltip={formatName(board.name)}
+                  >
+                    <KanbanIcon />
+                    <span className="truncate">{formatName(board.name)}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })
           ) : (
             <SidebarMenuItem>
               <p className="px-3 py-2 text-xs text-muted-foreground">

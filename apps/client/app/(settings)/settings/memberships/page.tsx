@@ -8,11 +8,49 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useWorkspaces } from "@/hooks/workspace";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import {
+  useLeaveWorkspace,
+  useWorkspacePermission,
+  useWorkspaces,
+} from "@/hooks/workspace";
 import { formatName } from "@/lib/utils/formatting";
-import { LeaveWorkspaceDialog } from "@/components/workspace/LeaveWorkspaceDialog";
 import { MembersListSidebar } from "@/components/workspace/MembersListSidebar";
+
+interface LeaveWorkspaceButtonProps {
+  workspaceId: string;
+  workspaceName: string;
+}
+
+const LeaveWorkspaceButton = ({
+  workspaceId,
+  workspaceName,
+}: LeaveWorkspaceButtonProps) => {
+  const canLeave = useWorkspacePermission(workspaceId, "workspace:leave");
+  const { mutate: leave, isPending } = useLeaveWorkspace();
+
+  return (
+    <ConfirmationDialog
+      title="Leave workspace"
+      trigger={
+        <Button variant="destructive" size="sm" disabled={!canLeave}>
+          Leave
+        </Button>
+      }
+      confirmLabel="Leave Workspace"
+      confirmingLabel="Leaving..."
+      confirmVariant="destructive"
+      isPending={isPending}
+      onConfirm={(close) => leave(workspaceId, { onSuccess: close })}
+    >
+      Are you sure you want to leave{" "}
+      <span className="font-semibold text-foreground">{workspaceName}</span>? You
+      will lose access to all its boards and tasks.
+    </ConfirmationDialog>
+  );
+};
 
 const RoutePage = () => {
   const { data: workspaces, isPending, isError, error } = useWorkspaces();
@@ -70,7 +108,7 @@ const RoutePage = () => {
                           workspaceId={workspace.id}
                           workspaceName={formatName(workspace.name)}
                         />
-                        <LeaveWorkspaceDialog
+                        <LeaveWorkspaceButton
                           workspaceId={workspace.id}
                           workspaceName={formatName(workspace.name)}
                         />

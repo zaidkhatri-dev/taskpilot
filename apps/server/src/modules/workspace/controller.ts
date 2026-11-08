@@ -6,6 +6,7 @@ import {
   leaveWorkspaceService,
   getWorkspaceMembersService,
   acceptWorkspaceInvitationService,
+  deleteWorkspaceService,
 } from "./services.js";
 import type {
   GetMyWorkspacesResponse,
@@ -170,3 +171,27 @@ export const acceptWorkspaceInvitationController = async (
     next(error);
   }
 };
+
+export const deleteWorkspaceController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: workspaceId } = req.params as GetTypeFromSchema<typeof idSchema>;
+    const userId = req.session.userId!;
+
+    await deleteWorkspaceService(userId, workspaceId);
+
+    const response: EmptyResponse = {
+      success: true,
+      message: "Workspace deleted successfully",
+      data: null,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+

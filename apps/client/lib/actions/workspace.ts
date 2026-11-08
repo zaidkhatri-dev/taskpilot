@@ -1,14 +1,17 @@
 "use server";
 
-import { createWorkspaceSchema } from "@repo/validation/workspace";
+import {
+  createWorkspaceSchema,
+  updateWorkspaceSchema,
+} from "@repo/validation/workspace";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
 import type {
   CreateWorkspaceResponse,
   GetMyWorkspacesResponse,
+  UpdateWorkspaceResponse,
 } from "@repo/contracts/response/workspace";
 import type { FormActionState } from "@/types/form";
-import { handleUnauthorizedAccess } from "../utils/error";
 import { handleServerNetworkError } from "../utils/network";
 import { getCookieForServerActions } from "../utils/cookie";
 
@@ -61,9 +64,49 @@ export async function createWorkspace(
 
     const data: CreateWorkspaceResponse = await response.json();
 
-    if (response.status === 401) {
-      handleUnauthorizedAccess();
-    }
+    return {
+      success: data.success,
+      message: data.message,
+      data: {
+        id: data.data.id,
+        name: data.data.name,
+      },
+      errors: null,
+      values: objFormData,
+      submissionId: Date.now(),
+    };
+  } catch (error) {
+    return handleServerNetworkError(error, objFormData);
+  }
+}
+
+export async function updateWorkspace(
+  prevState: FormActionState | null,
+  formData: FormData,
+): Promise<FormActionState> {
+  const objFormData = cleanFormData(formData);
+
+  const result = validateAction(objFormData, updateWorkspaceSchema);
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${result?.data?.workspaceId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(result.data),
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+      },
+    );
+
+    const data: UpdateWorkspaceResponse = await response.json();
 
     return {
       success: data.success,

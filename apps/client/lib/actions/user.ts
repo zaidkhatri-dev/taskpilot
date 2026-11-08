@@ -4,9 +4,7 @@ import { onboardingSchema, updateMeSchema } from "@repo/validation/user";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
 import type { EmptyResponse } from "@repo/contracts/response/common";
-import type { GetMeResponse } from "@repo/contracts/response/user";
 import type { FormActionState } from "@/types/form";
-import { handleUnauthorizedAccess } from "../utils/error";
 import { handleServerNetworkError } from "../utils/network";
 import {
   forwardCookieFromServerToBrowser,
@@ -40,10 +38,6 @@ export async function completeOnboarding(
     );
 
     const data: EmptyResponse = await response.json();
-
-    if (response.status === 401) {
-      handleUnauthorizedAccess();
-    }
 
     if (response.ok) {
       await forwardCookieFromServerToBrowser(response);
@@ -87,10 +81,6 @@ export async function updateMe(
     );
 
     const data: EmptyResponse = await response.json();
-
-    if (response.status === 401) {
-      handleUnauthorizedAccess();
-    }
 
     if (response.ok) {
       await forwardCookieFromServerToBrowser(response);

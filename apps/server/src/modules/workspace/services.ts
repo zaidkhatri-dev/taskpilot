@@ -4,6 +4,7 @@ import {
   getMyWorkspaces,
   updateWorkspace,
   getWorkspaceById,
+  deleteWorkspace,
 } from "./repository.js";
 import { assertWorkspacePermission } from "@/utils/auth.js";
 import {
@@ -86,4 +87,13 @@ export const acceptWorkspaceInvitationService = async (
   }
 
   return invitation;
+};
+
+export const deleteWorkspaceService = async (
+  userId: string,
+  workspaceId: string,
+) => {
+  await assertWorkspacePermission(userId, workspaceId, "workspace:delete");
+
+  await deleteWorkspace(workspaceId);
 };

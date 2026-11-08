@@ -3,7 +3,6 @@ export const queryKeys = {
 
   workspaces: {
     all: ["workspaces"] as const,
-    detail: (workspaceId: string) => ["workspaces", workspaceId] as const,
     members: (workspaceId: string) =>
       ["workspaces", workspaceId, "members"] as const,
   },
@@ -11,13 +10,9 @@ export const queryKeys = {
   boards: {
     all: (workspaceId: string) =>
       ["workspaces", workspaceId, "boards"] as const,
-
-    detail: (boardId: string) => ["boards", boardId] as const,
   },
 
   users: {
-    all: ["users"] as const,
-    detail: (userId: string) => ["users", userId] as const,
     me: ["users", "me"] as const,
     invitations: ["users", "me", "invitations"] as const,
   },
