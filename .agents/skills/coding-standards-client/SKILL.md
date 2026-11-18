@@ -43,6 +43,7 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
   - Use destructuring to extract values from objects and arrays.
   - Use template literals instead of string concatenation.
   - Use ternary operator instead of `if-else` statement when there is only one `if` and one `else`.
+  - For imports use import aliases ie. '@/..'.
 - **Validation**:
   - Zod schemas that are used in multiple places should be defined as common schemas in `@repo/validation`.
 - **Quality**:

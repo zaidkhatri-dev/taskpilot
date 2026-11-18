@@ -1,2 +1,0 @@
-- For every endpoint follow this architecture - Route -> Controller -> Service -> Repository
-- For every function name in Controller and Service file, end it with its action name - e.g. "onboardingController", "onboardingService"
