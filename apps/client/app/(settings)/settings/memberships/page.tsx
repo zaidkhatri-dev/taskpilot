@@ -46,8 +46,8 @@ const LeaveWorkspaceButton = ({
       onConfirm={(close) => leave(workspaceId, { onSuccess: close })}
     >
       Are you sure you want to leave{" "}
-      <span className="font-semibold text-foreground">{workspaceName}</span>? You
-      will lose access to all its boards and tasks.
+      <span className="font-semibold text-foreground">{workspaceName}</span>?
+      You will lose access to all its boards and tasks.
     </ConfirmationDialog>
   );
 };
@@ -68,7 +68,7 @@ const RoutePage = () => {
 
         <div className="rounded-md border">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-card">
               <TableRow>
                 <TableHead>Workspace</TableHead>
                 <TableHead>Role</TableHead>

@@ -34,7 +34,7 @@ const RoutePage = () => {
 
         <div className="rounded-md border">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-card">
               <TableRow>
                 <TableHead>Workspace</TableHead>
                 <TableHead className="w-px text-center">Action</TableHead>
