@@ -8,7 +8,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 
 const AVATARS = Array.from(
   { length: 24 },
@@ -56,11 +55,9 @@ export default function AvatarDialog({
               type="button"
               onClick={() => setTempSelected(name)}
               aria-pressed={tempSelected === name}
-              className={cn(
-                "rounded-full p-1 transition",
-                "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                tempSelected === name && "ring-2 ring-primary bg-muted",
-              )}
+              className={`rounded-full p-1 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                tempSelected === name ? "ring-2 ring-primary bg-muted" : ""
+              }`}
             >
               <Avatar className="size-15">
                 <AvatarImage

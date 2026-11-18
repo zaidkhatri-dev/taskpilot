@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "cn";
 import { formatName } from "@/lib/utils/formatting";
 import { getBoardCoverImage } from "@/lib/utils/image";
 
@@ -32,10 +31,9 @@ export const BoardCard = ({
 
   return (
     <Card
-      className={cn(
-        "h-full overflow-hidden pt-0 transition-all duration-200 hover:shadow-lg",
-        className,
-      )}
+      className={`h-full overflow-hidden pt-0 transition-all duration-200 hover:shadow-lg${
+        className ? ` ${className}` : ""
+      }`}
     >
       <div className="relative aspect-video w-full overflow-hidden rounded-t-4xl">
         <Image
