@@ -41,7 +41,6 @@ export const generateMagicLinkService = async (email: string) => {
   const jobData: EmailJobData = {
     from: serverConfig.SENDER_EMAIL,
     to: email,
-
     subject: `Your sign-in link for ${serverConfig.APP_NAME}`,
     html: emailBody,
   };
@@ -77,9 +76,6 @@ export const verifyMagicLinkService = async (rawToken: string) => {
   if (!fetchedUser) {
     let user = await createUser(email);
 
-    if (!user) {
-      throw new AppError("Signup failed", 500);
-    }
     sessionData = {
       userId: user.userId,
       email: user.email,

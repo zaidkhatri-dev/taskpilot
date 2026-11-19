@@ -88,5 +88,9 @@ export async function createUser(email: string) {
     email: users.email,
   });
 
+  if (!user) {
+    throw new Error("User insert returned no row");
+  }
+
   return user;
 }

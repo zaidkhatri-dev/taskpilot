@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/navigation/AppSidebar";
 import { UpdateLastWorkspace } from "@/components/workspace/UpdateLastWorkspace";
 import { validateParams } from "@/lib/utils/params";
 import { redirect } from "next/navigation";
+import { CloseSidebarOnNavigate } from "@/components/navigation/CloseSidebarOnNavigate";
 
 export default async function WorkspaceIdLayout({
   children,
@@ -19,6 +20,8 @@ export default async function WorkspaceIdLayout({
   return (
     <SidebarProvider>
       <UpdateLastWorkspace workspaceId={id} />
+
+      <CloseSidebarOnNavigate />
 
       <AppSidebar workspaceId={id} />
 

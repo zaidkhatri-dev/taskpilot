@@ -3,7 +3,6 @@ import {
   createWorkspace,
   getMyWorkspaces,
   updateWorkspace,
-  getWorkspaceById,
   deleteWorkspace,
 } from "./repository.js";
 import { assertWorkspacePermission } from "@/utils/auth.js";
@@ -16,21 +15,6 @@ import {
 export const getMyWorkspacesService = async (userId: string) => {
   const workspaces = await getMyWorkspaces(userId);
   return workspaces;
-};
-
-export const getWorkspaceService = async (
-  userId: string,
-  workspaceId: string,
-) => {
-  await assertWorkspacePermission(userId, workspaceId, "workspace:read");
-
-  const workspace = await getWorkspaceById(workspaceId);
-
-  if (!workspace) {
-    throw new AppError("Workspace not found", 404);
-  }
-
-  return workspace;
 };
 
 export const createWorkspaceService = async (userId: string, name: string) => {

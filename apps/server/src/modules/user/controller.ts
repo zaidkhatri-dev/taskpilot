@@ -53,7 +53,7 @@ export const onboardingController = async (
       data: null,
     };
 
-    res.status(200).json(response);
+    res.status(201).json(response);
   } catch (error) {
     next(error);
   }

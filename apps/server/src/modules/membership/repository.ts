@@ -84,7 +84,6 @@ export const getWorkspaceInvitations = async (userId: string) => {
       and(
         eq(workspaceMemberships.userId, userId),
         eq(workspaceMemberships.accepted, false),
-        eq(workspaceMemberships.role, "member"),
       ),
     )
     .orderBy(desc(workspaceMemberships.createdAt));
@@ -104,7 +103,6 @@ export const acceptWorkspaceInvitation = async (
       and(
         eq(workspaceMemberships.id, workspaceId),
         eq(workspaceMemberships.userId, userId),
-        eq(workspaceMemberships.role, "member"),
       ),
     )
     .returning({

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
    */
   title: {
     template: "%s | TaskPilot",
-    default: "TaskPilot — Task management for modern teams",
+    default: "TaskPilot - Task management for modern teams",
   },
   description:
     "TaskPilot helps modern teams manage tasks, projects, and priorities in one place.",
