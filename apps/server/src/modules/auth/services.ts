@@ -10,7 +10,7 @@ import {
 import { getEmailQueue } from "@repo/email/queue";
 import { serverConfig } from "@repo/config/server";
 import { getMagicLinkKey } from "@/utils/redis.js";
-import { generateMagicLink, getEmailBody } from "@/utils/auth.js";
+import { generateMagicLink, getLinkEmailBody } from "@/utils/auth.js";
 import { EmailJobData } from "@repo/contracts/miscellaneous/auth";
 import { MagicLinkPayload } from "@/types/redis.js";
 import { AppError } from "@repo/errors/app-error";
@@ -36,7 +36,7 @@ export const generateMagicLinkService = async (email: string) => {
   await setHValue(MAGIC_KEY, payload, serverConfig.AUTH_TOKEN_EXPIRY_TIME);
 
   const link = generateMagicLink(rawToken);
-  const emailBody = getEmailBody(email, link);
+  const emailBody = getLinkEmailBody(email, link);
 
   const jobData: EmailJobData = {
     from: serverConfig.SENDER_EMAIL,

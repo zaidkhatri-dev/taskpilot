@@ -1,6 +1,7 @@
 import { initDb } from "@repo/db/client";
 import { workspaces } from "@repo/db/workspaces";
 import { workspaceMemberships } from "@repo/db/memberships";
+import { users } from "@repo/db/users";
 import { eq, and } from "drizzle-orm";
 import { serverConfig } from "@repo/config/server";
 
@@ -74,7 +75,10 @@ export const createWorkspace = async (userId: string, name: string) => {
 export const updateWorkspace = async (workspaceId: string, name: string) => {
   const [workspace] = await dbClient
     .update(workspaces)
-    .set({ name })
+    .set({
+      name,
+      updatedAt: new Date(),
+    })
     .where(eq(workspaces.id, workspaceId))
     .returning({ id: workspaces.id, name: workspaces.name });
 
@@ -83,4 +87,16 @@ export const updateWorkspace = async (workspaceId: string, name: string) => {
 
 export const deleteWorkspace = async (workspaceId: string) => {
   await dbClient.delete(workspaces).where(eq(workspaces.id, workspaceId));
+};
+
+export const getUserByEmail = async (email: string) => {
+  const [user] = await dbClient
+    .select({
+      id: users.id,
+      email: users.email,
+    })
+    .from(users)
+    .where(eq(users.email, email));
+
+  return user;
 };

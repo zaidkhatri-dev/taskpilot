@@ -4,9 +4,10 @@ import {
   getMyWorkspacesService,
   updateWorkspaceService,
   leaveWorkspaceService,
-  getWorkspaceMembersService,
+  getWorkspaceUsersService,
   acceptWorkspaceInvitationService,
   deleteWorkspaceService,
+  inviteUserService,
 } from "./services.js";
 import type {
   GetMyWorkspacesResponse,
@@ -18,6 +19,7 @@ import { GetTypeFromSchema } from "@/types/validation.js";
 import {
   updateWorkspaceSchema,
   createWorkspaceSchema,
+  inviteUserSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 import { EmptyResponse } from "@repo/contracts/response/common";
@@ -122,7 +124,7 @@ export const leaveWorkspaceController = async (
   }
 };
 
-export const getWorkspaceMembersController = async (
+export const getWorkspaceUsersController = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -133,11 +135,11 @@ export const getWorkspaceMembersController = async (
     >;
     const userId = req.session.userId!;
 
-    const data = await getWorkspaceMembersService(userId, workspaceId);
+    const data = await getWorkspaceUsersService(userId, workspaceId);
 
     const response: GetWorkspaceMembersResponse = {
       success: true,
-      message: "Workspace members fetched successfully",
+      message: "Workspace users fetched successfully",
       data,
     };
 
@@ -178,7 +180,9 @@ export const deleteWorkspaceController = async (
   next: NextFunction,
 ) => {
   try {
-    const { id: workspaceId } = req.params as GetTypeFromSchema<typeof idSchema>;
+    const { id: workspaceId } = req.params as GetTypeFromSchema<
+      typeof idSchema
+    >;
     const userId = req.session.userId!;
 
     await deleteWorkspaceService(userId, workspaceId);
@@ -195,3 +199,30 @@ export const deleteWorkspaceController = async (
   }
 };
 
+export const inviteUserController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: workspaceId } = req.params as GetTypeFromSchema<
+      typeof idSchema
+    >;
+    const userId = req.session.userId!;
+    const { email, role } = req.body as GetTypeFromSchema<
+      typeof inviteUserSchema
+    >;
+
+    await inviteUserService(userId, workspaceId, email, role);
+
+    const response: EmptyResponse = {
+      success: true,
+      message: "User invited to workspace successfully",
+      data: null,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};

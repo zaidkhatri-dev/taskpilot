@@ -2,6 +2,7 @@
 
 import {
   createWorkspaceSchema,
+  inviteUserSchema,
   updateWorkspaceSchema,
 } from "@repo/validation/workspace";
 import { cleanFormData, validateAction } from "../utils/form";
@@ -14,6 +15,7 @@ import type {
 import type { FormActionState } from "@/types/form";
 import { handleServerNetworkError } from "../utils/network";
 import { getCookieForServerActions } from "../utils/cookie";
+import { EmptyResponse } from "@repo/contracts/response/common";
 
 export async function getMyWorkspacesServer() {
   try {
@@ -115,6 +117,47 @@ export async function updateWorkspace(
         id: data.data.id,
         name: data.data.name,
       },
+      errors: null,
+      values: objFormData,
+      submissionId: Date.now(),
+    };
+  } catch (error) {
+    return handleServerNetworkError(error, objFormData);
+  }
+}
+
+export async function inviteUser(
+  prevState: FormActionState | null,
+  formData: FormData,
+): Promise<FormActionState> {
+  const objFormData = cleanFormData(formData);
+
+  const result = validateAction(objFormData, inviteUserSchema);
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${result?.data?.workspaceId}/invite`,
+      {
+        method: "POST",
+        body: JSON.stringify(result.data),
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+      },
+    );
+
+    const data: EmptyResponse = await response.json();
+
+    return {
+      success: data.success,
+      message: data.message,
+      data: null,
       errors: null,
       values: objFormData,
       submissionId: Date.now(),

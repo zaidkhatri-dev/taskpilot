@@ -1,14 +1,22 @@
-import { Permission, PERMISSIONS, WorkspaceMembershipRoles } from "@repo/contracts/miscellaneous/auth";
+import {
+  Permission,
+  PERMISSIONS,
+  TARGET_PERMISSIONS,
+  TargetedAction,
+  WorkspaceMembershipRoles,
+} from "@repo/contracts/miscellaneous/auth";
 import { getUserWorkspaceMembershipFromIds } from "@/modules/membership/repository.js";
 import { serverConfig } from "@repo/config/server";
 import { AppError } from "@repo/errors/app-error";
+import { getLogoBase64 } from "./logo.js";
 
 export const generateMagicLink = (token: string) => {
   return `${serverConfig.EMAIL_VERIFICATION_BASE_URL}?token=${token}`;
 };
 
-export const getEmailBody = (email: string, link: string) => {
+export const getLinkEmailBody = (email: string, link: string) => {
   const expiryMinutes = Math.floor(serverConfig.AUTH_TOKEN_EXPIRY_TIME / 60);
+  const logoBase64 = getLogoBase64();
 
   return `
 <!DOCTYPE html>
@@ -29,6 +37,24 @@ export const getEmailBody = (email: string, link: string) => {
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 520px; background-color: #ffffff; border-radius: 10px; border: 1px solid #ebebeb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04); overflow: hidden;">
           <tr>
             <td style="padding: 36px 32px; text-align: left;">
+              <!-- App Brand Header -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 24px;">
+                <tr>
+                  ${
+                    logoBase64
+                      ? `<td style="vertical-align: middle; padding-right: 10px;">
+                    <img src="${logoBase64}" alt="${serverConfig.APP_NAME}" width="30" height="30" style="display: block; width: 30px; height: 30px; border-radius: 6px; object-fit: contain;" />
+                  </td>`
+                      : ""
+                  }
+                  <td style="vertical-align: middle;">
+                    <span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: #171717; line-height: 1;">
+                      ${serverConfig.APP_NAME}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+
               <!-- Header / Title -->
               <h1 style="margin: 0 0 20px 0; font-size: 20px; font-weight: 600; letter-spacing: -0.015em; color: #171717;">
                 Sign in to ${serverConfig.APP_NAME}
@@ -82,6 +108,14 @@ export const getEmailBody = (email: string, link: string) => {
 </body>
 </html>
   `;
+};
+
+export const checkTargetPermission = (
+  action: TargetedAction,
+  userRole: WorkspaceMembershipRoles,
+  targetRole: WorkspaceMembershipRoles,
+) => {
+  return TARGET_PERMISSIONS[action]?.[userRole]?.includes(targetRole) ?? false;
 };
 
 const checkPermission = (

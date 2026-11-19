@@ -4,13 +4,20 @@ import {
   getMyWorkspaces,
   updateWorkspace,
   deleteWorkspace,
+  getWorkspaceById,
+  getUserByEmail,
 } from "./repository.js";
-import { assertWorkspacePermission } from "@/utils/auth.js";
+import { assertWorkspacePermission, checkTargetPermission } from "@/utils/auth.js";
 import {
   removeUserFromWorkspace,
-  getWorkspaceMembers,
+  getWorkspaceUsers,
   acceptWorkspaceInvitation,
-} from "../membership/repository.js";
+  inviteUser,
+} from "@/modules/membership/repository.js";
+import { getWorkspaceInvitationEmailBody } from "@/utils/workspace.js";
+import { EmailJobData, TARGET_PERMISSIONS } from "@repo/contracts/miscellaneous/auth";
+import { serverConfig } from "@repo/config/server";
+import { getEmailQueue } from "@repo/email/queue";
 
 export const getMyWorkspacesService = async (userId: string) => {
   const workspaces = await getMyWorkspaces(userId);
@@ -49,15 +56,17 @@ export const leaveWorkspaceService = async (
   await removeUserFromWorkspace(workspaceId, userId);
 };
 
-export const getWorkspaceMembersService = async (
+export const getWorkspaceUsersService = async (
   userId: string,
   workspaceId: string,
 ) => {
-  await assertWorkspacePermission(userId, workspaceId, "members:view");
+  const { role } = await assertWorkspacePermission(userId, workspaceId, "users:view");
 
-  const members = await getWorkspaceMembers(workspaceId);
+  const allowedRoles = TARGET_PERMISSIONS["user:view"][role]!;
 
-  return members;
+  const users = await getWorkspaceUsers(workspaceId, allowedRoles);
+
+  return users;
 };
 
 export const acceptWorkspaceInvitationService = async (
@@ -80,4 +89,55 @@ export const deleteWorkspaceService = async (
   await assertWorkspacePermission(userId, workspaceId, "workspace:delete");
 
   await deleteWorkspace(workspaceId);
+};
+
+export const inviteUserService = async (
+  userId: string,
+  workspaceId: string,
+  email: string,
+  role: "admin" | "member",
+) => {
+  const { role: userRole } = await assertWorkspacePermission(
+    userId,
+    workspaceId,
+    "user:invite",
+  );
+
+  if (!checkTargetPermission("user:invite", userRole, role)) {
+    throw new AppError("You don't have permission to perform this action", 403);
+  }
+
+  const workspace = await getWorkspaceById(workspaceId);
+  if (!workspace) {
+    throw new AppError("Workspace not found", 404);
+  }
+
+  const user = await getUserByEmail(email);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const invitationLink = `${serverConfig.CORS_ORIGIN}/settings/invitations`;
+  const emailBody = getWorkspaceInvitationEmailBody(
+    email,
+    invitationLink,
+    workspace.name,
+  );
+  const invitation = await inviteUser(workspaceId, user.id, role);
+
+  const jobData: EmailJobData = {
+    from: serverConfig.SENDER_EMAIL,
+    to: email,
+    subject: `Your invitation to join ${workspace.name}`,
+    html: emailBody,
+  };
+
+  const emailQueue = getEmailQueue({
+    redisUrl: serverConfig.REDIS_URL,
+    maxRetries: serverConfig.EMAIL_WORKER_MAX_RETRY,
+    attemptDelay: serverConfig.EMAIL_WORKER_ATTEMPT_DELAY,
+  });
+  await emailQueue.add("send-email", jobData);
+
+  return invitation;
 };

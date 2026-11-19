@@ -253,9 +253,7 @@ export const UpdateWorkspaceForm = ({
         </div>
       </form>
 
-      {nameError && (
-        <FieldError id="name-error">{nameError}</FieldError>
-      )}
+      {nameError && <FieldError id="name-error">{nameError}</FieldError>}
     </div>
   );
 };

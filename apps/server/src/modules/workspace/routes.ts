@@ -4,14 +4,16 @@ import {
   getMyWorkspacesController,
   updateWorkspaceController,
   leaveWorkspaceController,
-  getWorkspaceMembersController,
+  getWorkspaceUsersController,
   acceptWorkspaceInvitationController,
   deleteWorkspaceController,
+  inviteUserController
 } from "./controller.js";
 import { inputValidator } from "@/middlewares/input-validator.js";
 import {
   createWorkspaceSchema,
   updateWorkspaceSchema,
+  inviteUserSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 
@@ -37,15 +39,24 @@ router.patch(
 );
 
 router.get(
-  "/:id/members",
+  "/:id/users",
   inputValidator({ params: idSchema }),
-  getWorkspaceMembersController,
+  getWorkspaceUsersController,
 );
 
 router.post(
   "/:id/leave",
   inputValidator({ params: idSchema }),
   leaveWorkspaceController,
+);
+
+router.post(
+  "/:id/invite",
+  inputValidator({
+    params: idSchema,
+    body: inviteUserSchema.omit({ workspaceId: true }),
+  }),
+  inviteUserController,
 );
 
 router.post(

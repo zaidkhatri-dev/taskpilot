@@ -10,7 +10,6 @@ import {
   useWorkspaces,
 } from "@/hooks/workspace";
 import { formatName } from "@/lib/utils/formatting";
-import { MembersListSidebar } from "@/components/workspace/MembersListSidebar";
 
 interface LeaveWorkspaceButtonProps {
   workspaceId: string;
@@ -64,14 +63,13 @@ const RoutePage = () => {
             Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                className="flex gap-3 px-4 py-3 items-center justify-between"
               >
-                <div className="space-y-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <Skeleton className="h-5 w-32" />
                   <Skeleton className="h-4 w-16" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-32" />
                   <Skeleton className="h-8 w-16" />
                 </div>
               </div>
@@ -80,7 +78,7 @@ const RoutePage = () => {
             workspaces.map((workspace) => (
               <div
                 key={workspace.id}
-                className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                className="flex gap-3 px-4 py-3 items-center justify-between"
               >
                 <div className="flex min-w-0 items-center gap-2">
                   <p className="truncate font-medium">
@@ -89,10 +87,6 @@ const RoutePage = () => {
                   <RoleBadge role={workspace.role} />
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  <MembersListSidebar
-                    workspaceId={workspace.id}
-                    workspaceName={formatName(workspace.name)}
-                  />
                   <LeaveWorkspaceButton
                     workspaceId={workspace.id}
                     workspaceName={formatName(workspace.name)}

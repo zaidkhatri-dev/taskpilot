@@ -1,9 +1,10 @@
 import { initDb } from "@repo/db/client";
 import { workspaceMemberships } from "@repo/db/memberships";
 import { serverConfig } from "@repo/config/server";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { users } from "@repo/db/users";
 import { workspaces } from "@repo/db/workspaces";
+import { WorkspaceMembershipRoles } from "@repo/contracts/miscellaneous/auth";
 
 const dbClient = initDb({
   DATABASE_URL: serverConfig.DATABASE_URL,
@@ -51,7 +52,9 @@ export const removeUserFromWorkspace = async (
     );
 };
 
-export const getWorkspaceMembers = async (workspaceId: string) => {
+export const getWorkspaceUsers = async (workspaceId: string, allowedRoles: readonly WorkspaceMembershipRoles[]) => {
+  if (allowedRoles.length === 0) return [];
+  
   const members = await dbClient
     .select({
       email: users.email,
@@ -66,6 +69,7 @@ export const getWorkspaceMembers = async (workspaceId: string) => {
       and(
         eq(workspaceMemberships.workspaceId, workspaceId),
         eq(workspaceMemberships.accepted, true),
+        inArray(workspaceMemberships.role, [...allowedRoles]),
       ),
     )
     .orderBy(users.createdAt);
@@ -98,6 +102,7 @@ export const acceptWorkspaceInvitation = async (
     .update(workspaceMemberships)
     .set({
       accepted: true,
+      updatedAt: new Date(),
     })
     .where(
       and(
@@ -108,5 +113,28 @@ export const acceptWorkspaceInvitation = async (
     .returning({
       id: workspaceMemberships.id,
     });
+  return result;
+};
+
+export const inviteUser = async (
+  workspaceId: string,
+  userId: string,
+  role: "admin" | "member",
+) => {
+  const [result] = await dbClient
+    .insert(workspaceMemberships)
+    .values({
+      workspaceId,
+      userId,
+      role,
+      accepted: false,
+    })
+    .returning({
+      id: workspaceMemberships.id,
+    });
+
+  if (!result) {
+    throw new Error("Workspace membership insert returned no row");
+  }
   return result;
 };
