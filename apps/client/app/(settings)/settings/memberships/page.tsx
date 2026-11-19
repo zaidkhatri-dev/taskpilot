@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { RoleBadge } from "@/components/workspace/RoleBadge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
@@ -66,68 +59,52 @@ const RoutePage = () => {
           Memberships
         </h1>
 
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader className="bg-card">
-              <TableRow>
-                <TableHead>Workspace</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="w-px text-center">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isPending ? (
-                Array.from({ length: 3 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-16" />
-                    </TableCell>
-                    <TableCell className="w-px text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <Skeleton className="h-8 w-32" />
-                        <Skeleton className="h-8 w-16" />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : workspaces && workspaces.length > 0 ? (
-                workspaces.map((workspace) => (
-                  <TableRow key={workspace.id}>
-                    <TableCell className="font-medium">
-                      {formatName(workspace.name)}
-                    </TableCell>
-                    <TableCell className="capitalize">
-                      {workspace.role ?? "-"}
-                    </TableCell>
-                    <TableCell className="w-px text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <MembersListSidebar
-                          workspaceId={workspace.id}
-                          workspaceName={formatName(workspace.name)}
-                        />
-                        <LeaveWorkspaceButton
-                          workspaceId={workspace.id}
-                          workspaceName={formatName(workspace.name)}
-                        />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={3}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    No workspaces found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+        <div className="divide-y rounded-md border">
+          {isPending ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-8 w-16" />
+                </div>
+              </div>
+            ))
+          ) : workspaces && workspaces.length > 0 ? (
+            workspaces.map((workspace) => (
+              <div
+                key={workspace.id}
+                className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  <p className="truncate font-medium">
+                    {formatName(workspace.name)}
+                  </p>
+                  <RoleBadge role={workspace.role} />
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <MembersListSidebar
+                    workspaceId={workspace.id}
+                    workspaceName={formatName(workspace.name)}
+                  />
+                  <LeaveWorkspaceButton
+                    workspaceId={workspace.id}
+                    workspaceName={formatName(workspace.name)}
+                  />
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="flex h-24 items-center justify-center text-sm text-muted-foreground">
+              No workspaces found.
+            </div>
+          )}
         </div>
       </div>
     </div>

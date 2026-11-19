@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWorkspaceInvitations } from "@/hooks/user";
 import { formatName } from "@/lib/utils/formatting";
@@ -32,56 +24,39 @@ const RoutePage = () => {
           Invitations
         </h1>
 
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader className="bg-card">
-              <TableRow>
-                <TableHead>Workspace</TableHead>
-                <TableHead className="w-px text-center">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isPending ? (
-                Array.from({ length: 3 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell className="w-px text-center">
-                      <div className="flex items-center justify-center">
-                        <Skeleton className="h-8 w-16" />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : invitations && invitations.length > 0 ? (
-                invitations.map((invitation) => (
-                  <TableRow key={invitation.id}>
-                    <TableCell className="font-medium">
-                      {formatName(invitation.name)}
-                    </TableCell>
-                    <TableCell className="w-px text-center">
-                      <div className="flex items-center justify-center">
-                        <AcceptInvitationDialog
-                          workspaceId={invitation.id}
-                          workspaceName={formatName(invitation.name)}
-                        />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={2}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    No invitations found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+        <div className="divide-y rounded-md border">
+          {isPending ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between gap-4 px-4 py-3"
+              >
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-8 w-16" />
+              </div>
+            ))
+          ) : invitations && invitations.length > 0 ? (
+            invitations.map((invitation) => (
+              <div
+                key={invitation.id}
+                className="flex items-center justify-between gap-4 px-4 py-3"
+              >
+                <span className="min-w-0 flex-1 truncate font-medium">
+                  {formatName(invitation.name)}
+                </span>
+                <div className="shrink-0">
+                  <AcceptInvitationDialog
+                    workspaceId={invitation.id}
+                    workspaceName={formatName(invitation.name)}
+                  />
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="flex h-24 items-center justify-center text-sm text-muted-foreground">
+              No invitations found.
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -4,7 +4,10 @@ import type { WorkspaceMembershipRoles } from "../miscellaneous/auth.js";
 export interface WorkspaceItem {
   id: string;
   name: string;
-  role?: WorkspaceMembershipRoles;
+}
+
+export interface WorkspaceItemWithRole extends WorkspaceItem {
+  role: WorkspaceMembershipRoles;
 }
 
 export interface WorkspaceMember {
@@ -15,7 +18,7 @@ export interface WorkspaceMember {
   role: WorkspaceMembershipRoles;
 }
 
-export type GetMyWorkspacesResponse = ApiResponse<WorkspaceItem[]>;
+export type GetMyWorkspacesResponse = ApiResponse<WorkspaceItemWithRole[]>;
 
 export type CreateWorkspaceResponse = ApiResponse<WorkspaceItem>;
 export type UpdateWorkspaceResponse = ApiResponse<WorkspaceItem>;
