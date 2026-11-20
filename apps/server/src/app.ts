@@ -11,6 +11,7 @@ import userRoutes from "@modules/user/routes.js";
 import boardRoutes from "@modules/board/routes.js";
 import workspaceRoutes from "@modules/workspace/routes.js";
 import { requireAuth, requireOnboarding } from "@middlewares/auth.js";
+import { getLogoPath } from "@/utils/logo.js";
 
 const app: Express = express();
 
@@ -33,6 +34,12 @@ app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({
     status: "healthy",
     timestamp: Date.now(),
+  });
+});
+
+app.get("/logo", (req: Request, res: Response) => {
+  res.sendFile(getLogoPath(), (err) => {
+    if (err) res.status(404).end();
   });
 });
 

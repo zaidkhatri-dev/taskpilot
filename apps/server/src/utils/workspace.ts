@@ -1,12 +1,12 @@
 import { serverConfig } from "@repo/config/server";
-import { getLogoBase64 } from "./logo.js";
+import { getLogoUrl } from "./logo.js";
 
 export const getWorkspaceInvitationEmailBody = (
   email: string,
   link: string,
   workspaceName: string,
 ) => {
-  const logoBase64 = getLogoBase64();
+  const logoUrl = getLogoUrl(serverConfig.SERVER_URL);
 
   return `
 <!DOCTYPE html>
@@ -31,9 +31,9 @@ export const getWorkspaceInvitationEmailBody = (
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 24px;">
                 <tr>
                   ${
-                    logoBase64
+                    logoUrl
                       ? `<td style="vertical-align: middle; padding-right: 10px;">
-                    <img src="${logoBase64}" alt="${serverConfig.APP_NAME}" width="30" height="30" style="display: block; width: 30px; height: 30px; border-radius: 6px; object-fit: contain;" />
+                    <img src="${logoUrl}" alt="${serverConfig.APP_NAME}" width="30" height="30" style="display: block; width: 30px; height: 30px; border-radius: 6px; object-fit: contain;" />
                   </td>`
                       : ""
                   }

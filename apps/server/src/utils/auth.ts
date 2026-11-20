@@ -8,7 +8,7 @@ import {
 import { getUserWorkspaceMembershipFromIds } from "@/modules/membership/repository.js";
 import { serverConfig } from "@repo/config/server";
 import { AppError } from "@repo/errors/app-error";
-import { getLogoBase64 } from "./logo.js";
+import { getLogoUrl } from "./logo.js";
 
 export const generateMagicLink = (token: string) => {
   return `${serverConfig.EMAIL_VERIFICATION_BASE_URL}?token=${token}`;
@@ -16,7 +16,7 @@ export const generateMagicLink = (token: string) => {
 
 export const getLinkEmailBody = (email: string, link: string) => {
   const expiryMinutes = Math.floor(serverConfig.AUTH_TOKEN_EXPIRY_TIME / 60);
-  const logoBase64 = getLogoBase64();
+  const logoUrl = getLogoUrl(serverConfig.SERVER_URL);
 
   return `
 <!DOCTYPE html>
@@ -41,9 +41,9 @@ export const getLinkEmailBody = (email: string, link: string) => {
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 24px;">
                 <tr>
                   ${
-                    logoBase64
+                    logoUrl
                       ? `<td style="vertical-align: middle; padding-right: 10px;">
-                    <img src="${logoBase64}" alt="${serverConfig.APP_NAME}" width="30" height="30" style="display: block; width: 30px; height: 30px; border-radius: 6px; object-fit: contain;" />
+                    <img src="${logoUrl}" alt="${serverConfig.APP_NAME}" width="30" height="30" style="display: block; width: 30px; height: 30px; border-radius: 6px; object-fit: contain;" />
                   </td>`
                       : ""
                   }
