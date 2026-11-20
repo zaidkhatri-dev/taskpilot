@@ -1,10 +1,10 @@
 import { initDb } from "@repo/db/client";
 import { workspaceMemberships } from "@repo/db/memberships";
 import { serverConfig } from "@repo/config/server";
-import { and, desc, eq, inArray, ilike, or, count, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, ilike, or, count } from "drizzle-orm";
 import { users } from "@repo/db/users";
 import { workspaces } from "@repo/db/workspaces";
-import { WorkspaceMembershipRoles } from "@repo/contracts/miscellaneous/auth";
+import type { GetWorkspaceUsersOptions } from "@/types/workspace.js";
 
 const dbClient = initDb({
   DATABASE_URL: serverConfig.DATABASE_URL,
@@ -52,15 +52,6 @@ export const removeUserFromWorkspace = async (
     );
 };
 
-export interface GetWorkspaceUsersOptions {
-  workspaceId: string;
-  allowedRoles: readonly WorkspaceMembershipRoles[];
-  status: "accepted" | "pending";
-  page: number;
-  limit: number;
-  name?: string;
-}
-
 export const getWorkspaceUsers = async ({
   workspaceId,
   allowedRoles,
@@ -69,7 +60,9 @@ export const getWorkspaceUsers = async ({
   limit,
   name,
 }: GetWorkspaceUsersOptions) => {
-  if (allowedRoles.length === 0) return [];
+  if (allowedRoles.length === 0) {
+    return { users: [], page, totalPages: 1 };
+  }
 
   const isAccepted = status === "accepted";
   const conditions = [
@@ -109,34 +102,37 @@ export const getWorkspaceUsers = async ({
     ? workspaceMemberships.updatedAt
     : workspaceMemberships.createdAt;
 
-  const members = await dbClient
+  const rows = await dbClient
     .select({
       email: users.email,
       firstName: users.firstName,
       lastName: users.lastName,
       avatarId: users.avatarId,
       role: workspaceMemberships.role,
-      joinedOn: isAccepted ? workspaceMemberships.updatedAt : sql<Date>`NULL`,
-      invitedOn: !isAccepted ? workspaceMemberships.createdAt : sql<Date>`NULL`,
+      updatedAt: workspaceMemberships.updatedAt,
+      createdAt: workspaceMemberships.createdAt,
     })
     .from(workspaceMemberships)
     .innerJoin(users, eq(workspaceMemberships.userId, users.id))
     .where(whereClause)
-    .orderBy(desc(orderColumn))
+    .orderBy(desc(orderColumn), desc(workspaceMemberships.id)) // tiebreaker, use your unique column
     .limit(limit)
     .offset(offset);
 
-  return members.map((member) => ({
-    email: member.email,
-    firstName: member.firstName,
-    lastName: member.lastName,
-    avatarId: member.avatarId,
-    role: member.role,
-    ...(isAccepted && member.joinedOn ? { joinedOn: member.joinedOn } : {}),
-    ...(!isAccepted && member.invitedOn ? { invitedOn: member.invitedOn } : {}),
+  return {
+    users: rows.map((row) => ({
+      email: row.email,
+      firstName: row.firstName,
+      lastName: row.lastName,
+      avatarId: row.avatarId,
+      role: row.role,
+      ...(isAccepted
+        ? { joinedOn: row.updatedAt }
+        : { invitedOn: row.createdAt }),
+    })),
     page,
     totalPages,
-  }));
+  };
 };
 
 export const getWorkspaceInvitations = async (userId: string) => {
@@ -157,14 +153,27 @@ export const getWorkspaceInvitations = async (userId: string) => {
   return invitations;
 };
 
-export const acceptWorkspaceInvitation = async (
+export const processWorkspaceInvitation = async (
   workspaceId: string,
   userId: string,
+  accepted: boolean,
 ) => {
+  if (!accepted) {
+    await dbClient
+      .delete(workspaceMemberships)
+      .where(
+        and(
+          eq(workspaceMemberships.id, workspaceId),
+          eq(workspaceMemberships.userId, userId),
+        ),
+      );
+    return;
+  }
+  
   const [result] = await dbClient
     .update(workspaceMemberships)
     .set({
-      accepted: true,
+      accepted: accepted,
       updatedAt: new Date(),
     })
     .where(
@@ -199,5 +208,49 @@ export const inviteUser = async (
   if (!result) {
     throw new Error("Workspace membership insert returned no row");
   }
+  return result;
+};
+
+export const getMembershipByUserIdAndWorkspaceId = async (
+  userId: string,
+  workspaceId: string,
+) => {
+  const [result] = await dbClient
+    .select({
+      id: workspaceMemberships.id,
+      role: workspaceMemberships.role,
+    })
+    .from(workspaceMemberships)
+    .where(
+      and(
+        eq(workspaceMemberships.userId, userId),
+        eq(workspaceMemberships.workspaceId, workspaceId),
+        eq(workspaceMemberships.accepted, true),
+      ),
+    )
+    .limit(1);
+  return result;
+};
+
+export const changeUserRole = async (
+  workspaceId: string,
+  userId: string,
+  role: "admin" | "member",
+) => {
+  const [result] = await dbClient
+    .update(workspaceMemberships)
+    .set({
+      role,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(workspaceMemberships.workspaceId, workspaceId),
+        eq(workspaceMemberships.userId, userId),
+      ),
+    )
+    .returning({
+      id: workspaceMemberships.id,
+    });
   return result;
 };

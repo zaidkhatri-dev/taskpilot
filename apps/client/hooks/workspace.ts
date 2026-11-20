@@ -5,15 +5,16 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   getMyWorkspaces,
   leaveWorkspace,
-  getWorkspaceMembers,
-  acceptWorkspaceInvitation,
+  getWorkspaceUsers,
+  processWorkspaceInvitation,
   deleteWorkspace,
 } from "@/lib/services/workspace";
 import { queryKeys } from "@/hooks/keys";
-import { checkPermission } from "@/lib/utils/auth";
+import { checkPermission, checkTargetPermission } from "@/lib/utils/auth";
 import type {
   Permission,
   WorkspaceMembershipRoles,
+  TargetedAction,
 } from "@repo/contracts/miscellaneous/auth";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
@@ -34,16 +35,15 @@ export const useWorkspaces = () => {
   });
 };
 
-export const useWorkspaceMembers = (
+export const useWorkspaceUsers = (
   workspaceId: string,
   params?: { status?: "accepted" | "pending"; page?: number; limit?: number; name?: string },
-  options?: { enabled?: boolean },
 ) => {
   return useQuery({
-    queryKey: queryKeys.workspaces.members(workspaceId, params),
+    queryKey: queryKeys.workspaces.users(workspaceId, params),
 
     queryFn: async () => {
-      const result = await getWorkspaceMembers(workspaceId, params);
+      const result = await getWorkspaceUsers(workspaceId, params);
 
       if (!result.success) {
         throw new Error(result.message);
@@ -52,7 +52,7 @@ export const useWorkspaceMembers = (
       return result.data;
     },
 
-    enabled: Boolean(workspaceId) && (options?.enabled ?? true),
+    enabled: Boolean(workspaceId),
   });
 };
 
@@ -69,6 +69,16 @@ export const useWorkspacePermission = (
 ): boolean => {
   const role = useWorkspaceRole(workspaceId);
   return checkPermission(permission, role);
+};
+
+export const useTargetPermission = (
+  action: TargetedAction,
+  workspaceId: string | undefined,
+  targetRole: WorkspaceMembershipRoles,
+): boolean => {
+  const role = useWorkspaceRole(workspaceId);
+  if (!role) return false;
+  return checkTargetPermission(action, role, targetRole);
 };
 
 export const useLeaveWorkspace = () => {
@@ -89,8 +99,8 @@ export const useLeaveWorkspace = () => {
         queryKey: queryKeys.boards.all(workspaceId),
       });
 
-      queryClient.removeQueries({
-        queryKey: queryKeys.workspaces.membersBase(workspaceId),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.usersBase(workspaceId),
       });
 
       queryClient.invalidateQueries({
@@ -110,37 +120,51 @@ export const useLeaveWorkspace = () => {
   });
 };
 
-export const useAcceptWorkspaceInvitation = () => {
+export const useProcessWorkspaceInvitation = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (workspaceId: string) => {
-      const result = await acceptWorkspaceInvitation(workspaceId);
+    mutationFn: async ({
+      workspaceId,
+      accepted,
+    }: {
+      workspaceId: string;
+      accepted: boolean;
+    }) => {
+      const result = await processWorkspaceInvitation(workspaceId, accepted);
 
       if (!result.success) {
         throw new Error(result.message);
       }
 
-      return result;
+      return { ...result, accepted };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.all,
-      });
+      if (result.accepted) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.workspaces.all,
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: queryKeys.users.invitations,
       });
       toast.add({
-        description: result.message || "Invitation accepted successfully",
+        description:
+          result.message ||
+          (result.accepted
+            ? "Invitation accepted successfully"
+            : "Invitation declined successfully"),
         type: "success",
       });
 
-      router.replace("/w");
+      if (result.accepted) {
+        router.replace("/w");
+      }
     },
     onError: (error) => {
       toast.add({
-        description: error.message || "Failed to accept workspace invitation",
+        description: error.message || "Failed to process workspace invitation",
         type: "error",
       });
     },
@@ -165,8 +189,8 @@ export const useDeleteWorkspace = () => {
         queryKey: queryKeys.boards.all(workspaceId),
       });
 
-      queryClient.removeQueries({
-        queryKey: queryKeys.workspaces.membersBase(workspaceId),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.usersBase(workspaceId),
       });
 
       queryClient.invalidateQueries({

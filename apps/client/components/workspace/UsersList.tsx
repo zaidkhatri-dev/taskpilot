@@ -16,43 +16,35 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RoleBadge } from "@/components/workspace/RoleBadge";
-import { useWorkspaceMembers } from "@/hooks/workspace";
 import { useDebounce } from "@/hooks/use-debounce";
-import { formatName } from "@/lib/utils/formatting";
+import { formatName, formatDate } from "@/lib/utils/formatting";
+import { useWorkspaceUsers } from "@/hooks/workspace";
 
-type MemberStatus = "accepted" | "pending";
+type UserStatus = "accepted" | "pending";
 
-interface MembersListProps {
+interface UsersListProps {
   workspaceId: string;
 }
 
 const PAGE_SIZE = 10;
 
-const formatDate = (date?: Date | string): string => {
-  if (!date) return "—";
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-};
-
-export const MembersList = ({ workspaceId }: MembersListProps) => {
-  const [status, setStatus] = useState<MemberStatus>("accepted");
+export const UsersList = ({ workspaceId }: UsersListProps) => {
+  const [status, setStatus] = useState<UserStatus>("accepted");
   const [page, setPage] = useState(1);
   const [nameInput, setNameInput] = useState("");
   const debouncedName = useDebounce(nameInput, 400);
 
-  const { data: members, isPending, isError, error } = useWorkspaceMembers(
+  const { data, isPending, isError, error } = useWorkspaceUsers(
     workspaceId,
     { status, page, limit: PAGE_SIZE, name: debouncedName || undefined },
   );
 
   if (isError) throw error;
 
-  const totalPages = members?.[0]?.totalPages ?? 1;
+  const totalPages = data?.totalPages ?? 1;
+  const users = data?.users ?? [];
 
-  const handleTabChange = (newStatus: MemberStatus) => {
+  const handleTabChange = (newStatus: UserStatus) => {
     setStatus(newStatus);
     setPage(1);
     setNameInput("");
@@ -128,32 +120,32 @@ export const MembersList = ({ workspaceId }: MembersListProps) => {
                 </TableCell>
               </TableRow>
             ))
-          ) : members && members.length > 0 ? (
-            members.map((member, i) => {
+          ) : users && users.length > 0 ? (
+            users.map((user, i) => {
               const fullName = formatName(
-                `${member.firstName ?? ""} ${member.lastName ?? ""}`,
+                `${user.firstName ?? ""} ${user.lastName ?? ""}`,
               );
-              const avatarSrc = member.avatarId
-                ? `/avatars/${member.avatarId}.svg`
+              const avatarSrc = user.avatarId
+                ? `/avatars/${user.avatarId}.svg`
                 : "/avatars/avatar_01.svg";
               const displayDate =
                 status === "accepted"
-                  ? formatDate(member.joinedOn)
-                  : formatDate(member.invitedOn);
+                  ? formatDate(user.joinedOn)
+                  : formatDate(user.invitedOn);
 
               return (
-                <TableRow key={`${member.email}-${i}`}>
+                <TableRow key={`${user.email}-${i}`}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="size-9 shrink-0">
                         <AvatarImage
                           src={avatarSrc}
-                          alt={fullName || member.email}
+                          alt={fullName || user.email}
                           width={36}
                           height={36}
                         />
                         <AvatarFallback>
-                          {(fullName || member.email)
+                          {(fullName || user.email)
                             .charAt(0)
                             .toUpperCase()}
                         </AvatarFallback>
@@ -165,13 +157,13 @@ export const MembersList = ({ workspaceId }: MembersListProps) => {
                           </span>
                         )}
                         <span className="truncate text-xs text-muted-foreground">
-                          {member.email}
+                          {user.email}
                         </span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <RoleBadge role={member.role} />
+                    <RoleBadge role={user.role} />
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {displayDate}

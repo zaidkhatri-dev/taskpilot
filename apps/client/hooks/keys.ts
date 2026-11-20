@@ -3,16 +3,16 @@ export const queryKeys = {
 
   workspaces: {
     all: ["workspaces"] as const,
-    membersBase: (workspaceId: string) =>
-      ["workspaces", workspaceId, "members"] as const,
-    members: (
+    usersBase: (workspaceId: string) =>
+      ["workspaces", workspaceId, "users"] as const,
+    users: (
       workspaceId: string,
       params?: { status?: string; page?: number; name?: string },
     ) =>
       [
         "workspaces",
         workspaceId,
-        "members",
+        "users",
         params?.status ?? "accepted",
         params?.page ?? 1,
         params?.name ?? "",

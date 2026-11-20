@@ -11,10 +11,12 @@ import { assertWorkspacePermission, checkTargetPermission } from "@/utils/auth.j
 import {
   removeUserFromWorkspace,
   getWorkspaceUsers,
-  acceptWorkspaceInvitation,
+  processWorkspaceInvitation,
   inviteUser,
+  getMembershipByUserIdAndWorkspaceId,
+  changeUserRole
 } from "@/modules/membership/repository.js";
-import { getWorkspaceInvitationEmailBody } from "@/utils/workspace.js";
+import { getWorkspaceInvitationEmailBody, isRoleChangeValid } from "@/utils/workspace.js";
 import { EmailJobData, TARGET_PERMISSIONS } from "@repo/contracts/miscellaneous/auth";
 import { serverConfig } from "@repo/config/server";
 import { getEmailQueue } from "@repo/email/queue";
@@ -56,6 +58,25 @@ export const leaveWorkspaceService = async (
   await removeUserFromWorkspace(workspaceId, userId);
 };
 
+export const removeUserFromWorkspaceService = async (
+  userId: string,
+  workspaceId: string,
+  targetUserId: string,
+) => {
+  const { role } = await assertWorkspacePermission(userId, workspaceId, "user:remove");
+  
+  const targetMembership = await getMembershipByUserIdAndWorkspaceId(targetUserId, workspaceId);
+  if (!targetMembership) {
+    throw new AppError("User not found in workspace", 404);
+  }
+
+  if (!checkTargetPermission("user:remove", role, targetMembership.role)) {
+    throw new AppError("You do not have permission to perform this action", 403);
+  }
+
+  await removeUserFromWorkspace(workspaceId, targetUserId);
+};
+
 export interface GetWorkspaceUsersServiceOptions {
   status: "accepted" | "pending";
   page: number;
@@ -81,11 +102,12 @@ export const getWorkspaceUsersService = async (
   return users;
 };
 
-export const acceptWorkspaceInvitationService = async (
+export const workspaceInvitationService = async (
   userId: string,
   workspaceId: string,
+  accepted: boolean,
 ) => {
-  const invitation = await acceptWorkspaceInvitation(workspaceId, userId);
+  const invitation = await processWorkspaceInvitation(workspaceId, userId, accepted);
 
   if (!invitation) {
     throw new AppError("Workspace invitation not found", 404);
@@ -152,4 +174,32 @@ export const inviteUserService = async (
   await emailQueue.add("send-email", jobData);
 
   return invitation;
+};
+
+export const changeUserRoleService = async (
+  userId: string,
+  workspaceId: string,
+  targetUserId: string,
+  role: "admin" | "member",
+) => {
+  await assertWorkspacePermission(
+    userId,
+    workspaceId,
+    "user:change-role",
+  );
+
+  const targetMembership = await getMembershipByUserIdAndWorkspaceId(targetUserId, workspaceId);
+  if (!targetMembership) {
+    throw new AppError("User not found in workspace", 404);
+  }
+
+  if (!isRoleChangeValid(targetMembership.role, role)) {
+    throw new AppError("Invalid role change", 400);
+  }
+
+  const result = await changeUserRole(workspaceId, targetUserId, role);
+  
+  if (!result) {
+    throw new AppError("User not found in workspace", 404);
+  }
 };

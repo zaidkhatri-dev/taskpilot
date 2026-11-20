@@ -3,7 +3,7 @@
 import { clientConfig } from "@repo/config/client";
 import type {
   GetMyWorkspacesResponse,
-  GetWorkspaceMembersResponse,
+  GetWorkspaceUsersResponse,
 } from "@repo/contracts/response/workspace";
 import type { EmptyResponse } from "@repo/contracts/response/common";
 
@@ -43,16 +43,16 @@ export async function leaveWorkspace(workspaceId: string) {
   }
 }
 
-export interface GetWorkspaceMembersParams {
+export interface GetWorkspaceUsersParams {
   status?: "accepted" | "pending";
   page?: number;
   limit?: number;
   name?: string;
 }
 
-export const getWorkspaceMembers = async (
+export const getWorkspaceUsers = async (
   workspaceId: string,
-  params?: GetWorkspaceMembersParams,
+  params?: GetWorkspaceUsersParams,
 ) => {
   try {
     const searchParams = new URLSearchParams();
@@ -70,19 +70,28 @@ export const getWorkspaceMembers = async (
       cache: "no-store",
     });
 
-    const result: GetWorkspaceMembersResponse = await response.json();
+    const result: GetWorkspaceUsersResponse = await response.json();
     return result;
   } catch (error) {
     throw new Error("Network error, please try again later.");
   }
 };
 
-export const acceptWorkspaceInvitation = async (workspaceId: string) => {
+export const processWorkspaceInvitation = async (
+  workspaceId: string,
+  accepted: boolean,
+) => {
   try {
     const response = await fetch(
-      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}/accept`,
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}/invitations`,
       {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accepted,
+        }),
         credentials: "include",
         cache: "no-store",
       },

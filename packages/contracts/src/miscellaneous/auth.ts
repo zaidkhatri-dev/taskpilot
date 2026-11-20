@@ -17,6 +17,8 @@ export const PERMISSIONS: Readonly<Record<string, WorkspaceMembershipRoles[]>> =
     "workspace:transfer": ["owner"],
     "user:view": ["admin", "owner"],
     "user:invite": ["admin", "owner"],
+    "user:remove": ["admin", "owner"],
+    "user:change-role": ["owner"],
   };
 
 export type TargetedAction = "user:view" | "user:invite" | "user:remove";

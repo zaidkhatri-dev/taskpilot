@@ -5,15 +5,17 @@ import {
   updateWorkspaceService,
   leaveWorkspaceService,
   getWorkspaceUsersService,
-  acceptWorkspaceInvitationService,
+  workspaceInvitationService,
   deleteWorkspaceService,
   inviteUserService,
+  removeUserFromWorkspaceService,
+  changeUserRoleService,
 } from "./services.js";
 import type {
   GetMyWorkspacesResponse,
   CreateWorkspaceResponse,
   UpdateWorkspaceResponse,
-  GetWorkspaceMembersResponse,
+  GetWorkspaceUsersResponse,
 } from "@repo/contracts/response/workspace";
 import { GetTypeFromSchema } from "@/types/validation.js";
 import {
@@ -21,6 +23,9 @@ import {
   createWorkspaceSchema,
   inviteUserSchema,
   getWorkspaceUsersSchema,
+  workspaceInvitationSchema,
+  removeUserFromWorkspaceSchema,
+  changeUserRoleSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 import { EmptyResponse } from "@repo/contracts/response/common";
@@ -125,6 +130,34 @@ export const leaveWorkspaceController = async (
   }
 };
 
+export const removeUserFromWorkspaceController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: workspaceId } = req.params as GetTypeFromSchema<
+      typeof idSchema
+    >;
+    const { userId } = req.body as GetTypeFromSchema<
+      typeof removeUserFromWorkspaceSchema
+    >;
+    const currentUserId = req.session.userId!;
+
+    await removeUserFromWorkspaceService(currentUserId, workspaceId, userId);
+
+    const response: EmptyResponse = {
+      success: true,
+      message: "User removed from workspace successfully",
+      data: null,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getWorkspaceUsersController = async (
   req: Request,
   res: Response,
@@ -146,7 +179,7 @@ export const getWorkspaceUsersController = async (
       name,
     });
 
-    const response: GetWorkspaceMembersResponse = {
+    const response: GetWorkspaceUsersResponse = {
       success: true,
       message: "Workspace users fetched successfully",
       data,
@@ -158,7 +191,7 @@ export const getWorkspaceUsersController = async (
   }
 };
 
-export const acceptWorkspaceInvitationController = async (
+export const workspaceInvitationController = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -167,13 +200,16 @@ export const acceptWorkspaceInvitationController = async (
     const { id: workspaceId } = req.params as GetTypeFromSchema<
       typeof idSchema
     >;
+    const { accepted } = req.body as GetTypeFromSchema<
+      typeof workspaceInvitationSchema
+    >;
     const userId = req.session.userId!;
 
-    await acceptWorkspaceInvitationService(userId, workspaceId);
+    await workspaceInvitationService(userId, workspaceId, accepted);
 
     const response: EmptyResponse = {
       success: true,
-      message: "Workspace invitation accepted successfully",
+      message: `Workspace invitation ${accepted ? "accepted" : "declined"} successfully`,
       data: null,
     };
 
@@ -227,6 +263,34 @@ export const inviteUserController = async (
     const response: EmptyResponse = {
       success: true,
       message: "User invited to workspace successfully",
+      data: null,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changeUserRoleController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: workspaceId } = req.params as GetTypeFromSchema<
+      typeof idSchema
+    >;
+    const { userId, role } = req.body as GetTypeFromSchema<
+      typeof changeUserRoleSchema
+    >;
+    const currentUserId = req.session.userId!;
+
+    await changeUserRoleService(currentUserId, workspaceId, userId, role);
+
+    const response: EmptyResponse = {
+      success: true,
+      message: "User role changed successfully",
       data: null,
     };
 

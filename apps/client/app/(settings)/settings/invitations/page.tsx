@@ -1,9 +1,68 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useWorkspaceInvitations } from "@/hooks/user";
+import { useProcessWorkspaceInvitation } from "@/hooks/workspace";
 import { formatName } from "@/lib/utils/formatting";
-import { AcceptInvitationDialog } from "@/components/workspace/AcceptInvitationDialog";
+
+interface InvitationActionsProps {
+  workspaceId: string;
+  workspaceName: string;
+}
+
+const InvitationActions = ({
+  workspaceId,
+  workspaceName,
+}: InvitationActionsProps) => {
+  const { mutate: processInvitation, isPending } =
+    useProcessWorkspaceInvitation();
+
+  return (
+    <div className="flex shrink-0 items-center gap-2">
+      <ConfirmationDialog
+        title="Reject invitation"
+        trigger={
+          <Button variant="outline" size="sm">
+            Reject
+          </Button>
+        }
+        confirmLabel="Reject Invitation"
+        confirmingLabel="Rejecting..."
+        confirmVariant="destructive"
+        isPending={isPending}
+        onConfirm={(close) =>
+          processInvitation(
+            { workspaceId, accepted: false },
+            { onSuccess: close },
+          )
+        }
+      >
+        Are you sure you want to reject the invitation to join{" "}
+        <span className="font-semibold text-foreground">{workspaceName}</span>?
+      </ConfirmationDialog>
+
+      <ConfirmationDialog
+        title="Accept invitation"
+        trigger={<Button size="sm">Accept</Button>}
+        confirmLabel="Accept Invitation"
+        confirmingLabel="Accepting..."
+        confirmVariant="default"
+        isPending={isPending}
+        onConfirm={(close) =>
+          processInvitation(
+            { workspaceId, accepted: true },
+            { onSuccess: close },
+          )
+        }
+      >
+        Are you sure you want to accept the invitation to join{" "}
+        <span className="font-semibold text-foreground">{workspaceName}</span>?
+      </ConfirmationDialog>
+    </div>
+  );
+};
 
 const RoutePage = () => {
   const {
@@ -32,7 +91,10 @@ const RoutePage = () => {
                 className="flex items-center justify-between gap-4 px-4 py-3"
               >
                 <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-8 w-16" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-8 w-16" />
+                </div>
               </div>
             ))
           ) : invitations && invitations.length > 0 ? (
@@ -44,12 +106,10 @@ const RoutePage = () => {
                 <span className="min-w-0 flex-1 truncate font-medium">
                   {formatName(invitation.name)}
                 </span>
-                <div className="shrink-0">
-                  <AcceptInvitationDialog
-                    workspaceId={invitation.id}
-                    workspaceName={formatName(invitation.name)}
-                  />
-                </div>
+                <InvitationActions
+                  workspaceId={invitation.id}
+                  workspaceName={formatName(invitation.name)}
+                />
               </div>
             ))
           ) : (

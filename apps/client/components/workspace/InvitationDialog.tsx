@@ -33,27 +33,26 @@ import { toast } from "@/components/ui/toast";
 import { inviteUser } from "@/lib/actions/workspace";
 import { getFieldError } from "@/lib/utils/form";
 import { queryKeys } from "@/hooks/keys";
-import { useWorkspacePermission, useWorkspaceRole } from "@/hooks/workspace";
-import type { WorkspaceMembershipRoles } from "@repo/contracts/miscellaneous/auth";
+import { useTargetPermission, useWorkspaceRole } from "@/hooks/workspace";
+import { TARGET_PERMISSIONS, type WorkspaceMembershipRoles } from "@repo/contracts/miscellaneous/auth";
 
 interface InvitationDialogProps {
   workspaceId: string;
 }
 
-type InvitableRole = Extract<WorkspaceMembershipRoles, "admin" | "member">;
-
 export function InvitationDialog({ workspaceId }: InvitationDialogProps) {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(inviteUser, null);
   const queryClient = useQueryClient();
-  const canInvite = useWorkspacePermission(workspaceId, "user:invite");
   const currentUserRole = useWorkspaceRole(workspaceId);
+  const canInvite = useTargetPermission("user:invite", workspaceId, "member");
 
-  // If currentUserRole is 'admin', they can invite only 'member'
-  const availableRoles: InvitableRole[] =
-    currentUserRole === "admin" ? ["member"] : ["admin", "member"];
+  const availableRoles =
+    currentUserRole && TARGET_PERMISSIONS["user:invite"][currentUserRole]
+      ? TARGET_PERMISSIONS["user:invite"][currentUserRole]
+      : [];
 
-  const [selectedRole, setSelectedRole] = useState<InvitableRole>("member");
+  const [selectedRole, setSelectedRole] = useState<WorkspaceMembershipRoles>("member");
 
   // Keep selectedRole valid if availableRoles changes
   useEffect(() => {
@@ -82,7 +81,7 @@ export function InvitationDialog({ workspaceId }: InvitationDialogProps) {
         type: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.members(workspaceId),
+        queryKey: queryKeys.workspaces.usersBase(workspaceId),
       });
     } else {
       toast.add({
@@ -101,9 +100,9 @@ export function InvitationDialog({ workspaceId }: InvitationDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button size="lg">
+          <Button variant="outline">
             <Plus data-icon="inline-start" />
-            Invite Member
+            Invite
           </Button>
         }
       />

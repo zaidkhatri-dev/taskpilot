@@ -34,5 +34,7 @@ export const idSchema = z.object({
   id: z.uuid("Invalid ID format"),
 });
 
+export const workspaceMembershipRoles = z.enum(["admin", "member"]);
+
 export const emptyToUndefined = (value: unknown) =>
   value === "" ? undefined : value;

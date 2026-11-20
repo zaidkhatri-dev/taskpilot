@@ -10,7 +10,7 @@ export interface WorkspaceItemWithRole extends WorkspaceItem {
   role: WorkspaceMembershipRoles;
 }
 
-export interface WorkspaceMember {
+export interface WorkspaceUser {
   email: string;
   firstName: string | null;
   lastName: string | null;
@@ -18,6 +18,10 @@ export interface WorkspaceMember {
   role: WorkspaceMembershipRoles;
   joinedOn?: Date;
   invitedOn?: Date;
+}
+
+export interface WorkspaceUsersResponse {
+  users: WorkspaceUser[];
   page: number;
   totalPages: number;
 }
@@ -26,4 +30,4 @@ export type GetMyWorkspacesResponse = ApiResponse<WorkspaceItemWithRole[]>;
 
 export type CreateWorkspaceResponse = ApiResponse<WorkspaceItem>;
 export type UpdateWorkspaceResponse = ApiResponse<WorkspaceItem>;
-export type GetWorkspaceMembersResponse = ApiResponse<WorkspaceMember[]>;
+export type GetWorkspaceUsersResponse = ApiResponse<WorkspaceUsersResponse>;

@@ -99,3 +99,15 @@ export const getWorkspaceInvitationEmailBody = (
 </html>
   `;
 };
+
+export const isRoleChangeValid = (currentRole: string, newRole: string) => {
+  if (currentRole === "admin" && newRole === "member") {
+    return true;
+  }
+
+  if (currentRole === "member" && newRole === "admin") {
+    return true;
+  }
+
+  return false;
+};

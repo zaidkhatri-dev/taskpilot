@@ -5,9 +5,11 @@ import {
   updateWorkspaceController,
   leaveWorkspaceController,
   getWorkspaceUsersController,
-  acceptWorkspaceInvitationController,
+  workspaceInvitationController,
   deleteWorkspaceController,
-  inviteUserController
+  inviteUserController,
+  removeUserFromWorkspaceController,
+  changeUserRoleController,
 } from "./controller.js";
 import { inputValidator } from "@/middlewares/input-validator.js";
 import {
@@ -15,6 +17,9 @@ import {
   updateWorkspaceSchema,
   inviteUserSchema,
   getWorkspaceUsersSchema,
+  workspaceInvitationSchema,
+  removeUserFromWorkspaceSchema,
+  changeUserRoleSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 
@@ -52,6 +57,12 @@ router.post(
 );
 
 router.post(
+  "/:id/remove",
+  inputValidator({ params: idSchema, body: removeUserFromWorkspaceSchema.omit({ workspaceId: true }) }),
+  removeUserFromWorkspaceController,
+);
+
+router.post(
   "/:id/invite",
   inputValidator({
     params: idSchema,
@@ -61,9 +72,15 @@ router.post(
 );
 
 router.post(
-  "/:id/accept",
-  inputValidator({ params: idSchema }),
-  acceptWorkspaceInvitationController,
+  "/:id/invitations",
+  inputValidator({ params: idSchema, body: workspaceInvitationSchema.omit({ workspaceId: true }) }),
+  workspaceInvitationController,
+);
+
+router.post(
+  "/:id/change-role",
+  inputValidator({ params: idSchema, body: changeUserRoleSchema.omit({ workspaceId: true }) }),
+  changeUserRoleController,
 );
 
 router.delete(
