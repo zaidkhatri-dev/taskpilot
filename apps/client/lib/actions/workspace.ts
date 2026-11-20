@@ -4,6 +4,9 @@ import {
   createWorkspaceSchema,
   inviteUserSchema,
   updateWorkspaceSchema,
+  removeUserFromWorkspaceSchema,
+  changeUserRoleSchema,
+  transferOwnershipSchema,
 } from "@repo/validation/workspace";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
@@ -16,6 +19,132 @@ import type { FormActionState } from "@/types/form";
 import { handleServerNetworkError } from "../utils/network";
 import { getCookieForServerActions } from "../utils/cookie";
 import { EmptyResponse } from "@repo/contracts/response/common";
+
+export async function removeUserFromWorkspace(
+  _prevState: FormActionState | null,
+  formData: FormData,
+): Promise<FormActionState> {
+  const objFormData = cleanFormData(formData);
+
+  const result = validateAction(objFormData, removeUserFromWorkspaceSchema);
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${result?.data?.workspaceId}/remove`,
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: result.data?.userId }),
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+      },
+    );
+
+    const data: EmptyResponse = await response.json();
+
+    return {
+      success: data.success,
+      message: data.message,
+      data: null,
+      errors: null,
+      values: objFormData,
+      submissionId: Date.now(),
+    };
+  } catch (error) {
+    return handleServerNetworkError(error, objFormData);
+  }
+}
+
+export async function changeWorkspaceUserRole(
+  _prevState: FormActionState | null,
+  formData: FormData,
+): Promise<FormActionState> {
+  const objFormData = cleanFormData(formData);
+
+  const result = validateAction(objFormData, changeUserRoleSchema);
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${result?.data?.workspaceId}/change-role`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          userId: result.data?.userId,
+          role: result.data?.role,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+      },
+    );
+
+    const data: EmptyResponse = await response.json();
+
+    return {
+      success: data.success,
+      message: data.message,
+      data: null,
+      errors: null,
+      values: objFormData,
+      submissionId: Date.now(),
+    };
+  } catch (error) {
+    return handleServerNetworkError(error, objFormData);
+  }
+}
+
+export async function transferWorkspaceOwnership(
+  _prevState: FormActionState | null,
+  formData: FormData,
+): Promise<FormActionState> {
+  const objFormData = cleanFormData(formData);
+
+  const result = validateAction(objFormData, transferOwnershipSchema);
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${result?.data?.workspaceId}/transfer`,
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: result.data?.userId }),
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+      },
+    );
+
+    const data: EmptyResponse = await response.json();
+
+    return {
+      success: data.success,
+      message: data.message,
+      data: null,
+      errors: null,
+      values: objFormData,
+      submissionId: Date.now(),
+    };
+  } catch (error) {
+    return handleServerNetworkError(error, objFormData);
+  }
+}
 
 export async function getMyWorkspacesServer() {
   try {

@@ -8,6 +8,9 @@ import {
   getWorkspaceUsers,
   processWorkspaceInvitation,
   deleteWorkspace,
+  removeWorkspaceUser,
+  changeWorkspaceUserRole,
+  transferWorkspaceOwnership,
 } from "@/lib/services/workspace";
 import { queryKeys } from "@/hooks/keys";
 import { checkPermission, checkTargetPermission } from "@/lib/utils/auth";
@@ -204,6 +207,128 @@ export const useDeleteWorkspace = () => {
     onError: (error) => {
       toast.add({
         description: error.message || "Failed to delete workspace",
+        type: "error",
+      });
+    },
+  });
+};
+
+export const useRemoveWorkspaceUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workspaceId,
+      userId,
+    }: {
+      workspaceId: string;
+      userId: string;
+    }) => {
+      const result = await removeWorkspaceUser(workspaceId, userId);
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      return result;
+    },
+    onSuccess: (result, { workspaceId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.usersBase(workspaceId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.all,
+      });
+      toast.add({
+        description: result.message || "User removed successfully",
+        type: "success",
+      });
+    },
+    onError: (error) => {
+      toast.add({
+        description: error.message || "Failed to remove user",
+        type: "error",
+      });
+    },
+  });
+};
+
+export const useChangeWorkspaceUserRole = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workspaceId,
+      userId,
+      role,
+    }: {
+      workspaceId: string;
+      userId: string;
+      role: "admin" | "member";
+    }) => {
+      const result = await changeWorkspaceUserRole(workspaceId, userId, role);
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      return result;
+    },
+    onSuccess: (result, { workspaceId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.usersBase(workspaceId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.all,
+      });
+      toast.add({
+        description: result.message || "User role updated successfully",
+        type: "success",
+      });
+    },
+    onError: (error) => {
+      toast.add({
+        description: error.message || "Failed to change user role",
+        type: "error",
+      });
+    },
+  });
+};
+
+export const useTransferWorkspaceOwnership = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workspaceId,
+      userId,
+    }: {
+      workspaceId: string;
+      userId: string;
+    }) => {
+      const result = await transferWorkspaceOwnership(workspaceId, userId);
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      return result;
+    },
+    onSuccess: (result, { workspaceId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.usersBase(workspaceId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.workspaces.all,
+      });
+      toast.add({
+        description: result.message || "Ownership transferred successfully",
+        type: "success",
+      });
+    },
+    onError: (error) => {
+      toast.add({
+        description: error.message || "Failed to transfer ownership",
         type: "error",
       });
     },

@@ -18,7 +18,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RoleBadge } from "@/components/workspace/RoleBadge";
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatName, formatDate } from "@/lib/utils/formatting";
-import { useWorkspaceUsers } from "@/hooks/workspace";
+import { useWorkspaceRole, useWorkspaceUsers } from "@/hooks/workspace";
+import { RemoveUser } from "@/components/workspace/RemoveUser";
+import { ChangeRole } from "@/components/workspace/ChangeRole";
+import { TransferOwnership } from "@/components/workspace/TransferOwnership";
+import {
+  canTransferOwnershipTo,
+  isRoleChangeValid,
+} from "@/lib/utils/workspace";
 
 type UserStatus = "accepted" | "pending";
 
@@ -33,11 +40,14 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
   const [page, setPage] = useState(1);
   const [nameInput, setNameInput] = useState("");
   const debouncedName = useDebounce(nameInput, 400);
+  const currentRole = useWorkspaceRole(workspaceId);
 
-  const { data, isPending, isError, error } = useWorkspaceUsers(
-    workspaceId,
-    { status, page, limit: PAGE_SIZE, name: debouncedName || undefined },
-  );
+  const { data, isPending, isError, error } = useWorkspaceUsers(workspaceId, {
+    status,
+    page,
+    limit: PAGE_SIZE,
+    name: debouncedName || undefined,
+  });
 
   if (isError) throw error;
 
@@ -96,7 +106,10 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead>{status === "accepted" ? "Joined On" : "Invited On"}</TableHead>
+            <TableHead>
+              {status === "accepted" ? "Joined On" : "Invited On"}
+            </TableHead>
+            {status === "accepted" && <TableHead />}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -118,9 +131,10 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                 <TableCell>
                   <Skeleton className="h-3.5 w-24" />
                 </TableCell>
+                {status === "accepted" && <TableCell />}
               </TableRow>
             ))
-          ) : users && users.length > 0 ? (
+          ) : users.length > 0 ? (
             users.map((user, i) => {
               const fullName = formatName(
                 `${user.firstName ?? ""} ${user.lastName ?? ""}`,
@@ -132,6 +146,15 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                 status === "accepted"
                   ? formatDate(user.joinedOn)
                   : formatDate(user.invitedOn);
+
+              const canChangeRole =
+                currentRole === "owner" &&
+                isRoleChangeValid(
+                  user.role,
+                  user.role === "admin" ? "member" : "admin",
+                );
+              const canTransfer =
+                currentRole === "owner" && canTransferOwnershipTo(user.role);
 
               return (
                 <TableRow key={`${user.email}-${i}`}>
@@ -145,9 +168,7 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                           height={36}
                         />
                         <AvatarFallback>
-                          {(fullName || user.email)
-                            .charAt(0)
-                            .toUpperCase()}
+                          {(fullName || user.email).charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid min-w-0 leading-tight">
@@ -168,13 +189,43 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                   <TableCell className="text-sm text-muted-foreground">
                     {displayDate}
                   </TableCell>
+                  {status === "accepted" && (
+                    <TableCell>
+                      <div className="flex flex-wrap items-center justify-end gap-2">
+                        <RemoveUser
+                          workspaceId={workspaceId}
+                          userId={user.userId}
+                          firstName={user.firstName || ""}
+                          lastName={user.lastName || ""}
+                        />
+                        {canChangeRole && (
+                          <ChangeRole
+                            workspaceId={workspaceId}
+                            userId={user.userId}
+                            currentRole={user.role}
+                            firstName={user.firstName || ""}
+                            lastName={user.lastName || ""}
+                          />
+                        )}
+                        {canTransfer && (
+                          <TransferOwnership
+                            workspaceId={workspaceId}
+                            userId={user.userId}
+                            currentRole={user.role}
+                            firstName={user.firstName || ""}
+                            lastName={user.lastName || ""}
+                          />
+                        )}
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               );
             })
           ) : (
             <TableRow>
               <TableCell
-                colSpan={3}
+                colSpan={status === "accepted" ? 4 : 3}
                 className="py-10 text-center text-sm text-muted-foreground"
               >
                 {debouncedName

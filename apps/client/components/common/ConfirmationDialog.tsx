@@ -26,7 +26,7 @@ interface ConfirmationDialogProps {
 export const ConfirmationDialog = ({
   title,
   children,
-  trigger,
+  trigger,  
   confirmLabel = "Confirm",
   confirmingLabel = "Confirming...",
   confirmVariant = "destructive",
@@ -35,9 +35,11 @@ export const ConfirmationDialog = ({
 }: ConfirmationDialogProps) => {
   const [open, setOpen] = useState(false);
 
+  
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
+      {<DialogTrigger render={trigger}/>}
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

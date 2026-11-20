@@ -104,6 +104,7 @@ export const getWorkspaceUsers = async ({
 
   const rows = await dbClient
     .select({
+      userId: users.id,
       email: users.email,
       firstName: users.firstName,
       lastName: users.lastName,
@@ -121,6 +122,7 @@ export const getWorkspaceUsers = async ({
 
   return {
     users: rows.map((row) => ({
+      userId: row.userId,
       email: row.email,
       firstName: row.firstName,
       lastName: row.lastName,

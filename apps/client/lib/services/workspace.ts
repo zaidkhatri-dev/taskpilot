@@ -121,3 +121,52 @@ export const deleteWorkspace = async (workspaceId: string) => {
     throw new Error("Network error, please try again later.");
   }
 };
+
+export const removeWorkspaceUser = async (workspaceId: string, userId: string) => {
+  try {
+    const response = await fetch(`${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}/remove`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+      credentials: "include",
+      cache: "no-store",
+    });
+    return (await response.json()) as EmptyResponse;
+  } catch {
+    throw new Error("Network error, please try again later.");
+  }
+};
+
+export const changeWorkspaceUserRole = async (
+  workspaceId: string,
+  userId: string,
+  role: "admin" | "member",
+) => {
+  try {
+    const response = await fetch(`${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}/change-role`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, role }),
+      credentials: "include",
+      cache: "no-store",
+    });
+    return (await response.json()) as EmptyResponse;
+  } catch {
+    throw new Error("Network error, please try again later.");
+  }
+};
+
+export const transferWorkspaceOwnership = async (workspaceId: string, userId: string) => {
+  try {
+    const response = await fetch(`${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}/transfer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+      credentials: "include",
+      cache: "no-store",
+    });
+    return (await response.json()) as EmptyResponse;
+  } catch {
+    throw new Error("Network error, please try again later.");
+  }
+};

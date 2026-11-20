@@ -11,6 +11,7 @@ export interface WorkspaceItemWithRole extends WorkspaceItem {
 }
 
 export interface WorkspaceUser {
+  userId: string;
   email: string;
   firstName: string | null;
   lastName: string | null;
