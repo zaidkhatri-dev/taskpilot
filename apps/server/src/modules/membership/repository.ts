@@ -1,7 +1,7 @@
 import { initDb } from "@repo/db/client";
 import { workspaceMemberships } from "@repo/db/memberships";
 import { serverConfig } from "@repo/config/server";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, ilike, or, count, sql } from "drizzle-orm";
 import { users } from "@repo/db/users";
 import { workspaces } from "@repo/db/workspaces";
 import { WorkspaceMembershipRoles } from "@repo/contracts/miscellaneous/auth";
@@ -52,9 +52,63 @@ export const removeUserFromWorkspace = async (
     );
 };
 
-export const getWorkspaceUsers = async (workspaceId: string, allowedRoles: readonly WorkspaceMembershipRoles[]) => {
+export interface GetWorkspaceUsersOptions {
+  workspaceId: string;
+  allowedRoles: readonly WorkspaceMembershipRoles[];
+  status: "accepted" | "pending";
+  page: number;
+  limit: number;
+  name?: string;
+}
+
+export const getWorkspaceUsers = async ({
+  workspaceId,
+  allowedRoles,
+  status,
+  page,
+  limit,
+  name,
+}: GetWorkspaceUsersOptions) => {
   if (allowedRoles.length === 0) return [];
-  
+
+  const isAccepted = status === "accepted";
+  const conditions = [
+    eq(workspaceMemberships.workspaceId, workspaceId),
+    eq(workspaceMemberships.accepted, isAccepted),
+    inArray(workspaceMemberships.role, [...allowedRoles]),
+  ];
+
+  if (name) {
+    const tokens = name.trim().split(/\s+/).filter(Boolean);
+    const tokenConditions = tokens.map((token) => {
+      const pattern = `%${token}%`;
+      return or(
+        ilike(users.firstName, pattern),
+        ilike(users.lastName, pattern),
+      );
+    });
+
+    if (tokenConditions.length > 0) {
+      conditions.push(and(...tokenConditions)!);
+    }
+  }
+
+  const whereClause = and(...conditions);
+
+  const [totalCountResult] = await dbClient
+    .select({ total: count() })
+    .from(workspaceMemberships)
+    .innerJoin(users, eq(workspaceMemberships.userId, users.id))
+    .where(whereClause);
+
+  const total = totalCountResult?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const offset = (page - 1) * limit;
+
+  const orderColumn = isAccepted
+    ? workspaceMemberships.updatedAt
+    : workspaceMemberships.createdAt;
+
   const members = await dbClient
     .select({
       email: users.email,
@@ -62,18 +116,27 @@ export const getWorkspaceUsers = async (workspaceId: string, allowedRoles: reado
       lastName: users.lastName,
       avatarId: users.avatarId,
       role: workspaceMemberships.role,
+      joinedOn: isAccepted ? workspaceMemberships.updatedAt : sql<Date>`NULL`,
+      invitedOn: !isAccepted ? workspaceMemberships.createdAt : sql<Date>`NULL`,
     })
     .from(workspaceMemberships)
     .innerJoin(users, eq(workspaceMemberships.userId, users.id))
-    .where(
-      and(
-        eq(workspaceMemberships.workspaceId, workspaceId),
-        eq(workspaceMemberships.accepted, true),
-        inArray(workspaceMemberships.role, [...allowedRoles]),
-      ),
-    )
-    .orderBy(users.createdAt);
-  return members;
+    .where(whereClause)
+    .orderBy(desc(orderColumn))
+    .limit(limit)
+    .offset(offset);
+
+  return members.map((member) => ({
+    email: member.email,
+    firstName: member.firstName,
+    lastName: member.lastName,
+    avatarId: member.avatarId,
+    role: member.role,
+    ...(isAccepted && member.joinedOn ? { joinedOn: member.joinedOn } : {}),
+    ...(!isAccepted && member.invitedOn ? { invitedOn: member.invitedOn } : {}),
+    page,
+    totalPages,
+  }));
 };
 
 export const getWorkspaceInvitations = async (userId: string) => {

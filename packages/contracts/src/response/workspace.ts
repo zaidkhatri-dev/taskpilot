@@ -16,6 +16,10 @@ export interface WorkspaceMember {
   lastName: string | null;
   avatarId: string | null;
   role: WorkspaceMembershipRoles;
+  joinedOn?: Date;
+  invitedOn?: Date;
+  page: number;
+  totalPages: number;
 }
 
 export type GetMyWorkspacesResponse = ApiResponse<WorkspaceItemWithRole[]>;

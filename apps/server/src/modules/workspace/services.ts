@@ -56,15 +56,27 @@ export const leaveWorkspaceService = async (
   await removeUserFromWorkspace(workspaceId, userId);
 };
 
+export interface GetWorkspaceUsersServiceOptions {
+  status: "accepted" | "pending";
+  page: number;
+  limit: number;
+  name?: string;
+}
+
 export const getWorkspaceUsersService = async (
   userId: string,
   workspaceId: string,
+  options: GetWorkspaceUsersServiceOptions,
 ) => {
-  const { role } = await assertWorkspacePermission(userId, workspaceId, "users:view");
+  const { role } = await assertWorkspacePermission(userId, workspaceId, "user:view");
 
   const allowedRoles = TARGET_PERMISSIONS["user:view"][role]!;
 
-  const users = await getWorkspaceUsers(workspaceId, allowedRoles);
+  const users = await getWorkspaceUsers({
+    workspaceId,
+    allowedRoles,
+    ...options,
+  });
 
   return users;
 };

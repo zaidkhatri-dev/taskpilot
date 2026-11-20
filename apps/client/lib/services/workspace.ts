@@ -43,16 +43,32 @@ export async function leaveWorkspace(workspaceId: string) {
   }
 }
 
-export const getWorkspaceMembers = async (workspaceId: string) => {
+export interface GetWorkspaceMembersParams {
+  status?: "accepted" | "pending";
+  page?: number;
+  limit?: number;
+  name?: string;
+}
+
+export const getWorkspaceMembers = async (
+  workspaceId: string,
+  params?: GetWorkspaceMembersParams,
+) => {
   try {
-    const response = await fetch(
-      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}/members`,
-      {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
-      },
-    );
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.set("status", params.status);
+    if (params?.page) searchParams.set("page", String(params.page));
+    if (params?.limit) searchParams.set("limit", String(params.limit));
+    if (params?.name) searchParams.set("name", params.name);
+
+    const query = searchParams.toString();
+    const url = `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${workspaceId}/users${query ? `?${query}` : ""}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
 
     const result: GetWorkspaceMembersResponse = await response.json();
     return result;

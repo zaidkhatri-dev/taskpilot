@@ -20,6 +20,7 @@ import {
   updateWorkspaceSchema,
   createWorkspaceSchema,
   inviteUserSchema,
+  getWorkspaceUsersSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 import { EmptyResponse } from "@repo/contracts/response/common";
@@ -133,9 +134,17 @@ export const getWorkspaceUsersController = async (
     const { id: workspaceId } = req.params as GetTypeFromSchema<
       typeof idSchema
     >;
+    const { status, page, limit, name } = req.query as unknown as GetTypeFromSchema<
+      typeof getWorkspaceUsersSchema
+    >;
     const userId = req.session.userId!;
 
-    const data = await getWorkspaceUsersService(userId, workspaceId);
+    const data = await getWorkspaceUsersService(userId, workspaceId, {
+      status,
+      page,
+      limit,
+      name,
+    });
 
     const response: GetWorkspaceMembersResponse = {
       success: true,

@@ -15,3 +15,11 @@ export const inviteUserSchema = z.object({
   email: emailSchema,
   role: z.enum(["admin", "member"]),
 });
+
+export const getWorkspaceUsersSchema = z.object({
+  workspaceId: idSchema.shape.id,
+  status: z.enum(["pending", "accepted"]).default("accepted"),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(10),
+  name: nameSchema100.optional(),
+});

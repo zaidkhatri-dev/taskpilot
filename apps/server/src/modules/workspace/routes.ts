@@ -14,6 +14,7 @@ import {
   createWorkspaceSchema,
   updateWorkspaceSchema,
   inviteUserSchema,
+  getWorkspaceUsersSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 
@@ -40,7 +41,7 @@ router.patch(
 
 router.get(
   "/:id/users",
-  inputValidator({ params: idSchema }),
+  inputValidator({ params: idSchema, query: getWorkspaceUsersSchema.omit({ workspaceId: true }) }),
   getWorkspaceUsersController,
 );
 

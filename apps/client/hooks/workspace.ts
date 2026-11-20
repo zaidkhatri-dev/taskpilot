@@ -36,13 +36,14 @@ export const useWorkspaces = () => {
 
 export const useWorkspaceMembers = (
   workspaceId: string,
+  params?: { status?: "accepted" | "pending"; page?: number; limit?: number; name?: string },
   options?: { enabled?: boolean },
 ) => {
   return useQuery({
-    queryKey: queryKeys.workspaces.members(workspaceId),
+    queryKey: queryKeys.workspaces.members(workspaceId, params),
 
     queryFn: async () => {
-      const result = await getWorkspaceMembers(workspaceId);
+      const result = await getWorkspaceMembers(workspaceId, params);
 
       if (!result.success) {
         throw new Error(result.message);
@@ -89,7 +90,7 @@ export const useLeaveWorkspace = () => {
       });
 
       queryClient.removeQueries({
-        queryKey: queryKeys.workspaces.members(workspaceId),
+        queryKey: queryKeys.workspaces.membersBase(workspaceId),
       });
 
       queryClient.invalidateQueries({
@@ -165,7 +166,7 @@ export const useDeleteWorkspace = () => {
       });
 
       queryClient.removeQueries({
-        queryKey: queryKeys.workspaces.members(workspaceId),
+        queryKey: queryKeys.workspaces.membersBase(workspaceId),
       });
 
       queryClient.invalidateQueries({
