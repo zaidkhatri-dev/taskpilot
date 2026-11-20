@@ -10,6 +10,7 @@ import {
   inviteUserController,
   removeUserFromWorkspaceController,
   changeUserRoleController,
+  transferOwnershipController,
 } from "./controller.js";
 import { inputValidator } from "@/middlewares/input-validator.js";
 import {
@@ -20,6 +21,7 @@ import {
   workspaceInvitationSchema,
   removeUserFromWorkspaceSchema,
   changeUserRoleSchema,
+  transferOwnershipSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 
@@ -81,6 +83,12 @@ router.post(
   "/:id/change-role",
   inputValidator({ params: idSchema, body: changeUserRoleSchema.omit({ workspaceId: true }) }),
   changeUserRoleController,
+);
+
+router.post(
+  "/:id/transfer",
+  inputValidator({ params: idSchema, body: transferOwnershipSchema.omit({ workspaceId: true }) }),
+  transferOwnershipController,
 );
 
 router.delete(

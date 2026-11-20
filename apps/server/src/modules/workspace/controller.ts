@@ -10,6 +10,7 @@ import {
   inviteUserService,
   removeUserFromWorkspaceService,
   changeUserRoleService,
+  transferOwnershipService,
 } from "./services.js";
 import type {
   GetMyWorkspacesResponse,
@@ -26,6 +27,7 @@ import {
   workspaceInvitationSchema,
   removeUserFromWorkspaceSchema,
   changeUserRoleSchema,
+  transferOwnershipSchema,
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 import { EmptyResponse } from "@repo/contracts/response/common";
@@ -299,3 +301,32 @@ export const changeUserRoleController = async (
     next(error);
   }
 };
+
+export const transferOwnershipController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: workspaceId } = req.params as GetTypeFromSchema<
+      typeof idSchema
+    >;
+    const { userId } = req.body as GetTypeFromSchema<
+      typeof transferOwnershipSchema
+    >;
+    const currentUserId = req.session.userId!;
+
+    await transferOwnershipService(currentUserId, workspaceId, userId);
+
+    const response: EmptyResponse = {
+      success: true,
+      message: "Workspace ownership transferred successfully",
+      data: null,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+

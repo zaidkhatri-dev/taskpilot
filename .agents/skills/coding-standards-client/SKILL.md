@@ -69,7 +69,7 @@ Follow these guidelines and rules when creating, modifying, or refactoring code 
     - `layout.tsx` = `RouteLayout`
 - **React Imports & Hooks**:
   - Use object destructuring to use functions and hooks from React.
-  - Use `useActionState` for forms (`POST`/`PATCH`/`PUT`), `useQuery` for fetching data (`GET`), and `useMutation` for rest of it (`DELETE`).
+  - Use `useActionState` for forms, `useQuery` for fetching data, and `useMutation` for side effects and mutations.
   - For `useActionState`: render toast where `useActionState` is used.
   - For `useMutation`: render toast in the hook where `useMutation` is used.
   - For `useQuery`: throw error in the hook, and also throw error where that hook is used (which is using `useQuery`).

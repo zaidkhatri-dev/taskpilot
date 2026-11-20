@@ -159,15 +159,17 @@ export const processWorkspaceInvitation = async (
   accepted: boolean,
 ) => {
   if (!accepted) {
-    await dbClient
+    const [result] = await dbClient
       .delete(workspaceMemberships)
       .where(
         and(
           eq(workspaceMemberships.id, workspaceId),
           eq(workspaceMemberships.userId, userId),
         ),
-      );
-    return;
+      ).returning({
+        id: workspaceMemberships.id,
+      });
+    return result;
   }
   
   const [result] = await dbClient
@@ -237,7 +239,7 @@ export const changeUserRole = async (
   userId: string,
   role: "admin" | "member",
 ) => {
-  const [result] = await dbClient
+  await dbClient
     .update(workspaceMemberships)
     .set({
       role,
@@ -249,8 +251,37 @@ export const changeUserRole = async (
         eq(workspaceMemberships.userId, userId),
       ),
     )
-    .returning({
-      id: workspaceMemberships.id,
-    });
-  return result;
 };
+
+export const transferOwnership = async (
+  workspaceId: string,
+  userId: string,
+  targetUserId: string,
+) => {
+  await dbClient.transaction(async (tx) => {
+    tx.update(workspaceMemberships)
+      .set({
+        role: "admin",
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(workspaceMemberships.workspaceId, workspaceId),
+          eq(workspaceMemberships.userId, userId),
+        ),
+      );
+    tx.update(workspaceMemberships)
+      .set({
+        role: "admin",
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(workspaceMemberships.workspaceId, workspaceId),
+          eq(workspaceMemberships.userId, targetUserId),
+        ),
+      );
+  });
+};
+
+

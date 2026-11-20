@@ -11,3 +11,21 @@ export function getDefaultWorkspace(
     workspaces[0]
   );
 }
+
+export function canTransferOwnershipTo(targetRole: string) {
+  return targetRole === "admin";
+}
+
+export function isRoleChangeValid(currentRole: string, targetRole: string) {
+  if (currentRole === "admin" && targetRole === "member") {
+    return true;
+  }
+
+  if (currentRole === "member" && targetRole === "admin") {
+    return true;
+  }
+
+  return false;
+}
+
+

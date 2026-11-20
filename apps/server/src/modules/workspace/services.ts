@@ -14,7 +14,8 @@ import {
   processWorkspaceInvitation,
   inviteUser,
   getMembershipByUserIdAndWorkspaceId,
-  changeUserRole
+  changeUserRole,
+  transferOwnership
 } from "@/modules/membership/repository.js";
 import { getWorkspaceInvitationEmailBody, isRoleChangeValid } from "@/utils/workspace.js";
 import { EmailJobData, TARGET_PERMISSIONS } from "@repo/contracts/miscellaneous/auth";
@@ -197,9 +198,29 @@ export const changeUserRoleService = async (
     throw new AppError("Invalid role change", 400);
   }
 
-  const result = await changeUserRole(workspaceId, targetUserId, role);
-  
-  if (!result) {
+  await changeUserRole(workspaceId, targetUserId, role);
+};
+
+export const transferOwnershipService = async (
+  userId: string,
+  workspaceId: string,
+  targetUserId: string,
+) => {
+  await assertWorkspacePermission(
+    userId,
+    workspaceId,
+    "workspace:transfer",
+  );
+
+  const targetMembership = await getMembershipByUserIdAndWorkspaceId(targetUserId, workspaceId);
+  if (!targetMembership) {
     throw new AppError("User not found in workspace", 404);
   }
+
+  if (targetMembership.role !== "admin") {
+    throw new AppError("Only admins can be transferred ownership", 400);
+  }
+
+  await transferOwnership(workspaceId, userId, targetUserId);
 };
+

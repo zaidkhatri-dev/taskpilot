@@ -39,3 +39,8 @@ export const changeUserRoleSchema = z.object({
   userId: idSchema.shape.id,
   role: workspaceMembershipRoles,
 });
+
+export const transferOwnershipSchema = z.object({
+  workspaceId: idSchema.shape.id,
+  userId: idSchema.shape.id,
+});

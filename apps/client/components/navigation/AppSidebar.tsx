@@ -24,9 +24,9 @@ interface AppSidebarProps {
 }
 
 export const AppSidebar = ({ workspaceId }: AppSidebarProps) => {
-  const canUpdateWorkspace = useWorkspacePermission(
+  const canViewWorkspace = useWorkspacePermission(
     workspaceId,
-    "workspace:update",
+    "user:view",
   );
 
   const pathname = usePathname();
@@ -44,7 +44,7 @@ export const AppSidebar = ({ workspaceId }: AppSidebarProps) => {
       </SidebarContent>
 
       <SidebarFooter className="gap-3">
-        {canUpdateWorkspace && (
+        {canViewWorkspace && (
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
