@@ -1,20 +1,26 @@
+export interface WorkspaceUsersParams {
+  status?: "accepted" | "pending";
+  page?: number;
+  limit?: number;
+  name?: string;
+}
+
 export const queryKeys = {
   session: ["session"] as const,
 
   workspaces: {
-    all: ["workspaces"] as const,
+    all: ["workspaces", "list"] as const,
+    scope: (workspaceId: string) => ["workspaces", workspaceId] as const,
     usersBase: (workspaceId: string) =>
       ["workspaces", workspaceId, "users"] as const,
-    users: (
-      workspaceId: string,
-      params?: { status?: string; page?: number; name?: string },
-    ) =>
+    users: (workspaceId: string, params?: WorkspaceUsersParams) =>
       [
         "workspaces",
         workspaceId,
         "users",
         params?.status ?? "accepted",
         params?.page ?? 1,
+        params?.limit ?? 10,
         params?.name ?? "",
       ] as const,
   },

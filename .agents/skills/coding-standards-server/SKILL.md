@@ -1,75 +1,32 @@
 ---
 name: coding-standards-server
 description: >-
-  Coding standards, architectural guidelines, naming conventions, and best practices
-  for developing the backend API and server application (apps/server). Use this skill
-  when working on Express routes, controllers, services, repositories, or database operations.
+  Architecture and conventions for the backend API (apps/server). Use when
+  working on Express routes, controllers, services, repositories, or database operations.
 ---
 
-# TaskPilot Server Coding Standards (`apps/server`)
+# TaskPilot Server Standards (`apps/server`)
 
-Follow these guidelines and rules when creating, modifying, or refactoring code in the server application (`apps/server`).
+Code style (const, arrow functions, naming, `@/` imports, etc.) is enforced by ESLint; don't restate or hand-fix it.
 
----
+## Structure
+- Every endpoint is split into route, controller, service and repository inside `src/modules/<module>/`. Only those four file types live there. Supporting code goes in a file named after the module in the matching domain folder.
+- Modules are self-contained and never import from other modules.
+- Types shared by server and client live in `@repo/contracts`; app-only types live in the app's `types/` folder.
+- Zod schemas used in more than one place live in `@repo/validation`.
+- Packages never import other packages; only apps import packages.
 
-## 0. Context & Efficiency Guideline
+## Controllers
+- Annotate the final response with its response type.
+- Every route with a body, query or params uses the validation middleware, with its schema in `@repo/validation`.
 
-- **Context Window & Tool Efficiency**:
-  - Do not make any unnecessary tool call or use any file which is not relevant in the context window.
+## Repositories
+- Define generic DB functions and reuse them within the module.
+- Name them `actionResource` (e.g. `updateUser`).
+- In create functions, throw `Error('[Entity] insert returned no row')` when no row comes back.
 
----
-
-## 1. General Architectural & Code Standards
-
-- **Core Principle**:
-  - Follow the DRY (Don't Repeat Yourself) principle.
-- **Contracts & Shared Types**:
-  - Types that are used by both `server` and `client` are defined in `@repo/contracts`.
-  - Types that are only used by apps are defined in their respective `types/` folder.
-- **Domain & Module Separation**:
-  - Every package separates files module-wise (e.g., code related to a module `user` is in a separate file `user.ts`). These files are then grouped in a folder domain-wise (e.g., `@repo/contracts` groups `user.ts` in a `response/` folder).
-- **Packages & Code Sharing**:
-  - If code is used in multiple apps, it should be in a separate package.
-  - Packages export types and functions that are used by apps.
-  - **Dependency Boundary**: No package should import from another package; only apps can import from packages.
-  - Package names must follow the `@repo/<packagename>` format.
-- **Naming Conventions**:
-  - Files should be named in `kebab-case`.
-  - Functions and variables should be named in `camelCase`.
-- **Code Style & Syntax Rules**:
-  - Use `const` instead of `let` when possible.
-  - Use arrow functions instead of function declarations.
-  - Use `async`/`await` instead of promises.
-  - Use destructuring to extract values from objects and arrays.
-  - Use template literals instead of string concatenation.
-  - Use ternary operator instead of `if-else` statement when there is only one `if` and one `else`.
-  - For imports use import aliases ie. '@/..'.
-- **Validation**:
-  - Zod schemas that are used in multiple places should be defined as common schemas in `@repo/validation`.
-- **Quality**:
-  - Keep the code clean, simple, readable, organized, and maintainable.
-
----
-
-## 2. Server-Specific Standards
-
-- **Layered Endpoint Architecture**:
-  - Always break down an API endpoint into controller, services, and repository.
-  - Only routes, services, controllers, and repositories are defined in a module folder (`src/modules/<module>/`). Code supporting these files are in a separate file with name same as module in their respective domain folder.
-- **Type Annotations**:
-  - Always add type annotation to final response in controllers (Define these interfaces in `@repo/config`).
-- **Validation Middleware**:
-  - Always use validation middleware for all routes (unless it doesn't have any request body, query or params). Define schemas for such routes in `@repo/validation`.
-- **Repositories & Database Operations**:
-  - Always define generic db functions in repositories and use them in that particular module.
-  - In create repository functions, throw `Error('[Entity] insert returned no row')` to satisfy TypeScript when a row is expected.
-- **Services & Business Logic**:
-  - In service functions for update operations:
-    - Before updating, compare provided input fields against the existing record using `isUnchanged` from `@/utils/miscellaneous.js`; if unchanged, return the existing record early without issuing unnecessary DB update queries.
-    - An `if` branch is required after the update DB call which checks the condition in the `where` clause and throws an application error if that condition fails.
-- **Function Naming Conventions**:
-  - Repository functions: `actionResource` (e.g., `updateUser`).
-  - Service and Controller functions: `actionResourceService` / `actionResourceController` (e.g., `updateUserService`, `updateUserController`).
-- **Module Autonomy**:
-  - A module should be self-contained and should not depend on other modules.
-
+## Services
+- Name them `actionResourceService`; controllers are `actionResourceController`.
+- Update services:
+  1. Compare input to the existing record with `isUnchanged` (`@/utils/miscellaneous.js`) and return the existing record early if nothing changed.
+  2. After the update call, check the `where` condition and throw an application error if it failed.

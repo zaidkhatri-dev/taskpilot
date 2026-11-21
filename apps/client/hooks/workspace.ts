@@ -13,6 +13,7 @@ import {
   transferWorkspaceOwnership,
 } from "@/lib/services/workspace";
 import { queryKeys } from "@/hooks/keys";
+import type { WorkspaceUsersParams } from "@/hooks/keys";
 import { checkPermission, checkTargetPermission } from "@/lib/utils/auth";
 import type {
   Permission,
@@ -40,7 +41,7 @@ export const useWorkspaces = () => {
 
 export const useWorkspaceUsers = (
   workspaceId: string,
-  params?: { status?: "accepted" | "pending"; page?: number; limit?: number; name?: string },
+  params?: WorkspaceUsersParams,
 ) => {
   return useQuery({
     queryKey: queryKeys.workspaces.users(workspaceId, params),
@@ -98,21 +99,9 @@ export const useLeaveWorkspace = () => {
       return result;
     },
     onSuccess: (result, workspaceId) => {
-      queryClient.removeQueries({
-        queryKey: queryKeys.boards.all(workspaceId),
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.usersBase(workspaceId),
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.all,
-      });
-      toast.add({
-        description: result.message || "Left workspace successfully",
-        type: "success",
-      });
+      queryClient.removeQueries({ queryKey: queryKeys.workspaces.scope(workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.workspaces.all });
+      toast.add({ description: result.message || "Left workspace successfully", type: "success" });
     },
     onError: (error) => {
       toast.add({
@@ -188,17 +177,8 @@ export const useDeleteWorkspace = () => {
       return result;
     },
     onSuccess: (result, workspaceId) => {
-      queryClient.removeQueries({
-        queryKey: queryKeys.boards.all(workspaceId),
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.usersBase(workspaceId),
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.all,
-      });
+      queryClient.removeQueries({ queryKey: queryKeys.workspaces.scope(workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.workspaces.all });
       toast.add({
         description: result.message || "Workspace deleted successfully",
         type: "success",
@@ -236,9 +216,8 @@ export const useRemoveWorkspaceUser = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.usersBase(workspaceId),
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.all,
-      });
+      // The workspace list (WorkspaceItemWithRole) contains only id/name/role for
+      // the current user and has no member count, so no list invalidation needed.
       toast.add({
         description: result.message || "User removed successfully",
         type: "success",
@@ -278,9 +257,9 @@ export const useChangeWorkspaceUserRole = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.usersBase(workspaceId),
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.workspaces.all,
-      });
+      // workspaces.all is not invalidated: this mutation changes another user's
+      // role, not the current user's, and the list (WorkspaceItemWithRole) holds
+      // only the current user's own role.
       toast.add({
         description: result.message || "User role updated successfully",
         type: "success",
@@ -318,6 +297,8 @@ export const useTransferWorkspaceOwnership = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.usersBase(workspaceId),
       });
+      // The current user's role changes from owner to member; useWorkspaceRole
+      // reads that role from the workspace list, so invalidate it too.
       queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.all,
       });

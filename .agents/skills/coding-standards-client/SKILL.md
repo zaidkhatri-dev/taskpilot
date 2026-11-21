@@ -1,108 +1,67 @@
 ﻿---
 name: coding-standards-client
 description: >-
-  Coding standards, architectural guidelines, naming conventions, and best practices
-  for developing the frontend web client application (apps/client). Use this skill
-  when working on React/Next.js client code, UI components, client hooks, forms, actions, or client state.
+  Coding standards and conventions for the frontend web client (apps/client). Use when
+  working on React/Next.js client code, UI components, client hooks, forms, actions, or
+  client state.
 ---
 
-# TaskPilot Client Coding Standards (`apps/client`)
+# TaskPilot Client Standards (`apps/client`)
 
-Follow these guidelines and rules when creating, modifying, or refactoring code in the client application (`apps/client`).
+## 1. General
 
----
+- **Types**: Types shared by `server` and `client` live in `@repo/contracts`. App-only types live in the app's `types/` folder.
+- **Validation**: Zod schemas used in multiple places live in `@repo/validation`.
+- **Module separation**: One file per module (e.g. `user.ts`), grouped in folders by domain.
+- **Packages**: Code used by multiple apps goes in a package named `@repo/<name>`. Packages must not import from other packages. Only apps import from packages.
+- **Style**:
+  - Files are `kebab-case`.
+  - Use arrow functions, not function declarations.
+  - Use `@/` import aliases.
 
-## 0. Context & Efficiency Guideline
+## 2. Structure
 
-- **Context Window & Tool Efficiency**:
-  - Do not make any unnecessary tool call or use any file which is not relevant in the context window.
+- `hooks/`, `lib/`, and `components/` are top-level folders.
+- `lib/actions/` and `lib/utils/` hold actions and utils. All actions and utils for one module go in the same file.
+- Components of the same module are grouped in one folder. Split large components into smaller ones, one per file, in that folder.
+- Define the props interface in the component's own file.
+- Default export names for routing files: `error.tsx` → `RouteError`, `page.tsx` → `RoutePage`, `layout.tsx` → `RouteLayout`.
 
----
+## 3. Data & Forms
 
-## 1. General Architectural & Code Standards
+- **Hook choice**: `useActionState` for forms, `useQuery` for fetching, `useMutation` for side effects and mutations.
+- **Toasts and errors**:
+  - `useActionState`: render the toast in the component that uses it.
+  - `useMutation`: render the toast in the hook that defines it.
+  - `useQuery`: throw the error in the hook and again in the component that uses the hook.
+- **Query keys**: All keys live in `@/hooks/keys.ts`. Never inline key arrays. Add a key
+  only for a new `useQuery`, or for a prefix key used to invalidate/remove a group of
+  queries (name it `*Base` or `scope`). Delete keys that nothing references, whether a
+  hook or an invalidate/remove call.
+- **Cache invalidation**:
+  - Invalidate only the queries the mutation could have changed. Never invalidate "to be safe".
+  - Forms (`useActionState`): call `invalidateQueries` in the `useEffect` that watches `state?.submissionId`, right after the success toast.
+  - Mutations (`useMutation`): call `invalidateQueries` / `removeQueries` in `onSuccess`, in the same hook file.
+  - Call custom and Next.js hooks (e.g. `useRouter()`) at the hook's top level, never inside `onSuccess` / `onError`.
+  - **Prefix matching**: Query keys are hierarchical and TanStack Query matches by prefix.
+    Invalidate or remove with the narrowest key that covers the change. A list key must
+    never be a prefix of other queries' keys (e.g. `workspaces.all` is `["workspaces",
+    "list"]`, not `["workspaces"]`). Never call `removeQueries` with a list key.
+  - **Delete / Leave**: `removeQueries` with the resource's `scope` key (covers all child
+    queries for that resource), then `invalidateQueries` with the parent list key.
+  - Invalidate `queryKeys.session` only if auth state changes (e.g. `isOnboarded`). Do not invalidate it on workspace delete or leave.
+  - Reference implementation: `useProcessWorkspaceInvitation` (top-level hooks, conditional invalidation, toast placement) and `useDeleteWorkspace` (remove-then-invalidate) in `hooks/workspace.ts`.
+- **Update forms**: Track dirty state with `isUnchanged` from `@/lib/utils/miscellaneous`. Disable submit when the form is unchanged or `isPending`.
 
-- **Core Principle**:
-  - Follow the DRY (Don't Repeat Yourself) principle.
-- **Contracts & Shared Types**:
-  - Types that are used by both `server` and `client` are defined in `@repo/contracts`.
-  - Types that are only used by apps are defined in their respective `types/` folder.
-- **Domain & Module Separation**:
-  - Every package separates files module-wise (e.g., code related to a module `user` is in a separate file `user.ts`). These files are then grouped in a folder domain-wise (e.g., `@repo/contracts` groups `user.ts` in a `response/` folder).
-- **Packages & Code Sharing**:
-  - If code is used in multiple apps, it should be in a separate package.
-  - Packages export types and functions that are used by apps.
-  - **Dependency Boundary**: No package should import from another package; only apps can import from packages.
-  - Package names must follow the `@repo/<packagename>` format.
-- **Naming Conventions**:
-  - Files should be named in `kebab-case`.
-  - Functions and variables should be named in `camelCase`.
-- **Code Style & Syntax Rules**:
-  - Use `const` instead of `let` when possible.
-  - Use arrow functions instead of function declarations.
-  - Use `async`/`await` instead of promises.
-  - Use destructuring to extract values from objects and arrays.
-  - Use template literals instead of string concatenation.
-  - Use ternary operator instead of `if-else` statement when there is only one `if` and one `else`.
-  - For imports use import aliases ie. '@/..'.
-- **Validation**:
-  - Zod schemas that are used in multiple places should be defined as common schemas in `@repo/validation`.
-- **Quality**:
-  - Keep the code clean, simple, readable, organized, and maintainable.
+## 4. UI
 
----
-
-## 2. Client-Specific Standards
-
-- **Folder & Structure Conventions**:
-  - `hooks` and `lib` are defined in separate folders named `hooks` and `lib` respectively.
-  - Actions and utility functions are defined in separate folders named `actions` and `utils` inside `lib`.
-  - Components are defined in a separate folder named `components`.
-  - Every action and util function which are of the same module are written in the same file.
-  - Components of the same module are grouped together in a folder.
-- **Component Props & Decomposition**:
-  - Define interface for props in that particular component file.
-  - Break down big components into smaller components, each in their own file under a common module folder.
-  - Use object destructuring to extract values from props.
-  - **Export Default Function Naming for Routing Files**:
-    - `error.tsx` = `RouteError`
-    - `page.tsx` = `RoutePage`
-    - `layout.tsx` = `RouteLayout`
-- **React Imports & Hooks**:
-  - Use object destructuring to use functions and hooks from React.
-  - Use `useActionState` for forms, `useQuery` for fetching data, and `useMutation` for side effects and mutations.
-  - For `useActionState`: render toast where `useActionState` is used.
-  - For `useMutation`: render toast in the hook where `useMutation` is used.
-  - For `useQuery`: throw error in the hook, and also throw error where that hook is used (which is using `useQuery`).
-- **Query Cache Invalidation & Removal (`queryClient.invalidateQueries` / `queryClient.removeQueries`)**:
-  - **Where to call it**:
-    - For `useActionState` forms: call `invalidateQueries` inside the `useEffect` that watches `state?.submissionId`, immediately after the success toast - in the same component where `useActionState` is used.
-    - For `useMutation` hooks: call `invalidateQueries` / `removeQueries` inside the `onSuccess` callback - in the same hook file where `useMutation` is defined.
-    - **Hook Rules in Mutations**: Custom hooks and React/Next.js hooks (e.g. `useRouter()`) must be called at the top level of the custom hook function - never inside mutation callbacks like `onSuccess` or `onError`.
-  - **What to invalidate vs remove**:
-    - **Create** a resource -> invalidate the `all` list key for that resource (e.g., `queryKeys.boards.all(workspaceId)` after creating a board).
-    - **Update** a resource -> invalidate both the `all` list key and the `detail` key (if one exists) for that resource (e.g., `queryKeys.workspaces.all` and `queryKeys.workspaces.detail(workspaceId)` after updating a workspace).
-    - **Delete / Leave** a resource:
-      - Remove cached queries for data the user no longer has access to using `queryClient.removeQueries` (e.g., `queryKeys.boards.all(workspaceId)`, `queryKeys.workspaces.members(workspaceId)`).
-      - Invalidate parent/list queries using `queryClient.invalidateQueries` (e.g., `queryKeys.workspaces.all`).
-      - **Do not invalidate unrelated queries**: Do not invalidate `queryKeys.session` on workspace deletion/leave, as user session/authentication state is unaffected.
-    - **Actions that modify the current user's data** (profile update, onboarding) -> always invalidate `queryKeys.users.me`. If the action also affects the session (e.g., sets `isOnboarded`), also invalidate `queryKeys.session`.
-    - **Accepting an invitation** -> invalidate `queryKeys.workspaces.all` (new workspace is now accessible) and `queryKeys.users.invitations` (accepted invitation should disappear).
-  - **Keys reference**: All query keys live in `@/hooks/keys.ts`. Only add a new key there when a new `useQuery` hook is introduced; remove keys that are no longer referenced by any hook.
-- **Forms & Updates Handling**:
-  - For update forms, track dirty state by comparing current form values against initial values using `isUnchanged` from `@/lib/utils/miscellaneous`.
-  - Disable the save/submit button when the form is clean (`isUnchanged`) or pending (`isPending`) to prevent submitting no-op updates.
-- **Buttons & UI Rules**:
-  - Form submit buttons should be primary, size = default, and have full width of the form.
-  - Action buttons can be primary or secondary, size = large, and should have appropriate width (not full screen).
-  - Button text should be only two words — verb noun. Use icons when noun is an entity.
-  - Every Next.js link (`next/link`) should have `cursor-default` Tailwind class on it.
-- **Typography & Layout Hierarchy**:
-  - Font size hierarchy:
-    - Pages with only message (like error page): heading - `xl`, paragraph (supporting text) - `default`.
-    - Pages with data: heading - `lg`, other data (like text, input labels, button text, etc) - `default`. If hierarchy, then start from `default` and move to `sm` (as needed).
-    - Settings pages: heading - `2xl` (e.g. `text-2xl font-semibold tracking-tight text-foreground`), with page layout padding `pt-16 pb-20 px-6` and heading bottom margin `mb-8`.
-    - Do not change font sizes for components defined in `@components/ui`, they have fixed font sizes.
-  - Pages with only message should always be centered.
-- **Dialogs & Modals (`apps/client/components/ui/dialog.tsx`)**:
-  - Do not use a header description (`DialogDescription`).
-  - The dialog title should follow the format: `<Action> a/your <new/current> <entity>` (e.g., "Create a new board", "Update your current workspace").
+- **Buttons**:
+  - Form submit: primary, default size, full form width.
+  - Action buttons: primary or secondary, large size, content-fit width.
+  - Button text is two words, verb + noun. Use an icon when the noun is an entity.
+- **Links**: Every `next/link` gets the `cursor-default` class.
+- **Font sizes** (never override sizes inside `@components/ui`):
+  - Message-only pages (e.g. error): heading `xl`, supporting text `default`, centered.
+  - Data pages: heading `lg`, everything else `default`, stepping down to `sm` for hierarchy.
+  - Settings pages: heading `text-2xl font-semibold tracking-tight text-foreground` with `mb-8`, page padding `pt-16 pb-20 px-6`.
+- **Dialogs** (`components/ui/dialog.tsx`): No `DialogDescription`. Title format is `<Action> a/your <new/current> <entity>` (e.g. "Create a new board").
