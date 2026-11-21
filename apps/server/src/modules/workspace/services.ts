@@ -17,7 +17,7 @@ import {
   changeUserRole,
   transferOwnership,
 } from "@/modules/membership/repository.js";
-import { getWorkspaceInvitationEmailBody, isRoleChangeValid } from "@/utils/workspace.js";
+import { getRoleChangeType, getWorkspaceInvitationEmailBody, isRoleChangeValid } from "@/utils/workspace.js";
 import { EmailJobData, TARGET_PERMISSIONS } from "@repo/contracts/miscellaneous/auth";
 import { serverConfig } from "@repo/config/server";
 import { getEmailQueue } from "@repo/email/queue";
@@ -199,7 +199,9 @@ export const changeUserRoleService = async (
   }
 
   await changeUserRole(workspaceId, targetUserId, role);
-  return
+  return {
+    roleChangeType: getRoleChangeType(targetMembership.role, role),
+  };
 };
 
 export const transferOwnershipService = async (

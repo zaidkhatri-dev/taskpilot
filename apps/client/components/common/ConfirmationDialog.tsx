@@ -21,25 +21,37 @@ interface ConfirmationDialogProps {
   confirmVariant?: React.ComponentProps<typeof Button>["variant"];
   isPending?: boolean;
   onConfirm: (close: () => void) => void;
+  /** Controlled open state – when provided the dialog is fully controlled */
+  open?: boolean;
+  /** Called when the dialog requests an open/close transition */
+  onOpenChange?: (open: boolean) => void;
+  isNativeButton?: boolean;
 }
 
 export const ConfirmationDialog = ({
   title,
   children,
-  trigger,  
+  trigger,
   confirmLabel = "Confirm",
   confirmingLabel = "Confirming...",
   confirmVariant = "destructive",
   isPending = false,
   onConfirm,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  isNativeButton = true,
 }: ConfirmationDialogProps) => {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
 
-  
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const setOpen = isControlled
+    ? (controlledOnOpenChange ?? (() => {}))
+    : setUncontrolledOpen;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {<DialogTrigger render={trigger}/>}
+      {<DialogTrigger render={trigger} nativeButton={isNativeButton} />}
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

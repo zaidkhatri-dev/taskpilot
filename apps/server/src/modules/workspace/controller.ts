@@ -31,6 +31,7 @@ import {
 } from "@repo/validation/workspace";
 import { idSchema } from "@repo/validation/shared";
 import { EmptyResponse } from "@repo/contracts/response/common";
+import { getRoleChangeType } from "@/utils/workspace.js";
 
 export const getMyWorkspacesController = async (
   req: Request,
@@ -288,11 +289,11 @@ export const changeUserRoleController = async (
     >;
     const currentUserId = req.session.userId!;
 
-    await changeUserRoleService(currentUserId, workspaceId, userId, role);
-
+    const { roleChangeType } = await changeUserRoleService(currentUserId, workspaceId, userId, role);
+    
     const response: EmptyResponse = {
       success: true,
-      message: "User role changed successfully",
+      message: `User ${roleChangeType} successfully`,
       data: null,
     };
 

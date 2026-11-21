@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,13 +20,7 @@ import { RoleBadge } from "@/components/workspace/RoleBadge";
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatName, formatDate } from "@/lib/utils/formatting";
 import { useWorkspacePermission, useWorkspaceUsers } from "@/hooks/workspace";
-import { RemoveUser } from "@/components/workspace/RemoveUser";
-import { ChangeRole } from "@/components/workspace/ChangeRole";
-import { TransferOwnership } from "@/components/workspace/TransferOwnership";
-import {
-  canTransferOwnershipTo,
-  isRoleChangeValid,
-} from "@/lib/utils/workspace";
+import { UserActionsMenu } from "@/components/workspace/UserActionsMenu";
 
 type UserStatus = "accepted" | "pending";
 
@@ -101,23 +96,128 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
         </div>
       </div>
 
-      {/* Table */}
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>
-              {status === "accepted" ? "Joined On" : "Invited On"}
-            </TableHead>
-            {status === "accepted" && <TableHead />}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isPending ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i}>
-                <TableCell>
+      {/* Table (Desktop/Tablet) */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[45%]">Name</TableHead>
+              <TableHead className="w-[20%]">Role</TableHead>
+              <TableHead className="w-[25%]">
+                {status === "accepted" ? "Joined On" : "Invited On"}
+              </TableHead>
+              {status === "accepted" ? (
+                <TableHead className="w-[10%]" />
+              ) : null}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isPending ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="size-9 shrink-0 rounded-full" />
+                      <div className="flex flex-col gap-1.5">
+                        <Skeleton className="h-3.5 w-28" />
+                        <Skeleton className="h-3 w-36" />
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-3.5 w-24" />
+                  </TableCell>
+                  {status === "accepted" && <TableCell />}
+                </TableRow>
+              ))
+            ) : users.length > 0 ? (
+              users.map((user, i) => {
+                const fullName = formatName(
+                  `${user.firstName ?? ""} ${user.lastName ?? ""}`,
+                );
+                const avatarSrc = user.avatarId
+                  ? `/avatars/${user.avatarId}.svg`
+                  : "/avatars/avatar_01.svg";
+                const displayDate =
+                  status === "accepted"
+                    ? formatDate(user.joinedOn)
+                    : formatDate(user.invitedOn);
+
+                return (
+                  <TableRow key={`${user.email}-${i}`}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-9 shrink-0">
+                          <AvatarImage
+                            src={avatarSrc}
+                            alt={fullName || user.email}
+                            width={36}
+                            height={36}
+                          />
+                          <AvatarFallback>
+                            {(fullName || user.email).charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="grid min-w-0 leading-tight">
+                          {fullName && (
+                            <span className="truncate text-sm font-medium">
+                              {fullName}
+                            </span>
+                          )}
+                          <span className="truncate text-xs text-muted-foreground">
+                            {user.email}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <RoleBadge role={user.role} />
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {displayDate}
+                    </TableCell>
+                    {status === "accepted" && (
+                      <TableCell className="text-right">
+                        <UserActionsMenu
+                          workspaceId={workspaceId}
+                          userId={user.userId}
+                          firstName={user.firstName || ""}
+                          lastName={user.lastName || ""}
+                          currentRole={user.role}
+                          canChangeRole={canChangeRole}
+                          canTransfer={canTransfer}
+                        />
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={status === "accepted" ? 4 : 3}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
+                  {debouncedName
+                    ? `No ${status} members match "${debouncedName}".`
+                    : `No ${status} members found.`}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Cards (Mobile/Smaller screens) */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {isPending ? (
+          Array.from({ length: 5 }).map((_, i) => (
+            <Card key={i} size="sm">
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <Skeleton className="size-9 shrink-0 rounded-full" />
                     <div className="flex flex-col gap-1.5">
@@ -125,41 +225,33 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                       <Skeleton className="h-3 w-36" />
                     </div>
                   </div>
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-5 w-16 rounded-full" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-3.5 w-24" />
-                </TableCell>
-                {status === "accepted" && <TableCell />}
-              </TableRow>
-            ))
-          ) : users.length > 0 ? (
-            users.map((user, i) => {
-              const fullName = formatName(
-                `${user.firstName ?? ""} ${user.lastName ?? ""}`,
-              );
-              const avatarSrc = user.avatarId
-                ? `/avatars/${user.avatarId}.svg`
-                : "/avatars/avatar_01.svg";
-              const displayDate =
-                status === "accepted"
-                  ? formatDate(user.joinedOn)
-                  : formatDate(user.invitedOn);
+                  <Skeleton className="h-5 w-16 shrink-0 rounded-full" />
+                </div>
+                <div className="flex items-center justify-between border-t pt-2 text-xs text-muted-foreground">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        ) : users.length > 0 ? (
+          users.map((user, i) => {
+            const fullName = formatName(
+              `${user.firstName ?? ""} ${user.lastName ?? ""}`,
+            );
+            const avatarSrc = user.avatarId
+              ? `/avatars/${user.avatarId}.svg`
+              : "/avatars/avatar_01.svg";
+            const displayDate =
+              status === "accepted"
+                ? formatDate(user.joinedOn)
+                : formatDate(user.invitedOn);
 
-              const canChangeRoleForUser =
-                canChangeRole && isRoleChangeValid(
-                  user.role,
-                  user.role === "admin" ? "member" : "admin",
-                );
-              const canTransferToUser =
-                canTransfer && canTransferOwnershipTo(user.role);
-
-              return (
-                <TableRow key={`${user.email}-${i}`}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
+            return (
+              <Card key={`${user.email}-${i}`} size="sm">
+                <CardContent className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
                       <Avatar className="size-9 shrink-0">
                         <AvatarImage
                           src={avatarSrc}
@@ -182,60 +274,39 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                         </span>
                       </div>
                     </div>
-                  </TableCell>
-                  <TableCell>
                     <RoleBadge role={user.role} />
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {displayDate}
-                  </TableCell>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{status === "accepted" ? "Joined" : "Invited"}</span>
+                    <span>{displayDate}</span>
+                  </div>
+
                   {status === "accepted" && (
-                    <TableCell>
-                      <div className="flex flex-wrap items-center justify-end gap-2">
-                        <RemoveUser
-                          workspaceId={workspaceId}
-                          userId={user.userId}
-                          firstName={user.firstName || ""}
-                          lastName={user.lastName || ""}
-                        />
-                        {canChangeRoleForUser && (
-                          <ChangeRole
-                            workspaceId={workspaceId}
-                            userId={user.userId}
-                            currentRole={user.role}
-                            firstName={user.firstName || ""}
-                            lastName={user.lastName || ""}
-                          />
-                        )}
-                        {canTransferToUser && (
-                          <TransferOwnership
-                            workspaceId={workspaceId}
-                            userId={user.userId}
-                            currentRole={user.role}
-                            firstName={user.firstName || ""}
-                            lastName={user.lastName || ""}
-                          />
-                        )}
-                      </div>
-                    </TableCell>
+                    <div className="border-t pt-3">
+                      <UserActionsMenu
+                        workspaceId={workspaceId}
+                        userId={user.userId}
+                        firstName={user.firstName || ""}
+                        lastName={user.lastName || ""}
+                        currentRole={user.role}
+                        canChangeRole={canChangeRole}
+                        canTransfer={canTransfer}
+                      />
+                    </div>
                   )}
-                </TableRow>
-              );
-            })
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={status === "accepted" ? 4 : 3}
-                className="py-10 text-center text-sm text-muted-foreground"
-              >
-                {debouncedName
-                  ? `No ${status} members match "${debouncedName}".`
-                  : `No ${status} members found.`}
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+                </CardContent>
+              </Card>
+            );
+          })
+        ) : (
+          <div className="rounded-xl border border-dashed py-10 text-center text-sm text-muted-foreground">
+            {debouncedName
+              ? `No ${status} members match "${debouncedName}".`
+              : `No ${status} members found.`}
+          </div>
+        )}
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (

@@ -111,3 +111,15 @@ export const isRoleChangeValid = (currentRole: string, newRole: string) => {
 
   return false;
 };
+
+export const getRoleChangeType = (currentRole: string, newRole: string) => {
+  if (currentRole === "admin" && newRole === "member") {
+    return "demoted";
+  }
+
+  if (currentRole === "member" && newRole === "admin") {
+    return "promoted";
+  }
+
+  return "changed";
+};
