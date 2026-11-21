@@ -13,9 +13,9 @@ import {
   getWorkspaceUsers,
   processWorkspaceInvitation,
   inviteUser,
-  getMembershipByUserIdAndWorkspaceId,
+  getUserWorkspaceMembershipFromIds,
   changeUserRole,
-  transferOwnership
+  transferOwnership,
 } from "@/modules/membership/repository.js";
 import { getWorkspaceInvitationEmailBody, isRoleChangeValid } from "@/utils/workspace.js";
 import { EmailJobData, TARGET_PERMISSIONS } from "@repo/contracts/miscellaneous/auth";
@@ -66,7 +66,7 @@ export const removeUserFromWorkspaceService = async (
 ) => {
   const { role } = await assertWorkspacePermission(userId, workspaceId, "user:remove");
   
-  const targetMembership = await getMembershipByUserIdAndWorkspaceId(targetUserId, workspaceId);
+  const targetMembership = await getUserWorkspaceMembershipFromIds(targetUserId, workspaceId);
   if (!targetMembership) {
     throw new AppError("User not found in workspace", 404);
   }
@@ -189,7 +189,7 @@ export const changeUserRoleService = async (
     "user:change-role",
   );
 
-  const targetMembership = await getMembershipByUserIdAndWorkspaceId(targetUserId, workspaceId);
+  const targetMembership = await getUserWorkspaceMembershipFromIds(targetUserId, workspaceId);
   if (!targetMembership) {
     throw new AppError("User not found in workspace", 404);
   }
@@ -212,7 +212,7 @@ export const transferOwnershipService = async (
     "workspace:transfer",
   );
 
-  const targetMembership = await getMembershipByUserIdAndWorkspaceId(targetUserId, workspaceId);
+  const targetMembership = await getUserWorkspaceMembershipFromIds(targetUserId, workspaceId);
   if (!targetMembership) {
     throw new AppError("User not found in workspace", 404);
   }

@@ -211,7 +211,7 @@ export const workspaceInvitationController = async (
 
     const response: EmptyResponse = {
       success: true,
-      message: `Workspace invitation ${accepted ? "accepted" : "declined"} successfully`,
+      message: `Workspace invitation ${accepted ? "accepted" : "rejected"} successfully`,
       data: null,
     };
 

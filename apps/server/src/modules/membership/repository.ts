@@ -215,27 +215,6 @@ export const inviteUser = async (
   return result;
 };
 
-export const getMembershipByUserIdAndWorkspaceId = async (
-  userId: string,
-  workspaceId: string,
-) => {
-  const [result] = await dbClient
-    .select({
-      id: workspaceMemberships.id,
-      role: workspaceMemberships.role,
-    })
-    .from(workspaceMemberships)
-    .where(
-      and(
-        eq(workspaceMemberships.userId, userId),
-        eq(workspaceMemberships.workspaceId, workspaceId),
-        eq(workspaceMemberships.accepted, true),
-      ),
-    )
-    .limit(1);
-  return result;
-};
-
 export const changeUserRole = async (
   workspaceId: string,
   userId: string,

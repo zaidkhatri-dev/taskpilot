@@ -132,7 +132,7 @@ export const useProcessWorkspaceInvitation = () => {
 
       return { ...result, accepted };
     },
-    onSuccess: (result) => {
+    onSuccess: (result, { workspaceId }) => {
       if (result.accepted) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.workspaces.all,
@@ -146,12 +146,12 @@ export const useProcessWorkspaceInvitation = () => {
           result.message ||
           (result.accepted
             ? "Invitation accepted successfully"
-            : "Invitation declined successfully"),
+            : "Invitation rejected successfully"),
         type: "success",
       });
 
       if (result.accepted) {
-        router.replace("/w");
+        router.replace(`/w/${workspaceId}`);
       }
     },
     onError: (error) => {
@@ -165,6 +165,7 @@ export const useProcessWorkspaceInvitation = () => {
 
 export const useDeleteWorkspace = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: async (workspaceId: string) => {
@@ -183,6 +184,8 @@ export const useDeleteWorkspace = () => {
         description: result.message || "Workspace deleted successfully",
         type: "success",
       });
+
+      router.replace("/w");
     },
     onError: (error) => {
       toast.add({
