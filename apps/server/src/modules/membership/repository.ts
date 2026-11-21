@@ -240,7 +240,9 @@ export const transferOwnership = async (
   targetUserId: string,
 ) => {
   await dbClient.transaction(async (tx) => {
-    tx.update(workspaceMemberships)
+    // Demote the current owner to admin
+    await tx
+      .update(workspaceMemberships)
       .set({
         role: "admin",
         updatedAt: new Date(),
@@ -251,9 +253,12 @@ export const transferOwnership = async (
           eq(workspaceMemberships.userId, userId),
         ),
       );
-    tx.update(workspaceMemberships)
+
+    // Promote the target user to owner
+    await tx
+      .update(workspaceMemberships)
       .set({
-        role: "admin",
+        role: "owner",
         updatedAt: new Date(),
       })
       .where(

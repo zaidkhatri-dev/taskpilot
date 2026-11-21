@@ -296,13 +296,16 @@ export const useTransferWorkspaceOwnership = () => {
 
       return result;
     },
-    onSuccess: (result, { workspaceId }) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (result, { workspaceId }) => {
+      // Invalidate the users list so roles update (new owner + current user's
+      // role change from owner → admin/member).
+      await queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.usersBase(workspaceId),
       });
-      // The current user's role changes from owner to member; useWorkspaceRole
-      // reads that role from the workspace list, so invalidate it too.
-      queryClient.invalidateQueries({
+      // The current user's own role changed (owner → admin/member); refetch the
+      // workspace list so permission checks (canTransfer, canChangeRole) update
+      // immediately and the "Transfer Ownership" button disappears.
+      await queryClient.invalidateQueries({
         queryKey: queryKeys.workspaces.all,
       });
       toast.add({

@@ -66,7 +66,7 @@ export const removeUserFromWorkspaceService = async (
 ) => {
   const { role } = await assertWorkspacePermission(userId, workspaceId, "user:remove");
   
-  const targetMembership = await getUserWorkspaceMembershipFromIds(targetUserId, workspaceId);
+  const targetMembership = await getUserWorkspaceMembershipFromIds(workspaceId, targetUserId);
   if (!targetMembership) {
     throw new AppError("User not found in workspace", 404);
   }
@@ -189,7 +189,7 @@ export const changeUserRoleService = async (
     "user:change-role",
   );
 
-  const targetMembership = await getUserWorkspaceMembershipFromIds(targetUserId, workspaceId);
+  const targetMembership = await getUserWorkspaceMembershipFromIds(workspaceId, targetUserId);
   if (!targetMembership) {
     throw new AppError("User not found in workspace", 404);
   }
@@ -199,6 +199,7 @@ export const changeUserRoleService = async (
   }
 
   await changeUserRole(workspaceId, targetUserId, role);
+  return
 };
 
 export const transferOwnershipService = async (
@@ -212,7 +213,8 @@ export const transferOwnershipService = async (
     "workspace:transfer",
   );
 
-  const targetMembership = await getUserWorkspaceMembershipFromIds(targetUserId, workspaceId);
+  const targetMembership = await getUserWorkspaceMembershipFromIds(workspaceId, targetUserId
+  );
   if (!targetMembership) {
     throw new AppError("User not found in workspace", 404);
   }

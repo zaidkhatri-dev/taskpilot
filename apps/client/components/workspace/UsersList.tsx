@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RoleBadge } from "@/components/workspace/RoleBadge";
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatName, formatDate } from "@/lib/utils/formatting";
-import { useWorkspaceRole, useWorkspaceUsers } from "@/hooks/workspace";
+import { useWorkspacePermission, useWorkspaceUsers } from "@/hooks/workspace";
 import { RemoveUser } from "@/components/workspace/RemoveUser";
 import { ChangeRole } from "@/components/workspace/ChangeRole";
 import { TransferOwnership } from "@/components/workspace/TransferOwnership";
@@ -40,7 +40,8 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
   const [page, setPage] = useState(1);
   const [nameInput, setNameInput] = useState("");
   const debouncedName = useDebounce(nameInput, 400);
-  const currentRole = useWorkspaceRole(workspaceId);
+  const canChangeRole = useWorkspacePermission(workspaceId, "user:change-role");
+  const canTransfer = useWorkspacePermission(workspaceId, "workspace:transfer");
 
   const { data, isPending, isError, error } = useWorkspaceUsers(workspaceId, {
     status,
@@ -147,14 +148,13 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                   ? formatDate(user.joinedOn)
                   : formatDate(user.invitedOn);
 
-              const canChangeRole =
-                currentRole === "owner" &&
-                isRoleChangeValid(
+              const canChangeRoleForUser =
+                canChangeRole && isRoleChangeValid(
                   user.role,
                   user.role === "admin" ? "member" : "admin",
                 );
-              const canTransfer =
-                currentRole === "owner" && canTransferOwnershipTo(user.role);
+              const canTransferToUser =
+                canTransfer && canTransferOwnershipTo(user.role);
 
               return (
                 <TableRow key={`${user.email}-${i}`}>
@@ -198,7 +198,7 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                           firstName={user.firstName || ""}
                           lastName={user.lastName || ""}
                         />
-                        {canChangeRole && (
+                        {canChangeRoleForUser && (
                           <ChangeRole
                             workspaceId={workspaceId}
                             userId={user.userId}
@@ -207,7 +207,7 @@ export const UsersList = ({ workspaceId }: UsersListProps) => {
                             lastName={user.lastName || ""}
                           />
                         )}
-                        {canTransfer && (
+                        {canTransferToUser && (
                           <TransferOwnership
                             workspaceId={workspaceId}
                             userId={user.userId}

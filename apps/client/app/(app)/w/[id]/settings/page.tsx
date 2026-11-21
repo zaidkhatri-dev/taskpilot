@@ -26,12 +26,14 @@ export default function RoutePage({ params }: SettingsPageProps) {
   return (
     <div className="flex flex-1 flex-col items-center px-4 pt-8 pb-10">
       {name && <div className="flex w-full max-w-2xl flex-col gap-6">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between gap-4">
           <h1 className="min-w-0 truncate text-2xl font-semibold tracking-tight text-foreground">{name}</h1>
-          <UpdateWorkspaceForm workspaceId={id} />
-          <ConfirmationDialog title="Delete workspace" trigger={<Button type="button" variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Delete workspace" disabled={isPending}><Trash2 className="size-4" /></Button>} confirmLabel="Delete Workspace" confirmingLabel="Deleting..." confirmVariant="destructive" isPending={isPending} onConfirm={(close) => mutate(id, { onSuccess: () => { close(); router.replace("/w"); } })}>
-            Are you sure you want to delete {name && <span className="font-semibold text-foreground">{name}</span>}? This action cannot be undone and will permanently remove all associated boards, tasks, and data.
-          </ConfirmationDialog>
+          <div className="flex items-center gap-0.5 shrink-0">
+            <UpdateWorkspaceForm workspaceId={id} />
+            <ConfirmationDialog title="Delete workspace" trigger={<Button type="button" variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label="Delete workspace" disabled={isPending}><Trash2 className="size-4" /></Button>} confirmLabel="Delete Workspace" confirmingLabel="Deleting..." confirmVariant="destructive" isPending={isPending} onConfirm={(close) => mutate(id, { onSuccess: () => { close(); router.replace("/w"); } })}>
+              Are you sure you want to delete {name && <span className="font-semibold text-foreground">{name}</span>}? This action cannot be undone and will permanently remove all associated boards, tasks, and data.
+            </ConfirmationDialog>
+          </div>
         </div>
 
         <div className="flex flex-col gap-4">

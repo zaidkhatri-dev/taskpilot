@@ -7,6 +7,7 @@ import ConfirmationDialog from "@/components/common/ConfirmationDialog";
 import { Button } from "@/components/ui/button";
 import { useTransferWorkspaceOwnership } from "@/hooks/workspace";
 import { canTransferOwnershipTo } from "@/lib/utils/workspace";
+import { useWorkspacePermission } from "@/hooks/workspace";
 import { formatName } from "@/lib/utils/formatting";
 
 interface TransferOwnershipProps {
@@ -25,8 +26,9 @@ export const TransferOwnership = ({
   currentRole,
 }: TransferOwnershipProps) => {
   const { mutate, isPending } = useTransferWorkspaceOwnership();
+  const canTransfer = useWorkspacePermission(workspaceId, "workspace:transfer");
 
-  if (!canTransferOwnershipTo(currentRole ?? "")) return null;
+  if (!canTransfer || !canTransferOwnershipTo(currentRole ?? "")) return null;
 
   return (
     <ConfirmationDialog
