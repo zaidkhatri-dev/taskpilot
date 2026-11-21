@@ -4,18 +4,12 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { DialogFooter } from "@/components/ui/dialog";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { getFieldError } from "@/lib/utils/form";
@@ -39,6 +33,7 @@ export function CreateWorkspaceForm({
   const queryClient = useQueryClient();
   const [internalOpen, setInternalOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(createWorkspace, null);
+  const nameError = getFieldError(state?.errors ?? null, "name");
 
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -46,7 +41,6 @@ export function CreateWorkspaceForm({
     ? (onOpenChange ?? setInternalOpen)
     : setInternalOpen;
 
-  const nameError = getFieldError(state?.errors ?? null, "name");
   const router = useRouter();
 
   // Pre-seed with the current submissionId so that stale state carried
@@ -104,35 +98,13 @@ export function CreateWorkspaceForm({
           </DialogHeader>
           <FieldGroup>
             <Field data-invalid={!!nameError}>
-              <FieldLabel htmlFor="name">Name</FieldLabel>
-              <Input
-                type="text"
-                id="name"
-                name="name"
-                required
-                autoComplete="off"
-                defaultValue={
-                  state?.values?.name ? String(state.values.name) : ""
-                }
-                aria-invalid={!!nameError}
-                aria-describedby={nameError ? "name-error" : "name-desc"}
-              />
-              <div className="min-h-6">
-                {nameError ? (
-                  <FieldError id="name-error">{nameError}</FieldError>
-                ) : (
-                  <FieldDescription id="name-desc">
-                    Enter a name for your workspace
-                  </FieldDescription>
-                )}
-              </div>
+              <FieldLabel htmlFor="workspace-name">Name</FieldLabel>
+              <Input id="workspace-name" name="name" type="text" required autoComplete="off" defaultValue={state?.values?.name ? String(state.values.name) : ""} aria-invalid={!!nameError} aria-describedby={nameError ? "workspace-name-error" : "workspace-name-desc"} />
+              <div className="min-h-6">{nameError ? <FieldError id="workspace-name-error">{nameError}</FieldError> : <FieldDescription id="workspace-name-desc">Enter a name for your workspace</FieldDescription>}</div>
             </Field>
           </FieldGroup>
           <DialogFooter>
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending && <Spinner data-icon="inline-start" />}
-              {isPending ? "Creating..." : "Create"}
-            </Button>
+            <Button type="submit" className="w-full" disabled={isPending}>{isPending && <Spinner data-icon="inline-start" />}{isPending ? "Creating..." : "Create"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
