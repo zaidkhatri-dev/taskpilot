@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { CreateWorkspaceForm } from "@/components/workspace/CreateWorkspaceForm";
+import { RoleBadge } from "@/components/workspace/RoleBadge";
 import { useWorkspaces } from "@/hooks/workspace";
 import { formatName } from "@/lib/utils/formatting";
 import { WorkspaceAvatar } from "@/components/workspace/WorkspaceAvatar";
@@ -71,15 +72,18 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
                 <SidebarMenuButton
                   size="lg"
                   tooltip={activeName}
-                  className="h-11 py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0!"
+                  className="h-auto py-1.5 border border-sidebar-border bg-sidebar hover:bg-sidebar data-open:hover:bg-sidebar active:bg-sidebar group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0!"
                 />
               }
             >
               <WorkspaceAvatar name={activeName} />
 
-              <span className="min-w-0 flex-1 truncate text-left text-sm font-medium group-data-[collapsible=icon]:hidden">
-                {activeName}
-              </span>
+              <div className="flex min-w-0 flex-1 flex justify-between items-start group-data-[collapsible=icon]:hidden">
+                <span className="w-full truncate text-left text-sm font-medium">
+                  {activeName}
+                </span>
+                <RoleBadge role={activeWorkspace.role}/>
+              </div>
               <EllipsisIcon className="group-data-[collapsible=icon]:hidden" />
             </DropdownMenuTrigger>
 
@@ -104,14 +108,17 @@ export function WorkspaceSwitcher({ workspaceId }: WorkspaceSwitcherProps) {
                     >
                       <WorkspaceAvatar name={name} />
 
-                      <span
-                        className={`min-w-0 flex-1 truncate ${
-                          isActive ? "font-medium" : ""
-                        }`}
-                        title={name}
-                      >
-                        {name}
-                      </span>
+                      <div className="flex min-w-0 flex-1 justify-between items-start">
+                        <span
+                          className={`w-full truncate ${
+                            isActive ? "font-medium" : ""
+                          }`}
+                          title={name}
+                        >
+                          {name}
+                        </span>
+                        <RoleBadge role={workspace.role} />
+                      </div>
 
                       {isActive && <Check className="size-4 shrink-0" />}
                     </DropdownMenuItem>
