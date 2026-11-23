@@ -1,5 +1,8 @@
+"use client";
+
 import type { BoardItem } from "@repo/contracts/response/board";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import {
   Card,
   CardDescription,
@@ -8,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { formatName } from "@/lib/utils/formatting";
 import { getBoardCoverImage } from "@/lib/utils/image";
+import { UpdateBoardForm } from "./UpdateBoardForm";
 
 export interface BoardCardProps {
   board?: BoardItem;
@@ -15,6 +19,7 @@ export interface BoardCardProps {
   name?: string;
   description?: string | null;
   className?: string;
+  workspaceId?: string;
 }
 
 export const BoardCard = ({
@@ -23,15 +28,25 @@ export const BoardCard = ({
   name: propName,
   description: propDescription,
   className,
+  workspaceId: propWorkspaceId,
 }: BoardCardProps) => {
+  const params = useParams<{ id: string }>();
+  const workspaceId = propWorkspaceId ?? params?.id ?? "";
+
   const boardId = board?.id ?? propId ?? "";
   const name = formatName(board?.name ?? propName ?? "");
   const description = board?.description ?? propDescription ?? null;
   const coverImage = getBoardCoverImage(boardId);
 
+  const boardItem: BoardItem = board ?? {
+    id: boardId,
+    name,
+    description,
+  };
+
   return (
     <Card
-      className={`h-full overflow-hidden pt-0 transition-all duration-200 hover:shadow-lg${
+      className={`group relative h-full overflow-hidden pt-0 transition-all duration-200 hover:shadow-lg${
         className ? ` ${className}` : ""
       }`}
     >
@@ -43,6 +58,20 @@ export const BoardCard = ({
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="rounded-t-4xl object-cover"
         />
+        {workspaceId && boardId && (
+          <div
+            className="absolute top-2 right-2 z-10"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <UpdateBoardForm
+              workspaceId={workspaceId}
+              board={boardItem}
+            />
+          </div>
+        )}
       </div>
       <CardHeader>
         <CardTitle className="truncate">{name}</CardTitle>

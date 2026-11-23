@@ -1,15 +1,19 @@
 "use server";
 
-import { createBoardSchema } from "@repo/validation/board";
+import { createBoardSchema, updateBoardSchema } from "@repo/validation/board";
 import { cleanFormData, validateAction } from "../utils/form";
 import { clientConfig } from "@repo/config/client";
-import type { CreateBoardResponse } from "@repo/contracts/response/board";
+import type {
+  CreateBoardResponse,
+  UpdateBoardResponse,
+} from "@repo/contracts/response/board";
 import type { FormActionState } from "@/types/form";
 import { handleServerNetworkError } from "../utils/network";
 import { getCookieForServerActions } from "../utils/cookie";
+import { EmptyResponse } from "@repo/contracts/response/common";
 
 export const createBoard = async (
-  prevState: FormActionState | null,
+  _prevState: FormActionState | null,
   formData: FormData,
 ): Promise<FormActionState> => {
   const objFormData = cleanFormData(formData);
@@ -35,6 +39,53 @@ export const createBoard = async (
     );
 
     const data: CreateBoardResponse = await response.json();
+
+    return {
+      success: data.success,
+      message: data.message,
+      data: data.data
+        ? {
+            id: data.data.id,
+            name: data.data.name,
+            description: data.data.description,
+          }
+        : null,
+      errors: null,
+      values: objFormData,
+      submissionId: Date.now(),
+    };
+  } catch (error) {
+    return handleServerNetworkError(error, objFormData);
+  }
+};
+
+export const updateBoard = async (
+  _prevState: FormActionState | null,
+  formData: FormData,
+): Promise<FormActionState> => {
+  const objFormData = cleanFormData(formData);
+
+  const result = validateAction(objFormData, updateBoardSchema);
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const response = await fetch(
+      `${clientConfig.NEXT_PUBLIC_API_URL}/workspaces/${result.data?.workspaceId}/boards/${result.data?.boardId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(result.data),
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `connect.sid=${(await getCookieForServerActions("connect.sid"))?.value || ""}`,
+        },
+        credentials: "include",
+      },
+    );
+
+    const data: UpdateBoardResponse = await response.json();
 
     return {
       success: data.success,

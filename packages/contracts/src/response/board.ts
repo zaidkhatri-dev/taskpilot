@@ -8,3 +8,4 @@ export interface BoardItem {
 
 export type GetBoardsResponse = ApiResponse<BoardItem[]>;
 export type CreateBoardResponse = ApiResponse<BoardItem>;
+export type UpdateBoardResponse = ApiResponse<BoardItem>;

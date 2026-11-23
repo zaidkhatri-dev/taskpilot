@@ -2,11 +2,21 @@ import { NextFunction, Request, Response } from "express";
 import {
   GetBoardsResponse,
   CreateBoardResponse,
+  UpdateBoardResponse,
 } from "@repo/contracts/response/board";
-import { createBoardSchema } from "@repo/validation/board";
-import { getBoardsService, createBoardService } from "./services.js";
+import { EmptyResponse } from "@repo/contracts/response/common";
+import {
+  createBoardSchema,
+  updateBoardSchema,
+  boardParamsSchema,
+} from "@repo/validation/board";
+import {
+  getBoardsService,
+  createBoardService,
+  updateBoardService,
+  deleteBoardService,
+} from "./services.js";
 import { GetTypeFromSchema } from "@/types/validation.js";
-import { idSchema } from "@repo/validation/shared";
 
 export const getBoardsController = async (
   req: Request,
@@ -14,15 +24,76 @@ export const getBoardsController = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params as GetTypeFromSchema<typeof idSchema>;
+    const { workspaceId } = req.params as GetTypeFromSchema<
+      typeof boardParamsSchema
+    >;
     const userId = req.session.userId!;
 
-    const data = await getBoardsService(id, userId);
+    const data = await getBoardsService(workspaceId, userId);
 
     const response: GetBoardsResponse = {
       success: true,
       message: "Boards fetched successfully",
       data,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateBoardController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { workspaceId, boardId } = req.params as GetTypeFromSchema<
+      typeof boardParamsSchema
+    >;
+    const { name, description } = req.body as GetTypeFromSchema<
+      typeof updateBoardSchema
+    >;
+
+    const data = await updateBoardService(
+      boardId,
+      workspaceId,
+      req.session.userId!,
+      {
+        name,
+        description,
+      },
+    );
+
+    const response: UpdateBoardResponse = {
+      success: true,
+      message: "Board updated successfully",
+      data,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteBoardController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { boardId, workspaceId } = req.params as GetTypeFromSchema<
+      typeof boardParamsSchema
+    >;
+
+    await deleteBoardService(boardId, workspaceId, req.session.userId!);
+
+    const response: EmptyResponse = {
+      success: true,
+      message: "Board deleted successfully",
+      data: null,
     };
 
     res.status(200).json(response);
@@ -40,11 +111,13 @@ export const createBoardController = async (
     const { name, description } = req.body as GetTypeFromSchema<
       typeof createBoardSchema
     >;
-    const { id } = req.params as GetTypeFromSchema<typeof idSchema>;
+    const { workspaceId } = req.params as GetTypeFromSchema<
+      typeof boardParamsSchema
+    >;
     const userId = req.session.userId!;
 
     const data = await createBoardService(
-      id,
+      workspaceId,
       userId,
       name,
       description,

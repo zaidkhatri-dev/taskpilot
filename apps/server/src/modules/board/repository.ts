@@ -1,7 +1,7 @@
 import { initDb } from "@repo/db/client";
 import { serverConfig } from "@repo/config/server";
 import { boards } from "@repo/db/boards";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const dbClient = initDb({
   DATABASE_URL: serverConfig.DATABASE_URL,
@@ -25,7 +25,11 @@ export const getBoards = async (workspaceId: string) => {
   return result;
 };
 
-export const createBoard = async (workspaceId: string, name: string, description?: string) => {
+export const createBoard = async (
+  workspaceId: string,
+  name: string,
+  description?: string,
+) => {
   const [result] = await dbClient
     .insert(boards)
     .values({
@@ -38,13 +42,48 @@ export const createBoard = async (workspaceId: string, name: string, description
       name: boards.name,
       description: boards.description,
     });
-    
-    if (!result) {
-      throw new Error("Board insert returned no row");
-    }
+
+  if (!result) {
+    throw new Error("Board insert returned no row");
+  }
 
   return result;
 };
 
+export const getBoard = async (boardId: string, workspaceId: string) => {
+  const [board] = await dbClient
+    .select({
+      id: boards.id,
+      workspaceId: boards.workspaceId,
+      name: boards.name,
+      description: boards.description,
+    })
+    .from(boards)
+    .where(and(eq(boards.id, boardId), eq(boards.workspaceId, workspaceId)));
+  return board;
+};
 
+export const updateBoard = async (
+  boardId: string,
+  workspaceId: string,
+  values: { name?: string; description?: string },
+) => {
+  const [board] = await dbClient
+    .update(boards)
+    .set({ ...values, updatedAt: new Date() })
+    .where(and(eq(boards.id, boardId), eq(boards.workspaceId, workspaceId)))
+    .returning({
+      id: boards.id,
+      name: boards.name,
+      description: boards.description,
+    });
+  return board;
+};
 
+export const deleteBoard = async (boardId: string, workspaceId: string) => {
+  const [board] = await dbClient
+    .delete(boards)
+    .where(and(eq(boards.id, boardId), eq(boards.workspaceId, workspaceId)))
+    .returning({ id: boards.id });
+  return board;
+};

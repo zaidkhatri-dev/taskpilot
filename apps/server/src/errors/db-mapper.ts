@@ -26,6 +26,7 @@ const UNIQUE_CONSTRAINT_MESSAGES: Readonly<Record<string, string>> = {
   // workspace membership (schema-defined uniqueIndex)
   [USER_WORKSPACE_IDX]: "User is already a member or invited to this workspace",
   [WORKSPACE_OWNER_IDX]: "This workspace already has an owner",
+  
   [BOARD_NAME_WORKSPACE_IDX]:
     "A board with this name already exists in this workspace.",
 };

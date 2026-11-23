@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useWorkspaceBoards } from "@/hooks/board";
 import { useWorkspacePermission } from "@/hooks/workspace";
-import { BoardCard } from "@/components/workspace/BoardCard";
+import { BoardCard } from "@/components/board/BoardCard";
 import { BoardCardSkeleton } from "@/components/board/BoardCardSkeleton";
 import { CreateBoardForm } from "@/components/board/CreateBoardForm";
 import { Card } from "@/components/ui/card";

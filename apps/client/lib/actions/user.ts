@@ -12,7 +12,7 @@ import {
 } from "../utils/cookie";
 
 export async function completeOnboarding(
-  prevState: FormActionState | null,
+  _prevState: FormActionState | null,
   formData: FormData,
 ): Promise<FormActionState> {
   const objFormData = cleanFormData(formData);
@@ -55,7 +55,7 @@ export async function completeOnboarding(
 }
 
 export async function updateMe(
-  prevState: FormActionState | null,
+  _prevState: FormActionState | null,
   formData: FormData,
 ): Promise<FormActionState> {
   const objFormData = cleanFormData(formData);

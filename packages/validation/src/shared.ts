@@ -36,5 +36,11 @@ export const idSchema = z.object({
 
 export const workspaceMembershipRoles = z.enum(["admin", "member"]);
 
+export const descriptionSchema = z
+  .string("Invalid description format")
+  .trim()
+  .transform((v) => v || undefined)
+  .optional();
+
 export const emptyToUndefined = (value: unknown) =>
-  value === "" ? undefined : value;
+  typeof value === "string" && value.trim() === "" ? undefined : value;

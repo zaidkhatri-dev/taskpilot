@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "board_workspace_idx" ON "boards" ("workspace_id","id");

@@ -16,7 +16,7 @@ import {
 import type { FormActionState } from "@/types/form";
 
 export async function generateLink(
-  prevState: FormActionState | null,
+  _prevState: FormActionState | null,
   formData: FormData,
 ): Promise<FormActionState> {
   const objFormData = cleanFormData(formData);
