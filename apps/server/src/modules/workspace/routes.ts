@@ -48,7 +48,10 @@ router.patch(
 
 router.get(
   "/:id/users",
-  inputValidator({ params: idSchema, query: getWorkspaceUsersSchema.omit({ workspaceId: true }) }),
+  inputValidator({
+    params: idSchema,
+    query: getWorkspaceUsersSchema.omit({ workspaceId: true }),
+  }),
   getWorkspaceUsersController,
 );
 
@@ -60,7 +63,10 @@ router.post(
 
 router.post(
   "/:id/remove",
-  inputValidator({ params: idSchema, body: removeUserFromWorkspaceSchema.omit({ workspaceId: true }) }),
+  inputValidator({
+    params: idSchema,
+    body: removeUserFromWorkspaceSchema.omit({ workspaceId: true }),
+  }),
   removeUserFromWorkspaceController,
 );
 
@@ -75,19 +81,28 @@ router.post(
 
 router.post(
   "/:id/invitations",
-  inputValidator({ params: idSchema, body: workspaceInvitationSchema.omit({ workspaceId: true }) }),
+  inputValidator({
+    params: idSchema,
+    body: workspaceInvitationSchema.omit({ workspaceId: true }),
+  }),
   workspaceInvitationController,
 );
 
 router.post(
   "/:id/change-role",
-  inputValidator({ params: idSchema, body: changeUserRoleSchema.omit({ workspaceId: true }) }),
+  inputValidator({
+    params: idSchema,
+    body: changeUserRoleSchema.omit({ workspaceId: true }),
+  }),
   changeUserRoleController,
 );
 
 router.post(
   "/:id/transfer",
-  inputValidator({ params: idSchema, body: transferOwnershipSchema.omit({ workspaceId: true }) }),
+  inputValidator({
+    params: idSchema,
+    body: transferOwnershipSchema.omit({ workspaceId: true }),
+  }),
   transferOwnershipController,
 );
 

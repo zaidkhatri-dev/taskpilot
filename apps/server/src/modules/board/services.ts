@@ -20,7 +20,7 @@ export const createBoardService = async (
   workspaceId: string,
   userId: string,
   name: string,
-  description?: string,
+  description: string | null,
 ) => {
   await assertWorkspacePermission(userId, workspaceId, "board:create");
 

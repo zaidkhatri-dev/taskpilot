@@ -10,7 +10,7 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/c
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { getFieldError } from "@/lib/utils/form";
-import { useWorkspaces } from "@/hooks/workspace";
+import { useWorkspacePermission, useWorkspaces } from "@/hooks/workspace";
 import { queryKeys } from "@/hooks/keys";
 import { updateWorkspace } from "@/lib/actions/workspace";
 import { formatName } from "@/lib/utils/formatting";
@@ -19,6 +19,7 @@ import { toast } from "@/components/ui/toast";
 export function UpdateWorkspaceForm({ workspaceId }: { workspaceId: string }) {
   const { data: workspaces, isPending, isError, error } = useWorkspaces();
   const workspace = workspaces?.find((w) => w.id === workspaceId);
+  const canUpdateWorkspace = useWorkspacePermission(workspaceId, "workspace:update");
   const [state, formAction, pending] = useActionState(updateWorkspace, null);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -35,6 +36,7 @@ export function UpdateWorkspaceForm({ workspaceId }: { workspaceId: string }) {
   }, [state, queryClient]);
 
   if (isError && !workspaces) throw error;
+  if (!canUpdateWorkspace) return null;
   if (isPending) return <Button variant="ghost" size="icon" disabled aria-label="Edit workspace name"><Edit /></Button>;
   if (!workspace) return null;
 

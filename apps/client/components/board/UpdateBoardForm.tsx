@@ -125,7 +125,12 @@ export const UpdateBoardForm = ({
         }
       />
       <DialogContent className="sm:max-w-sm">
-        <form noValidate action={formAction} className="flex flex-col gap-6">
+        <form
+          noValidate
+          action={formAction}
+          className="flex flex-col gap-6"
+          onClick={(e) => e.stopPropagation()}
+        >
           <input type="hidden" name="workspaceId" value={workspaceId} />
           <input type="hidden" name="boardId" value={board.id} />
 
@@ -138,7 +143,6 @@ export const UpdateBoardForm = ({
               <Input
                 type="text"
                 id={`board-name-${board.id}`}
-                name="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -149,6 +153,7 @@ export const UpdateBoardForm = ({
                     ? `board-name-${board.id}-error`
                     : `board-name-${board.id}-desc`
                 }
+                name={name.trim() !== initialName ? "name" : undefined}
               />
               <div className="min-h-6">
                 {nameError ? (
@@ -170,7 +175,6 @@ export const UpdateBoardForm = ({
               <Input
                 type="text"
                 id={`board-description-${board.id}`}
-                name="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 autoComplete="off"
@@ -179,6 +183,11 @@ export const UpdateBoardForm = ({
                   descriptionError
                     ? `board-description-${board.id}-error`
                     : `board-description-${board.id}-desc`
+                }
+                name={
+                  description.trim() !== initialDescription
+                    ? "description"
+                    : undefined
                 }
               />
               <div className="min-h-6">
@@ -198,7 +207,7 @@ export const UpdateBoardForm = ({
             <Button
               type="submit"
               className="w-full"
-              disabled={isPending || isClean}
+              disabled={isPending || isClean || !name.trim()}
             >
               {isPending && <Spinner data-icon="inline-start" />}
               {isPending ? "Updating..." : "Update"}

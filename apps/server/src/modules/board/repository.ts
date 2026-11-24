@@ -28,7 +28,7 @@ export const getBoards = async (workspaceId: string) => {
 export const createBoard = async (
   workspaceId: string,
   name: string,
-  description?: string,
+  description: string | null,
 ) => {
   const [result] = await dbClient
     .insert(boards)
@@ -66,7 +66,7 @@ export const getBoard = async (boardId: string, workspaceId: string) => {
 export const updateBoard = async (
   boardId: string,
   workspaceId: string,
-  values: { name?: string; description?: string },
+  values: { name?: string; description?: string | null },
 ) => {
   const [board] = await dbClient
     .update(boards)

@@ -15,7 +15,7 @@ description: >-
 - **Module separation**: One file per module (e.g. `user.ts`), grouped in folders by domain.
 - **Packages**: Code used by multiple apps goes in a package named `@repo/<name>`. Packages must not import from other packages. Only apps import from packages.
 - **Style**:
-  - Files are `kebab-case`.
+  - Files are `PascalCase`.
   - Use arrow functions, not function declarations.
   - Use `@/` import aliases.
 
@@ -46,12 +46,17 @@ description: >-
   - **Prefix matching**: Query keys are hierarchical and TanStack Query matches by prefix.
     Invalidate or remove with the narrowest key that covers the change. A list key must
     never be a prefix of other queries' keys (e.g. `workspaces.all` is `["workspaces",
-    "list"]`, not `["workspaces"]`). Never call `removeQueries` with a list key.
+"list"]`, not `["workspaces"]`). Never call `removeQueries` with a list key.
   - **Delete / Leave**: `removeQueries` with the resource's `scope` key (covers all child
     queries for that resource), then `invalidateQueries` with the parent list key.
   - Invalidate `queryKeys.session` only if auth state changes (e.g. `isOnboarded`). Do not invalidate it on workspace delete or leave.
   - Reference implementation: `useProcessWorkspaceInvitation` (top-level hooks, conditional invalidation, toast placement) and `useDeleteWorkspace` (remove-then-invalidate) in `hooks/workspace.ts`.
-- **Update forms**: Track dirty state with `isUnchanged` from `@/lib/utils/miscellaneous`. Disable submit when the form is unchanged or `isPending`.
+- **Update forms**: Send only the fields the user changed (PATCH semantics).
+  - Track dirty state with `isUnchanged` from `@/lib/utils/miscellaneous`. Disable submit when the form is unchanged, `isPending`, or a required field is empty after trimming.
+  - Give each editable input a conditional `name`. It is the field name only when the trimmed value differs from the initial value, otherwise `undefined`. Inputs without a `name` are left out of `FormData`, so unchanged fields never reach the action. Hidden identifier inputs (`workspaceId`, `boardId`) always keep their `name`.
+  - The update schema makes every editable field optional. Required text fields use `z.preprocess(emptyToUndefined, <schema>.optional())`. Nullable text fields use `descriptionSchema`, where `""` becomes `null`.
+  - Missing key means "leave unchanged". `null` means "clear the value". The server must treat the two differently.
+  - Reference implementation: `UpdateBoardForm` (conditional `name` on inputs, `isClean` and empty-name check on the submit button), `updateBoardSchema` (optional fields) and the `updateBoard` action in `lib/actions/board.ts`.
 
 ## 4. UI
 
